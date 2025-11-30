@@ -33,15 +33,8 @@ button{width:100%;padding:.75rem;background:var(--primary);color:#fff;border:non
 </div>
 
 <script>
-// Determine API base depending on hostname
-let API_BASE;
-if (window.location.hostname === 'kruedog.ddns.net') {
-  API_BASE = window.location.protocol === 'https:'
-    ? 'https://kruedog.ddns.net:477/webapi'
-    : 'http://kruedog.ddns.net:8080/webapi';
-} else {
-  API_BASE = 'http://192.168.1.2:8080/webapi';
-}
+// Smart API base — automatically works on NAS, Render, or your real domain
+const API_BASE = '/webapi';   // ← ONE LINE TO RULE THEM ALL
 
 // Login form
 const form = document.getElementById('loginForm');
@@ -49,36 +42,47 @@ form.addEventListener('submit', async e => {
   e.preventDefault();
   const loginMsg = document.getElementById('loginMsg');
   loginMsg.textContent = '';
-
   const username = document.getElementById('username').value.trim();
   const password = document.getElementById('password').value;
-
-  if (!username || !password) { loginMsg.textContent = 'Enter username and password'; return; }
+  if (!username || !password) {
+    loginMsg.textContent = 'Enter username and password';
+    return;
+  }
 
   const btn = form.querySelector('button[type="submit"]');
-  btn.disabled = true; btn.textContent = 'Logging in...';
+  btn.disabled = true;
+  btn.textContent = 'Logging in…';
 
   try {
     const res = await fetch(`${API_BASE}/login.php`, {
       method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({username, password}),
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, password }),
       credentials: 'same-origin'
     });
+
     const json = await res.json();
+
     if (json.success) {
       localStorage.setItem('username', json.username);
       localStorage.setItem('coachName', json.CoachName || json.username);
       localStorage.setItem('email', json.email || '');
-      window.location.href = 'profile.html';
-    } else loginMsg.textContent = json.message || 'Login failed';
-  } catch (err) { loginMsg.textContent = 'Network error: ' + err.message; }
-  finally { btn.disabled = false; btn.textContent = 'Login'; }
+      // Redirect to profile (relative so it works everywhere)
+      window.location.href = '/profile.html';
+    } else {
+      loginMsg.textContent = json.message || 'Login failed';
+    }
+  } catch (err) {
+    loginMsg.textContent = 'Network error: ' + err.message;
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Login';
+  }
 });
 
-// Home button
+// Home button — also relative so it works on Render
 document.getElementById('homeBtn').addEventListener('click', () => {
-  window.location.href = 'http://kruedog.ddns.net:8080/index.html';
+  window.location.href = '/index.html';
 });
 </script>
 </body>
