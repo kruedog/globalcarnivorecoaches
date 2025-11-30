@@ -68,7 +68,7 @@ form.addEventListener('submit', async e => {
       localStorage.setItem('coachName', json.CoachName || json.username);
       localStorage.setItem('email', json.email || '');
       // Redirect to profile (relative so it works everywhere)
-      window.location.href = 'webapi/profile.html';
+      window.location.href = 'profile.html';
     } else {
       loginMsg.textContent = json.message || 'Login failed';
     }
