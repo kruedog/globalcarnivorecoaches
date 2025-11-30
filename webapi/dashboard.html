@@ -9,7 +9,7 @@
 <script src="https://cdn.jsdelivr.net/npm/luxon"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon"></script>
 <style>
-  :root{--red:#C51230;--dark:#121212;--light:#f8f9fa;--gray:#333;--card:#ffffff;--border:#e0e0e0}
+  :root{--red:#C51230;--dark:#121212;--light:#f8f9fa;--card:#ffffff;--border:#e0e0e0}
   body.dark{--card:#1e1e1e;--border:#333;--light:#121212}
   body{margin:0;font-family:'Inter',sans-serif;background:var(--light);color:#000;transition:.3s;color-scheme:light dark}
   body.dark{color:#eee}
@@ -80,10 +80,10 @@
 </main>
 
 <script>
+// ONLY ONE <script> TAG — THIS IS THE FIX
 const API = '/webapi/webapi.php';
-let visitorChart;
 
-// Theme toggle
+// Theme
 if (localStorage.getItem('dark') === 'yes') document.body.classList.add('dark');
 document.getElementById('themeToggle').textContent = document.body.classList.contains('dark') ? 'Light Mode' : 'Dark Mode';
 document.getElementById('themeToggle').onclick = () => {
@@ -91,14 +91,13 @@ document.getElementById('themeToggle').onclick = () => {
   localStorage.setItem('dark', document.body.classList.contains('dark') ? 'yes' : 'no');
 };
 
-// Real-time activity feed
+// Real-time feed
 let es = new EventSource('/webapi/notify.php');
 es.onmessage = e => {
   const d = JSON.parse(e.data);
   addActivity(d.coach || d.username || 'Visitor', d.action?.replace(/_/g, ' ') || 'visit', d.details || d.location || '', d.color || '#666');
 };
 
-// Add activity item
 function addActivity(name, action, details, color) {
   const feed = document.getElementById('activityFeed');
   const div = document.createElement('div');
@@ -108,21 +107,17 @@ function addActivity(name, action, details, color) {
     <div><strong>${name}</strong> ${action}<br><small>${details||''}</small></div>
     <div style="margin-left:auto;font-size:.9rem;opacity:.8">${new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</div>`;
   feed.prepend(div);
-  // Keep only last 30 items
   while (feed.children.length > 30) feed.removeChild(feed.lastChild);
 }
 
-// Load data
+// Load stats
 async function load() {
-  const stats = await fetch(API + '?action=get_stats&t=' + Date.now()).then(r => r.json());
-  if (stats) {
-    document.getElementById('today').textContent = stats.today || 0;
-    document.getElementById('week').textContent = stats.week || 0;
-    document.getElementById('total').textContent = stats.total || 0;
-  }
+  const stats = await fetch(API + '?action=get_stats&t=' + Date.now()).then(r => r.json()).catch(() => ({}));
+  document.getElementById('today').textContent = stats.today ?? 0;
+  document.getElementById('week').textContent = stats.week ?? 0;
+  document.getElementById('total').textContent = stats.total ?? 0;
 }
 
-// Run on load + every 15s
 load();
 setInterval(load, 15000);
 
