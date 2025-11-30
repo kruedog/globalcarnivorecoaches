@@ -1,0 +1,13 @@
+# Block all PHP execution in uploads folder
+php_flag engine off
+RemoveHandler .php .phtml .php3 .php4 .php5 .php7 .php8 .phps
+<Files "*.php">
+    Order Allow,Deny
+    Deny from all
+</Files>
+
+# Only allow real image extensions
+<Files ~ "\.(jpe?g|png|gif|webp)$">
+    Order Deny,Allow
+    Allow from all
+</Files>
