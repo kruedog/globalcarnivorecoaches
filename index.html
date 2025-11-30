@@ -714,8 +714,8 @@ const API_BASE_URL = window.location.protocol === 'https:'
   : `http://${window.location.hostname}:8080/webapi`;
 async function loadCoaches() {
   try {
-    const response = await fetch(`${API_BASE_URL}/get_coaches.php`);
-    const data = await response.json();
+    const response = await fetch('/webapi/get_coaches.php');
+const data = await response.json();
     if (data.success) {
       const gallery = document.getElementById('coachGallery');
       const modalsContainer = document.getElementById('modalsContainer');
