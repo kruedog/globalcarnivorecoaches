@@ -80,26 +80,26 @@
 </main>
 
 <script>
-<script>
 const API = '/webapi/webapi.php';
 let visitorChart;
 
-// Theme
-if (localStorage.getItem('dark')==='yes') document.body.classList.add('dark');
-document.getElementById('themeToggle').textContent = document.body.classList.contains('dark')?'Light Mode':'Dark Mode';
-document.getElementById('themeToggle').onclick=()=>{document.body.classList.toggle('dark');localStorage.setItem('dark',document.body.classList.contains('dark')?'yes':'no');};
+// Theme toggle
+if (localStorage.getItem('dark') === 'yes') document.body.classList.add('dark');
+document.getElementById('themeToggle').textContent = document.body.classList.contains('dark') ? 'Light Mode' : 'Dark Mode';
+document.getElementById('themeToggle').onclick = () => {
+  document.body.classList.toggle('dark');
+  localStorage.setItem('dark', document.body.classList.contains('dark') ? 'yes' : 'no');
+};
 
-// Real-time feed
+// Real-time activity feed
 let es = new EventSource('/webapi/notify.php');
 es.onmessage = e => {
   const d = JSON.parse(e.data);
-  addActivity(d.coach||d.username||'Visitor', d.action?.replace(/_/g,' ')||'visit', d.details||d.location||'', d.color||'#666');
+  addActivity(d.coach || d.username || 'Visitor', d.action?.replace(/_/g, ' ') || 'visit', d.details || d.location || '', d.color || '#666');
 };
 
-// Helpers
-async function get(url){try{const r=await fetch(url+'&t='+Date.now());return r.ok?await r.json():null;}catch(e){return null;}}
-
-function addActivity(name, action, details, color){
+// Add activity item
+function addActivity(name, action, details, color) {
   const feed = document.getElementById('activityFeed');
   const div = document.createElement('div');
   div.className = 'activity-item';
@@ -112,33 +112,22 @@ function addActivity(name, action, details, color){
   while (feed.children.length > 30) feed.removeChild(feed.lastChild);
 }
 
-// Load everything
-async function load(){
-  const stats = await get(API+'?action=get_stats');
-  if(stats){
-    document.getElementById('today').textContent = stats.today||0;
-    document.getElementById('week').textContent = stats.week||0;
-    document.getElementById('total').textContent = stats.total||0;
+// Load data
+async function load() {
+  const stats = await fetch(API + '?action=get_stats&t=' + Date.now()).then(r => r.json());
+  if (stats) {
+    document.getElementById('today').textContent = stats.today || 0;
+    document.getElementById('week').textContent = stats.week || 0;
+    document.getElementById('total').textContent = stats.total || 0;
   }
-
-  // Visitor chart (stub — you can expand later)
-  if(!visitorChart){
-    visitorChart = new Chart(document.getElementById('visitorChart'),{
-      type:'line',
-      data:{labels:[],datasets:[{label:'Visitors',data:[],borderColor:'#C51230',tension:.3,fill:true}]},
-      options:{responsive:true,plugins:{legend:{display:false}}}
-    });
-  }
-
-  // Coach list (placeholder)
-  document.getElementById('coachList').innerHTML = '<em>Coming soon</em>';
 }
 
+// Run on load + every 15s
 load();
-setInterval(load,15000);
+setInterval(load, 15000);
 
-// Track visit
-fetch('/webapi/webapi.php?action=track_visit', {method:'HEAD'});
+// Track this visit
+fetch('/webapi/webapi.php?action=track_visit', {method: 'HEAD'});
 </script>
 </body>
 </html>
