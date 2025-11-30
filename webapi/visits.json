@@ -1,0 +1,21 @@
+{
+    "total": 18,
+    "today": 3,
+    "week": 14,
+    "last_day": "2025-11-29",
+    "last_week": "2025-48",
+    "ips": [
+        "37.19.213.54",
+        "86.48.15.197",
+        "86.48.15.201"
+    ],
+    "locations": [
+        "London, United Kingdom",
+        "Toronto, Canada",
+        "Franklin, United States",
+        "Montreal, Canada",
+        "Guancheng, China",
+        "Barnet, United Kingdom"
+    ],
+    "last_update": 1764466454
+}
