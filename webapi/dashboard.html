@@ -20,17 +20,11 @@
   .stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1.5rem}
   .stat{background:var(--red);color:white;padding:1.5rem;border-radius:12px;text-align:center}
   .stat.big{font-size:3.2rem;font-weight:700;margin:0.4rem 0}
-  .controls{margin:2rem 0;display:flex;gap:1rem;flex-wrap:wrap}
-  .btn{padding:.9rem 1.8rem;border:none;border-radius:12px;font-weight:600;cursor:pointer;transition:.3s}
-  .btn-primary{background:var(--red);color:white}
-  .btn-outline{border:2px solid var(--red);background:transparent;color:var(--red)}
-  .btn-outline:hover{background:var(--red);color:white}
   canvas{height:300px !important}
   #themeToggle{position:fixed;top:1rem;right:1rem;background:none;border:none;font-size:2rem;cursor:pointer;z-index:100}
   .activity-item{display:flex;align-items:center;gap:1rem;padding:1rem 0;border-bottom:1px solid var(--border)}
   .activity-icon{width:48px;height:48px;border-radius:50%;display:grid;place-items:center;font-weight:bold;color:white;font-size:1.1rem}
   .logout{position:absolute;top:1.5rem;left:1.5rem;color:white;text-decoration:none;font-weight:600}
-  .logout:hover{text-decoration:underline}
 </style>
 </head>
 <body>
@@ -39,7 +33,6 @@
 
 <header>
   <h1>Global Carnivore Coaches — Admin</h1>
-  <p id="welcome">Welcome back, <strong>Admin</strong></p>
 </header>
 
 <main>
@@ -59,29 +52,19 @@
   </div>
 
   <div class="card">
-    <h2>Quick Actions</h2>
-    <div class="controls">
-      <button class="btn btn-primary" onclick="exportCSV()">Export CSV</button>
-      <button class="btn btn-primary" onclick="exportXLSX()">Export Excel</button>
-      <button class="btn btn-outline" onclick="location.href='/webapi/profile.html'">Edit My Profile</button>
-      <button class="btn btn-outline" onclick="resetAll()">Reset All Data</button>
-    </div>
+    <h2>Active Coaches</h2>
+    <div id="coachList">Loading...</div>
   </div>
 
   <div class="card">
     <h2>Live Activity Feed</h2>
     <div id="activityFeed">Loading real-time events...</div>
   </div>
-
-  <div class="card">
-    <h2>Active Coaches</h2>
-    <div id="coachList">Loading...</div>
-  </div>
 </main>
 
 <script>
-// ONLY ONE <script> TAG — THIS IS THE FIX
 const API = '/webapi/webapi.php';
+let visitorChart;
 
 // Theme
 if (localStorage.getItem('dark') === 'yes') document.body.classList.add('dark');
@@ -91,11 +74,11 @@ document.getElementById('themeToggle').onclick = () => {
   localStorage.setItem('dark', document.body.classList.contains('dark') ? 'yes' : 'no');
 };
 
-// Real-time feed
-let es = new EventSource('/webapi/notify.php');
+// Real-time activity
+let es = new EventSource(API + '?action=notify');
 es.onmessage = e => {
   const d = JSON.parse(e.data);
-  addActivity(d.coach || d.username || 'Visitor', d.action?.replace(/_/g, ' ') || 'visit', d.details || d.location || '', d.color || '#666');
+  addActivity(d.coach || d.username || 'Visitor', d.action?.replace(/_/g,' ') || 'visit', d.details || d.location || '', d.color || '#666');
 };
 
 function addActivity(name, action, details, color) {
@@ -110,19 +93,57 @@ function addActivity(name, action, details, color) {
   while (feed.children.length > 30) feed.removeChild(feed.lastChild);
 }
 
-// Load stats
-async function load() {
+// Load all data
+async function loadAll() {
+  // Stats
   const stats = await fetch(API + '?action=get_stats&t=' + Date.now()).then(r => r.json()).catch(() => ({}));
   document.getElementById('today').textContent = stats.today ?? 0;
   document.getElementById('week').textContent = stats.week ?? 0;
   document.getElementById('total').textContent = stats.total ?? 0;
+
+  // 14-day chart
+  const visits = await fetch(API + '?action=get_visits_14days&t=' + Date.now()).then(r => r.json()).catch(() => []);
+  if (visits.length && !visitorChart) {
+    visitorChart = new Chart(document.getElementById('visitorChart'), {
+      type: 'line',
+      data: {
+        datasets: [{
+          label: 'Visitors',
+          data: visits,
+          borderColor: '#C51230',
+          backgroundColor: 'rgba(197,18,48,.1)',
+          tension: .3,
+          fill: true
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: { legend: { display: false } },
+        scales: { x: { type: 'time', time: { unit: 'day' } } }
+      }
+    });
+  }
+
+  // Active coaches
+  const coaches = await fetch(API + '?action=get_coaches&t=' + Date.now()).then(r => r.json()).catch(() => []);
+  const list = document.getElementById('coachList');
+  if (coaches?.length) {
+    list.innerHTML = coaches.map(c => `
+      <div style="padding:.8rem 0;border-bottom:1px solid #eee">
+        <strong>${c.CoachName || c.Username}</strong> — 
+        ${c.last_login ? 'Last login: ' + new Date(c.last_login).toLocaleString() : 'Never logged in'}
+      </div>`).join('');
+  } else {
+    list.innerHTML = '<em>No coaches registered yet</em>';
+  }
 }
 
-load();
-setInterval(load, 15000);
+// Run
+loadAll();
+setInterval(loadAll, 15000);
 
 // Track this visit
-fetch('/webapi/webapi.php?action=track_visit', {method: 'HEAD'});
+fetch(API + '?action=track_visit', {method: 'HEAD'});
 </script>
 </body>
 </html>
