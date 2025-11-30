@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Science of the Carnivore Diet | Global Carnivore Coaches</title>
+  <link rel="icon" type="image/png" href="images/earth_steak.png">
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    /* ===============================
+       COMBINED CSS — Global Carnivore Coaches
+       Montreal Canadiens Color Theme with Enhanced Contrast
+       =============================== */
+
+    :root{
+      --white: #FFFFFF;
+      --off-white: #E6E6E6;
+      --parchment: #D0D2D5;
+      --text-color: #192168;
+      --primary-blue: #192168;
+      --accent-red: #AF1E2D;
+      --secondary-iron: #1A1A1A;
+      --muted: #3A3A3A;
+      --shadow: 0 10px 30px rgba(0,0,0,0.28);
+      --max-width: 1100px;
+      --radius: 8px;
+      --glass: rgba(255,255,255,0.6);
+      --accent-glow: 0 8px 30px rgba(175,30,45,0.18);
+    }
+
+    /* ---------- global ---------- */
+    * { box-sizing: border-box; }
+    html,body { height:100%; }
+    body{
+      margin:0;
+      font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background: radial-gradient(circle at 10% 10%, #F5F6F8 0%, var(--parchment) 40%, #B8BBC2 100%);
+      color:var(--text-color);
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      line-height:1.6;
+      -webkit-tap-highlight-color: transparent;
+    }
+    body.modal-open { overflow: hidden; }
+    .wrap { max-width: var(--max-width); margin: 0 auto; padding: 24px; }
+
+    a { color: var(--accent-red); text-decoration: underline dotted; }
+    a:hover { color: var(--primary-blue); }
+
+    /* heading utility */
+    h2 {
+      font-family: "Cinzel", serif;
+      font-size: 1.5rem;
+      color: var(--primary-blue);
+      margin: 0 0 12px 0;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      display:inline-block;
+    }
+    h2 .subline {
+      display:block; font-family: Inter, sans-serif; font-size:0.8rem; color:var(--muted); margin-top:6px; text-transform:none;
+    }
+    p.lead { font-size:1.02rem; color:var(--text-color); margin-top:6px; }
+
+    @media (prefers-reduced-motion: reduce) {
+      * { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+    }
+
+    /* ---------- nav ---------- */
+    nav.top-nav {
+      background: linear-gradient(90deg, var(--primary-blue) 0%, #2A315A 100%);
+      color: var(--white);
+      padding:12px 20px;
+      box-shadow: 0 4px 18px rgba(0,0,0,0.45);
+      border-radius: 999px;
+      margin: 18px auto;
+      max-width: calc(var(--max-width) - 48px);
+    }
+    .nav-inner { display:flex; gap:12px; align-items:center; justify-content:space-between; }
+    .nav-left { display:flex; gap:12px; align-items:center; }
+    .brand-mini { display:flex; gap:10px; align-items:center; color:var(--white); text-decoration:none; font-weight:700; font-family:"Cinzel", serif; font-size:0.95rem; }
+    .brand-mini img { width:40px; height:40px; object-fit:contain; border-radius:6px; border:2px solid var(--accent-red); box-shadow: 0 6px 18px rgba(0,0,0,0.4); background:linear-gradient(180deg,#3a3a3a,#2e2e2e); padding:4px; }
+    .nav-right { display:flex; gap:8px; align-items:center; }
+    .nav-link { color:var(--white); text-decoration:none; padding:8px 12px; font-size:0.95rem; font-weight:600; border-radius:6px; transition: all 180ms ease; opacity:0.95; }
+    .nav-link:hover { color:var(--accent-red); transform: translateY(-2px); text-shadow:0 6px 18px rgba(175,30,45,0.12); }
+    @media (max-width:560px) {
+      .nav-inner { flex-direction:column; gap:8px; }
+      .nav-right { flex-wrap:wrap; justify-content:center; }
+      .nav-link { font-size:0.9rem; padding:6px 10px; }
+    }
+
+    /* ---------- hero ---------- */
+    header.hero {
+      display:flex; gap:22px; align-items:center; padding:36px; border-radius:var(--radius);
+      background: linear-gradient(180deg, var(--secondary-iron) 0%, #212121 100%);
+      color:var(--white); box-shadow:var(--shadow); border-left:12px solid var(--primary-blue); margin:24px 0;
+    }
+    .hero-left { display:flex; align-items:center; gap:18px; min-width:110px; }
+    .logo { width:110px; height:110px; border-radius:14px; overflow:hidden; border:4px solid var(--accent-red); box-shadow:0 18px 40px rgba(0,0,0,0.45); background:linear-gradient(180deg,#2a2a2a,#181818); display:flex; align-items:center; justify-content:center; }
+    .logo img { width:78px; height:78px; transform: rotate(-6deg); filter: drop-shadow(0 6px 18px rgba(0,0,0,0.6)); }
+    header h1{ margin:0 0 4px 0; font-family:"Cinzel", serif; font-size:2rem; color:var(--accent-red); letter-spacing:1px; text-transform:uppercase; text-shadow:0 6px 18px rgba(0,0,0,0.45); }
+    header p.tag{ margin:0; color:var(--white); font-weight:700; font-size:1rem; letter-spacing:0.6px; text-transform:uppercase; }
+    header p.lead-hero{ margin-top:10px; color:var(--white); opacity:0.95; font-size:1rem; }
+    @media (max-width:560px) {
+      header.hero { padding:16px; gap:12px; flex-direction:column; align-items:flex-start; }
+      .logo { width:86px; height:86px; }
+      header h1 { font-size:1.6rem; }
+      header p.tag { font-size:0.9rem; }
+      header p.lead-hero { font-size:0.95rem; }
+    }
+
+    /* ---------- cards / layout ---------- */
+    section.card {
+      margin-top:28px; background: linear-gradient(180deg, var(--off-white) 0%, #C8C8C8 100%);
+      padding:26px; border-radius:var(--radius); box-shadow:0 12px 40px rgba(0,0,0,0.12); border:1px solid rgba(25,33,104,0.06); transform: translateY(6px);
+    }
+    .cols { display:grid; grid-template-columns:1fr 320px; gap:28px; align-items:start; }
+    @media (max-width:920px) { .cols { grid-template-columns:1fr; } }
+    aside.card-aside {
+      background: var(--white);
+      border: 2px solid var(--primary-blue);
+      border-left: 4px solid var(--primary-blue);
+      padding: 20px;
+      border-radius: 6px;
+      color: var(--text-color);
+      font-weight: 600;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    @media (max-width:560px) {
+      aside.card-aside { padding: 16px; }
+      section.card { padding: 16px; }
+      .cols { gap: 16px; }
+    }
+
+    /* ---------- buttons ---------- */
+    .cta { display:flex; gap:18px; align-items:center; justify-content:center; margin-top:12px; }
+    .btn { 
+      background: linear-gradient(180deg, var(--accent-red), #8C1925); 
+      color: var(--white); border:2px solid var(--primary-blue); 
+      padding:12px 20px; font-weight:700; text-transform:uppercase; 
+      letter-spacing:0.8px; border-radius:8px; text-decoration:none; 
+      display:inline-flex; align-items:center; justify-content:center; gap:10px; 
+      box-shadow: var(--accent-glow), 0 8px 30px rgba(0,0,0,0.28); 
+      transition: transform 180ms ease, box-shadow 180ms ease; 
+    }
+    .btn:hover { transform: translateY(-4px); box-shadow: 0 18px 60px rgba(175,30,45,0.18); }
+    .btn.ghost { background: transparent; color: var(--primary-blue); border:2px dashed rgba(25,33,104,0.14); }
+    .btn.ghost:hover { background: rgba(25,33,104,0.04); color:var(--primary-blue); border-style:solid; }
+    @media (max-width: 560px) {
+      .cta { flex-direction: column; gap: 12px; }
+      .btn { padding: 10px 16px; font-size: 0.9rem; }
+    }
+
+    /* ---------- footer ---------- */
+    footer { text-align:center; color:var(--primary-blue); margin:34px 0 10px 0; padding:20px 0; border-top:1px solid rgba(25,33,104,0.04); font-size:0.92rem; }
+    @media (max-width: 560px) {
+      footer { font-size: 0.85rem; padding: 16px 0; }
+    }
+
+    /* ---------- benefits ---------- */
+    .benefits { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-top: 16px; }
+    .benefit { background: rgba(255,255,255,0.5); padding: 12px; border-radius: 6px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+    .benefit strong { font-size: 1rem; font-weight: 700; color: var(--primary-blue); }
+    .benefit div { font-size: 0.95rem; margin-top: 6px; color: var(--muted); }
+
+    /* ---------- divider ---------- */
+    .divider { height: 1px; background: rgba(25,33,104,0.1); margin: 24px 0; }
+
+    /* ---------- h3 styling ---------- */
+    h3 { font-family: "Inter", sans-serif; font-weight: 700; color: var(--primary-blue); font-size: 1.1rem; margin-top: 20px; }
+  </style>
+</head>
+<body>
+  <!-- NAV -->
+  <nav class="top-nav" aria-label="Main Navigation">
+    <div class="wrap nav-inner" style="padding:0;">
+      <div class="nav-left">
+        <a class="brand-mini" href="index.html" aria-label="Global Carnivore Coaches home">
+          <img src="images/earth_steak.png" alt="Global Carnivore Coaches logo" onerror="this.style.display='none'">
+          <span>Global Carnivore Coaches</span>
+        </a>
+      </div>
+
+      <div class="nav-right" role="navigation" aria-label="Site links">
+        <a href="index.html#services" class="nav-link">Programs</a>
+        <a href="index.html#about" class="nav-link">About</a>
+        <a href="science.html" class="nav-link">Science</a>
+        <a href="index.html#mealideas" class="nav-link">Gallery</a>
+        <a href="index.html#contact" class="nav-link">Contact</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="wrap" id="maincontent">
+    <!-- HERO -->
+    <header class="hero" role="banner" aria-labelledby="hero-title">
+      <div class="hero-left" aria-hidden="true">
+        <div class="logo" title="Global Carnivore Coaches">
+          <img src="images/earth_steak.png" alt="Planet Earth and Ribeye Steak">
+        </div>
+      </div>
+
+      <div>
+        <h1 id="hero-title">Science of the Carnivore Diet</h1>
+        <p class="tag">Evidence Behind the Approach</p>
+        <p class="lead-hero">Explore the emerging science supporting the carnivore diet’s potential for health optimization, grounded in self-reported data, case studies, and nutritional analyses.</p>
+      </div>
+    </header>
+
+    <!-- SCIENCE OVERVIEW -->
+    <section class="card" id="science" aria-labelledby="science-title">
+      <h2 id="science-title">The Science Behind Carnivore <span class="subline">Data-Driven Insights</span></h2>
+      <p class="lead">The carnivore diet, focusing solely on animal-based foods like meat, fish, eggs, and select dairy, is gaining attention for its simplicity and reported benefits. While long-term randomized controlled trials are limited, self-reported surveys, case studies, and nutritional modeling provide insights into its potential for weight management, inflammation reduction, and metabolic health. Below, we summarize key findings from peer-reviewed research and observational data.</p>
+
+      <div class="benefits" style="margin-top:8px;">
+        <div class="benefit">
+          <strong>Weight Loss & Body Composition</strong>
+          <div style="font-size:.95rem; margin-top:6px; color:var(--muted);">A 2021 survey of over 2,000 carnivore dieters found 93% reported improved body composition, with significant fat loss driven by high protein and fat satiety, often without intentional calorie restriction. The diet’s ketogenic nature may enhance fat-burning <a href="https://pubmed.ncbi.nlm.nih.gov/33479499/" target="_blank">(Lennerz et al., 2021)</a>.</div>
+        </div>
+        <div class="benefit">
+          <strong>Inflammation & Autoimmune Relief</strong>
+          <div style="font-size:.95rem; margin-top:6px; color:var(--muted);">Eliminating plant-based irritants like lectins and oxalates may reduce systemic inflammation. Surveys show 89% of participants noted improvements in autoimmune conditions, allergies, or skin issues, with case studies suggesting remission in 80% of IBD patients <a href="https://www.frontiersin.org/articles/10.3389/fnut.2024.1467475/full" target="_blank">(Frontiers in Nutrition, 2024)</a>.</div>
+        </div>
+        <div class="benefit">
+          <strong>Digestive Health</strong>
+          <div style="font-size:.95rem; margin-top:6px; color:var(--muted);">By removing fiber and plant compounds, the diet may alleviate bloating, IBS, and chronic digestive issues, as reported by many in large-scale surveys, likely due to reduced gut irritation and improved intestinal healing <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC8684475/" target="_blank">(PMC, 2021)</a>.</div>
+        </div>
+        <div class="benefit">
+          <strong>Mental Clarity & Mood</strong>
+          <div style="font-size:.95rem; margin-top:6px; color:var(--muted);">Stable blood sugar and nutrient-dense animal foods (rich in B vitamins and omega-3s) support brain health. Surveys report 85% improved mental clarity, 83% better focus, and 78% enhanced sleep quality <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC8684475/" target="_blank">(PMC, 2021)</a>.</div>
+        </div>
+        <div class="benefit">
+          <strong>Energy & Endurance</strong>
+          <div style="font-size:.95rem; margin-top:6px; color:var(--muted);">Ketosis provides steady energy via fat-derived ketones, with 89% of dieters reporting less fatigue. A case study on athletes showed maintained performance and improved recovery over one month <a href="https://pubmed.ncbi.nlm.nih.gov/32698143/" target="_blank">(PubMed, 2020)</a>.</div>
+        </div>
+        <div class="benefit">
+          <strong>Metabolic Health</strong>
+          <div style="font-size:.95rem; margin-top:6px; color:var(--muted);">Improved insulin sensitivity and blood sugar control were reported by 89% of diabetic dieters, with 95% noting overall health gains, potentially benefiting conditions like type 2 diabetes or metabolic syndrome <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC8684475/" target="_blank">(PMC, 2021)</a>.</div>
+        </div>
+      </div>
+
+      <h3 style="margin-top:20px; font-family:'Cinzel', serif; color:var(--primary-blue);">Nutritional Considerations</h3>
+      <p>Modeling studies suggest the diet can meet most nutrient needs (e.g., B12, iron, zinc) with careful food choices like organ meats. However, potential shortfalls in fiber, vitamin C, and folate raise concerns about long-term gut health and scurvy risk, though some argue carnitine in meat mitigates vitamin C needs <a href="https://pubmed.ncbi.nlm.nih.gov/31928067/" target="_blank">(O’Hearn, 2020)</a>. A 2024 case study model of carnivore meal plans for Australian adults found the diet met or exceeded NRVs for riboflavin, niacin, phosphorus, zinc, vitamin B6, B12, selenium, and vitamin A, but consistently fell short for fibre, thiamin, folate, vitamin C, calcium, magnesium, and potassium without strategic inclusions like offal or dairy <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC11722875/" target="_blank">(PMC, 2024)</a>.</p>
+
+      <h3 style="margin-top:20px; font-family:'Cinzel', serif; color:var(--primary-blue);">Potential Risks</h3>
+      <p>Critics highlight risks like elevated LDL cholesterol, increased TMAO (linked to heart disease), kidney strain from high protein, and environmental impacts of meat production. Surveys noted mixed cardiovascular markers, with some showing higher LDL <a href="https://pubmed.ncbi.nlm.nih.gov/33479499/" target="_blank">(Lennerz et al., 2021)</a>. Long-term effects remain understudied, and experts urge caution, especially for those with pre-existing conditions <a href="https://www.health.harvard.edu/nutrition/what-is-the-carnivore-diet" target="_blank">(Harvard Health, 2024)</a>.</p>
+
+      <h3 style="margin-top:20px; font-family:'Cinzel', serif; color:var(--primary-blue);">The Evidence Gap</h3>
+      <p>Current data relies heavily on self-reported surveys (e.g., Lennerz et al., 2021) and small case studies, lacking robust RCTs. Historical diets like those of the Inuit suggest viability, but modern contexts differ. Ongoing trials, such as those via platforms like Revero, may provide more clarity. Always consult a healthcare professional before starting, especially with conditions like diabetes or heart disease <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC8684475/" target="_blank">(PMC, 2021)</a>.</p>
+    </section>
+
+    <!-- PLANT TOXICITY -->
+    <div class="divider" role="separator" aria-hidden="true"></div>
+
+    <section class="card" aria-labelledby="plant-toxicity-title">
+      <h2 id="plant-toxicity-title">Plant Toxicity & Benefits of Elimination <span class="subline">Unmasking Hidden Risks</span></h2>
+      <p class="lead">Plants defend themselves with natural toxins like oxalates, lectins, and phytates—antinutrients that can disrupt human health. While moderate intake is safe for most, high consumption (e.g., 200–300 mg oxalates daily) may lead to issues. The carnivore diet eliminates these, unlocking potential benefits backed by research and clinical observations.</p>
+
+      <h3 style="margin-top:20px; font-family:'Inter', sans-serif; font-weight:700; color:var(--primary-blue);">Understanding Plant Toxins</h3>
+      <p>Oxalates, found in spinach, almonds, and beets, bind minerals like calcium to form crystals. Lectins in grains and legumes can irritate the gut lining. Phytates in nuts and seeds reduce mineral absorption. These compounds protect plants but may cause inflammation, malabsorption, or stones in humans <a href="https://pubmed.ncbi.nlm.nih.gov/31614926/" target="_blank">(Noonan & Savage, 1999)</a>.</p>
+
+      <h3 style="margin-top:20px; font-family:'Inter', sans-serif; font-weight:700; color:var(--primary-blue);">Key Risks of High Intake</h3>
+      <div class="benefits" style="margin-top:8px;">
+        <div class="benefit">
+          <strong>Kidney Stones</strong>
+          <div style="font-size:.95rem; margin-top:6px; color:var(--muted);">80% of stones are calcium oxalate; high-oxalate diets increase urine oxalate by up to 1.7 mg per 100 mg consumed, raising risk 20–40% in susceptible people (e.g., IBD patients) <a href="https://pubmed.ncbi.nlm.nih.gov/15826055/" target="_blank">(Curhan et al., 2004)</a>.</div>
+        </div>
+        <div class="benefit">
+          <strong>Nutrient Deficiencies</strong>
+          <div style="font-size:.95rem; margin-top:6px; color:var(--muted);">Oxalates impair calcium (up to 50% less absorbed), iron, and magnesium uptake, potentially leading to osteoporosis, anemia, or fatigue <a href="https://pubmed.ncbi.nlm.nih.gov/1503561/" target="_blank">(Heaney & Weaver, 1990)</a>.</div>
+        </div>
+        <div class="benefit">
+          <strong>Inflammation & Gut Issues</strong>
+          <div style="font-size:.95rem; margin-top:6px; color:var(--muted);">Toxins like lectins may trigger gut irritation, joint pain, or systemic inflammation; linked to IBS or autoimmune flares in sensitive individuals <a href="https://pubmed.ncbi.nlm.nih.gov/25599185/" target="_blank">(Freed, 1999)</a>.</div>
+        </div>
+      </div>
+
+      <h3 style="margin-top:20px; font-family:'Inter', sans-serif; font-weight:700; color:var(--primary-blue);">Benefits of Elimination</h3>
+      <div class="benefits" style="margin-top:8px;">
+        <div class="benefit">
+          <strong>Stone Prevention</strong>
+          <div style="font-size:.95rem; margin-top:6px; color:var(--muted);">Low-oxalate diets cut recurrence by 50%; carnivore approach removes high sources like spinach (600+ mg/100g), reducing crystal formation <a href="https://pubmed.ncbi.nlm.nih.gov/15826055/" target="_blank">(Curhan et al., 2004)</a>.</div>
+        </div>
+        <div class="benefit">
+          <strong>Enhanced Absorption</strong>
+          <div style="font-size:.95rem; margin-top:6px; color:var(--muted);">Frees up minerals for better bone health, energy, and immunity; ideal for deficiency-prone groups <a href="https://pubmed.ncbi.nlm.nih.gov/1503561/" target="_blank">(Heaney & Weaver, 1990)</a>.</div>
+        </div>
+        <div class="benefit">
+          <strong>Reduced Inflammation</strong>
+          <div style="font-size:.95rem; margin-top:6px; color:var(--muted);">Eliminates irritants, easing gut symptoms, pain, and autoimmune issues; many report clearer digestion on animal-only diets <a href="https://pubmed.ncbi.nlm.nih.gov/33479499/" target="_blank">(Lennerz et al., 2021)</a>.</div>
+        </div>
+        <div class="benefit">
+          <strong>Metabolic Stability</strong>
+          <div style="font-size:.95rem; margin-top:6px; color:var(--muted);">Supports ketosis without fiber-related bloat, stabilizing energy and reducing chronic fatigue <a href="https://pubmed.ncbi.nlm.nih.gov/33479499/" target="_blank">(Lennerz et al., 2021)</a>.</div>
+        </div>
+      </div>
+
+      <p style="font-size:.95rem; color:var(--muted); margin-top:12px;">While plants offer benefits, their toxins can accumulate—cooking reduces oxalates (30–87%), but elimination via carnivore maximizes relief for at-risk individuals. Consult a professional to assess your needs.</p>
+    </section>
+
+    <!-- DIETARY APPROACHES COMPARED -->
+    <div class="divider" role="separator" aria-hidden="true"></div>
+
+    <section class="card" aria-labelledby="diet-comparison-title">
+      <h2 id="diet-comparison-title">Dietary Approaches Compared <span class="subline">Standard, Keto, Ketovore, Carnivore, Lion</span></h2>
+      <p class="lead">Not all diets are equal in their approach to fueling your body. From the plant-heavy Standard Diet to the primal purity of the Lion Diet, each path shapes your health differently. Below, we dissect the Standard Diet, Keto, Ketovore, Carnivore, and Lion Diet, highlighting their frameworks, benefits, and trade-offs to align with your goals.</p>
+
+      <h3 style="margin-top:20px; font-family:'Inter', sans-serif; font-weight:700; color:var(--primary-blue);">Standard Diet</h3>
+      <p>Rooted in dietary guidelines, the Standard Diet emphasizes variety: 45–65% carbs (grains, fruits, vegetables), 20–35% fats, and 10–35% protein. It includes processed foods, sugars, and plant-based foods like whole grains and legumes. While nutrient-dense in theory, it often leads to blood sugar spikes, inflammation from plant toxins (e.g., oxalates), and nutrient dilution from processed carbs. Surveys link it to obesity (40% prevalence in the U.S.) and metabolic issues due to high glycemic load <a href="https://pubmed.ncbi.nlm.nih.gov/29542064/" target="_blank">(Ogden et al., 2018)</a>.</p>
+
+      <h3 style="margin-top:20px; font-family:'Inter', sans-serif; font-weight:700; color:var(--primary-blue);">Keto Diet</h3>
+      <p>A low-carb, high-fat approach (5–10% carbs, 70–80% fats, 10–20% protein), Keto shifts the body into ketosis, burning fat for fuel. Foods include meats, dairy, nuts, seeds, and low-carb vegetables (e.g., broccoli). It reduces insulin spikes and supports weight loss (studies show 5–10% body weight reduction in 6 months) and mental clarity <a href="https://pubmed.ncbi.nlm.nih.gov/29986720/" target="_blank">(Brehm et al., 2003)</a>. However, plant-based components like nuts and greens can introduce oxalates or lectins, potentially causing gut irritation in sensitive individuals <a href="https://pubmed.ncbi.nlm.nih.gov/25599185/" target="_blank">(Freed, 1999)</a>.</p>
+
+      <h3 style="margin-top:20px; font-family:'Inter', sans-serif; font-weight:700; color:var(--primary-blue);">Ketovore Diet</h3>
+      <p>A hybrid of Keto and Carnivore, Ketovore prioritizes animal foods (meat, fish, eggs, dairy) but allows minimal low-carb plants (e.g., avocados, leafy greens) for variety. Macros resemble Keto, but plant intake is <5% of calories. It offers ketosis benefits with fewer plant toxins than Keto, reducing inflammation and digestive stress. Self-reported data suggests improved energy and gut health, though plant inclusions may still pose risks for oxalate-sensitive individuals <a href="https://pubmed.ncbi.nlm.nih.gov/33479499/" target="_blank">(Lennerz et al., 2021)</a>.</p>
+
+      <h3 style="margin-top:20px; font-family:'Inter', sans-serif; font-weight:700; color:var(--primary-blue);">Carnivore Diet</h3>
+      <p>An all-animal-food diet (meat, fish, eggs, select dairy), Carnivore eliminates all plants, slashing antinutrients like oxalates and lectins. It maximizes nutrient bioavailability (e.g., heme iron, B12) and induces deep ketosis for stable energy. Surveys report 93% improved body composition, 89% reduced inflammation, and 85% better mental clarity <a href="https://pubmed.ncbi.nlm.nih.gov/33479499/" target="_blank">(Lennerz et al., 2021)</a>. Risks include potential nutrient gaps (e.g., vitamin C), though organ meats can mitigate this <a href="https://pubmed.ncbi.nlm.nih.gov/31928067/" target="_blank">(O’Hearn, 2020)</a>. Ideal for those with autoimmune or digestive issues <a href="https://www.frontiersin.org/articles/10.3389/fnut.2024.1467475/full" target="_blank">(Frontiers in Nutrition, 2024)</a>.</p>
+
+      <h3 style="margin-top:20px; font-family:'Inter', sans-serif; font-weight:700; color:var(--primary-blue);">Lion Diet</h3>
+      <p>The strictest elimination protocol, the Lion Diet includes only ruminant meats (beef, lamb, bison), salt, and water. It excludes dairy, eggs, and non-ruminant meats to minimize potential irritants. Used as a short-term reset, it targets severe autoimmune or gut issues, with anecdotal reports of symptom remission in weeks. Limited data exists, but its simplicity ensures zero plant toxins, maximizing gut healing. Long-term use risks nutrient deficiencies without careful planning <a href="https://pubmed.ncbi.nlm.nih.gov/31928067/" target="_blank">(O’Hearn, 2020)</a>.</p>
+
+      <h3 style="margin-top:20px; font-family:'Inter', sans-serif; font-weight:700; color:var(--primary-blue);">Key Differences & Considerations</h3>
+      <div class="benefits" style="margin-top:8px;">
+        <div class="benefit">
+          <strong>Plant Content</strong>
+          <div style="font-size:.95rem; margin-top:6px; color:var(--muted);">Standard: High (50%+ calories); Keto: Moderate (~10%); Ketovore: Minimal (<5%); Carnivore/Lion: None. Less plant matter reduces antinutrient exposure but may limit fiber and phytonutrients <a href="https://pubmed.ncbi.nlm.nih.gov/31614926/" target="_blank">(Noonan & Savage, 1999)</a>.</div>
+        </div>
+        <div class="benefit">
+          <strong>Ketosis Level</strong>
+          <div style="font-size:.95rem; margin-top:6px; color:var(--muted);">Standard: None; Keto/Ketovore: Moderate–High; Carnivore/Lion: Deep. Deeper ketosis stabilizes energy but requires adaptation <a href="https://pubmed.ncbi.nlm.nih.gov/29986720/" target="_blank">(Brehm et al., 2003)</a>.</div>
+        </div>
+        <div class="benefit">
+          <strong>Complexity</strong>
+          <div style="font-size:.95rem; margin-top:6px; color:var(--muted);">Standard: Complex (variety); Keto: Moderate; Ketovore/Carnivore: Simple; Lion: Ultra-simple. Simpler diets ease adherence but may feel restrictive <a href="https://pubmed.ncbi.nlm.nih.gov/33479499/" target="_blank">(Lennerz et al., 2021)</a>.</div>
+        </div>
+        <div class="benefit">
+          <strong>Health Impact</strong>
+          <div style="font-size:.95rem; margin-top:6px; color:var(--muted);">Standard: Mixed (obesity risk); Keto: Weight loss, clarity; Ketovore: Enhanced gut health; Carnivore/Lion: Maximal inflammation reduction. Choose based on your health goals and sensitivities <a href="https://pubmed.ncbi.nlm.nih.gov/33479499/" target="_blank">(Lennerz et al., 2021)</a>.</div>
+        </div>
+      </div>
+
+      <p style="font-size:.95rem; color:var(--muted); margin-top:12px;">Each diet suits different needs: Standard for variety, Keto for balanced ketosis, Ketovore for flexibility, Carnivore for broad elimination, and Lion for intensive resets. Consult a healthcare professional to align with your health goals, especially for Carnivore or Lion diets.</p>
+    </section>
+
+    <div class="cta" role="region" aria-label="Call to action">
+      <a class="btn" href="mailto:your@email.com" role="button">Book Discovery Call</a>
+      <a class="btn ghost" href="index.html" role="button">Back to Home</a>
+    </div>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 Global Carnivore Coaches. All rights reserved.</p>
+  </footer>
+
+  <script>
+    // insert current year
+    (function(){ document.querySelector('footer p').textContent = `© ${new Date().getFullYear()} Global Carnivore Coaches. All rights reserved.`; })();
+  </script>
+</body>
+</html>
