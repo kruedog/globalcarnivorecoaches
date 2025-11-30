@@ -4,24 +4,31 @@
 <meta charset="utf-8"/>
 <title>Admin • Global Carnivore Coaches</title>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Cinzel:wght700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Cinzel:wght@700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/luxon"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon"></script>
 <style>
-  :root{--red:#C51230;--dark:#121212;--light:#f8f9fa;--card:#fff;--border:#e0e0e0}
+  :root{--red:#C51230;--dark:#121212;--light:#f8f9fa;--card:#ffffff;--border:#e0e0e0}
   body.dark{--card:#1e1e1e;--border:#333;--light:#121212}
   body{margin:0;font-family:'Inter',sans-serif;background:var(--light);color:#000;transition:.3s;color-scheme:light dark}
   body.dark{color:#eee}
-  header{background:var(--red);color:white;padding:1.5rem;text-align:center;position:relative}
-  h1{font-family:'Cinzel',serif;font-size:2.8rem;margin:0}
-  main{max-width:1400px;margin:2rem auto;padding:0 1rem;display:grid;gap:2rem;grid-template-columns:repeat(auto-fit,minmax(380px,1fr))}
-  .card{background:var(--card);border-radius:16px;padding:1.8rem;box-shadow:0 8px 30px rgba(0,0,0,.08);border:1px solid var(--border)}
+  header{background:var(--red);color:white;padding:2rem 1rem;text-align:center;position:relative;box-shadow:0 6px 30px rgba(197,18,48,.4)}
+  h1{font-family:'Cinzel',serif;font-size:3rem;margin:0}
+  main{max-width:1450px;margin:2rem auto;padding:0 1rem;display:grid;gap:2rem;grid-template-columns:repeat(auto-fit,minmax(400px,1fr))}
+  .card{background:var(--card);border-radius:18px;padding:2rem;box-shadow:0 10px 40px rgba(0,0,0,.1);border:1px solid var(--border)}
   .stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1.5rem}
-  .stat{background:var(--red);color:white;padding:1.5rem;border-radius:12px;text-align:center}
-  .stat.big{font-size:3.2rem;font-weight:700;margin:.4rem 0}
-  canvas{height:300px !important}
-  #themeToggle{position:fixed;top:1rem;right:1rem;background:none;border:none;font-size:2rem;cursor:pointer;z-index:100}
-  .activity-item{display:flex;align-items:center;gap:1rem;padding:1rem 0;border-bottom:1px solid var(--border)}
-  .activity-icon{width:48px;height:48px;border-radius:50%;display:grid;place-items:center;font-weight:bold;color:white;font-size:1.1rem}
-  .logout{position:absolute;top:1.5rem;left:1.5rem;color:white;text-decoration:none;font-weight:600}
+  .stat{background:var(--red);color:white;padding:1.8rem;border-radius:14px;text-align:center}
+  .stat.big{font-size:3.4rem;font-weight:800;margin:.5rem 0}
+  canvas{height:320px !important}
+  #themeToggle{position:fixed;top:1.5rem;right:1.5rem;background:none;border:none;font-size:2.2rem;cursor:pointer;z-index:100}
+  .activity-item{display:flex;align-items:center;gap:1.2rem;padding:1rem 0;border-bottom:1px solid var(--border)}
+  .activity-icon{width:52px;height:52px;border-radius:50%;display:grid;place-items:center;font-weight:bold;color:white;font-size:1.2rem}
+  .logout{position:absolute;top:2rem;left:2rem;color:white;font-weight:600;text-decoration:none}
+  .logout:hover{text-decoration:underline}
+  #locationList{max-height:420px;overflow-y:auto;padding-right:8px}
+  #locationList::-webkit-scrollbar{width:8px}
+  #locationList::-webkit-scrollbar-thumb{background:var(--red);border-radius:4px}
 </style>
 </head>
 <body>
@@ -33,8 +40,9 @@
 </header>
 
 <main>
+  <!-- KEY METRICS -->
   <div class="card">
-    <h2>Key Metrics</h2>
+    <h2 style="margin-top:0">Key Metrics</h2>
     <div class="stat-grid">
       <div class="stat"><div class="stat big" id="today">0</div><div>Visitors Today</div></div>
       <div class="stat"><div class="stat big" id="week">0</div><div>This Week</div></div>
@@ -43,77 +51,118 @@
     </div>
   </div>
 
+  <!-- VISITOR LOCATIONS -->
   <div class="card">
-    <h2>Live Activity Feed</h2>
-    <div id="activityFeed">Connecting to real-time stream...</div>
+    <h2>Visitor Locations Today</h2>
+    <div id="locationList"><em>Fetching locations…</em></div>
   </div>
 
+  <!-- 14-DAY CHART -->
+  <div class="card">
+    <h2>Visitors – Last 14 Days</h2>
+    <canvas id="visitorChart"></canvas>
+  </div>
+
+  <!-- ACTIVE COACHES -->
   <div class="card">
     <h2>Active Coaches</h2>
-    <div id="coachList">Loading coaches...</div>
+    <div id="coachList">Loading coaches…</div>
+  </div>
+
+  <!-- LIVE ACTIVITY FEED -->
+  <div class="card">
+    <h2>Live Activity Feed</h2>
+    <div id="activityFeed">Connecting to real-time stream…</div>
   </div>
 </main>
 
 <script>
-// ONE API BASE — works everywhere
 const API = '/webapi/webapi.php';
+let visitorChart;
 
 // Theme
 if (localStorage.getItem('dark')==='yes') document.body.classList.add('dark');
-document.getElementById('themeToggle').textContent = document.body.classList.contains('dark')?'Light Mode':'Dark Mode';
-document.getElementById('themeToggle').onclick=()=>{document.body.classList.toggle('dark');localStorage.setItem('dark',document.body.classList.contains('dark')?'yes':'no');};
+document.getElementById('themeToggle').textContent = document.body.classList.contains('dark') ? 'Light Mode' : 'Dark Mode';
+document.getElementById('themeToggle').onclick = () => {
+  document.body.classList.toggle('dark');
+  localStorage.setItem('dark', document.body.classList.contains('dark') ? 'yes' : 'no');
+};
 
-// REAL-TIME ACTIVITY FEED — now works
+// REAL-TIME ACTIVITY FEED
 let es = new EventSource(API + '?action=notify');
 es.onmessage = e => {
   const d = JSON.parse(e.data);
   const name = d.coachName || d.username || 'Visitor';
-  const action = (d.action || 'visit').replace(/_/g,' ');
+  const action = (d.action || 'visit').replace(/_/g, ' ');
   const details = d.details || d.location || '';
-  const color = {login:'#28a745',profile_update:'#17a2b8',image_upload:'#9c27b0'}[d.action]||'#666';
+  const color = {login:'#28a745', profile_update:'#17a2b8', image_upload:'#9c27b0', visit:'#666'}[d.action] || '#666';
 
   const feed = document.getElementById('activityFeed');
   const div = document.createElement('div');
   div.className = 'activity-item';
   div.innerHTML = `
-    <div class="activity-icon" style="background:${color}">${action[0]}</div>
+    <div class="activity-icon" style="background:${color}">${action[0].toUpperCase()}</div>
     <div><strong>${name}</strong> ${action}<br><small>${details}</small></div>
-    <div style="margin-left:auto;opacity:.8;font-size:.9rem">${new Date().toLocaleTimeString([],{hour:2-digit',minute:'2-digit'})}</div>`;
+    <div style="margin-left:auto;opacity:.8;font-size:.9rem">${new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</div>`;
   feed.prepend(div);
-  if (feed.children.length > 30) feed.removeChild(feed.lastChild);
+  if (feed.children.length > 40) feed.removeChild(feed.lastChild);
 };
 es.onerror = () => {
-  document.getElementById('activityFeed').textContent = 'Realtime disconnected — reconnecting...';
-  setTimeout(() => location.reload(), 5000);
+  document.getElementById('activityFeed').innerHTML = '<em>Realtime disconnected — reconnecting…</em>';
+  setTimeout(() => location.reload(), 8000);
 };
 
-// LOAD STATS + COACHES
-async function loadData() {
+// LOAD ALL DATA
+async function loadAll() {
   // Stats
   const stats = await fetch(API + '?action=get_stats&t=' + Date.now()).then(r => r.json()).catch(() => ({}));
   document.getElementById('today').textContent = stats.today ?? 0;
   document.getElementById('week').textContent = stats.week ?? 0;
   document.getElementById('total').textContent = stats.total ?? 0;
 
-  // Active Coaches — pulls from your real coaches table
+  // Visitor Locations
+  const list = document.getElementById('locationList');
+  const locations = stats.locations || [];
+  if (locations.length === 0) {
+    list.innerHTML = '<em>No visitors today yet</em>';
+  } else {
+    list.innerHTML = locations
+      .map(loc => `<div style="padding:.7rem 0;display:flex;justify-content:space-between;border-bottom:1px solid #eee">
+        <span>${loc}</span>
+        <strong style="color:var(--red)">${stats.locationCount?.[loc] || 1}</strong>
+      </div>`).join('');
+  }
+
+  // Active Coaches
   const coaches = await fetch(API + '?action=get_coaches&t=' + Date.now()).then(r => r.json()).catch(() => []);
-  const list = document.getElementById('coachList');
+  const coachDiv = document.getElementById('coachList');
   if (coaches?.length) {
-    list.innerHTML = coaches.map(c => `
-      <div style="padding:.8rem 0;border-bottom:1px solid #eee">
-        <strong>${c.CoachName || c.Username}</strong> 
-        ${c.last_login ? '— Last login: ' + new Date(c.last_login).toLocaleString() : ''}
+    coachDiv.innerHTML = coaches.map(c => `
+      <div style="padding:.9rem 0;border-bottom:1px solid #eee">
+        <strong>${c.CoachName || c.Username}</strong>
+        ${c.last_login ? `<br><small>Last login: ${new Date(c.last_login).toLocaleString()}</small>` : ''}
       </div>`).join('');
   } else {
-    list.innerHTML = '<em>No coaches registered yet</em>';
+    coachDiv.innerHTML = '<em>No coaches registered yet</em>';
+  }
+
+  // 14-day chart
+  const visits = await fetch(API + '?action=get_visits_14days&t=' + Date.now()).then(r => r.json()).catch(() => []);
+  if (visits.length && !visitorChart) {
+    visitorChart = new Chart(document.getElementById('visitorChart'), {
+      type: 'line',
+      data: { datasets: [{ label: 'Visitors', data: visits, borderColor: '#C51230', backgroundColor: 'rgba(197,18,48,.15)', tension: .4, fill: true }] },
+      options: { responsive: true, plugins: { legend: { display: false } }, scales: { x: { type: 'time', time: { unit: 'day' } } } }
+    });
   }
 }
 
-loadData();
-setInterval(loadData, 12000);
+// Load on start + every 12 seconds
+loadAll();
+setInterval(loadAll, 12000);
 
 // Track this admin visit
-fetch(API + '?action=track_visit', {method:'HEAD'});
+fetch(API + '?action=track_visit', {method: 'HEAD'});
 </script>
 </body>
 </html>
