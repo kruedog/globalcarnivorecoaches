@@ -81,7 +81,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'get') {
         'total' => $stats['total'] ?? 0,
         'today' => $stats['today'] ?? 0,
         'week'  => $stats['week'] ?? 0,
-        'locations' => array_values(array_unique($stats['locations']))
+        'locations' => array_values(array_unique($stats['locations'] ?? []))
     ]);
     exit;
 }
