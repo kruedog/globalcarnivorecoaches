@@ -105,7 +105,7 @@ textarea{resize:vertical;min-height:160px}
     <div><label>New Password (leave blank to keep current)</label><input id="password" type="password"></div>
     <div><label>Phone</label><input id="phone"></div>
   </div>
-  <div style="margin-top:2rem"><label>Bio</label><textarea id="bio" placeholder="Share your carnivore transformation story..."></textarea></div>
+  <div style="margin-top:2rem"><label>Bio</label><textarea id="bio" rows="10" placeholder="Share your carnivore transformation story..."></textarea></div>
   <div style="margin-top:2rem">
     <label>Specializations</label>
     <div style="display:flex;gap:1rem;margin-bottom:.5rem">
@@ -137,7 +137,9 @@ textarea{resize:vertical;min-height:160px}
     <div class="modal-header">
       <h2 id="modalName">Coach Name</h2>
       <p id="modalEmail">coach@example.com</p>
-      <div class="profile-avatar" id="modalProfilePic"><img src="/images/earth_steak.png"></div>
+      <div class="profile-avatar" id="modalProfilePic">
+        <img src="/images/earth_steak.png" alt="Coach">
+      </div>
     </div>
     <div class="modal-body">
       <div class="left-column">
@@ -148,7 +150,9 @@ textarea{resize:vertical;min-height:160px}
         <div class="specialization-box">
           <h3>I Specialize In</h3>
           <ul id="specializationList"></ul>
-          <div id="emptySpecMessage" style="color:#999;font-style:italic;font-size:0.95rem;margin-top:0.5rem;display:none;">No specializations listed yet.</div>
+          <div id="emptySpecMessage" style="color:#999;font-style:italic;font-size:0.95rem;margin-top:0.5rem;display:none;">
+            No specializations listed yet.
+          </div>
         </div>
         <div id="certificateContainer"></div>
       </div>
@@ -161,14 +165,13 @@ textarea{resize:vertical;min-height:160px}
 const API_BASE = '/webapi';
 let currentCoach = {}, pendingDeletes = new Set(), newFiles = new Map(), specializations = [];
 
-// Helper
-function imgUrl(path){ return path ? `${API_BASE}/${path}?v=${Date.now()}` : ''; }
+function imgUrl(path){ 
+  return path ? `/${path}?v=${Date.now()}` : '';
+}
 
-// Load profile
-function loadProfile(){
+function loadProfile() {
   const email = localStorage.getItem('email');
-  if(!email) return location.href=API_BASE+'/login.html';
-
+  if (!email) return location.href='/webapi/login.html';
   fetch(`${API_BASE}/get_coach.php?email=${encodeURIComponent(email)}`)
     .then(r=>r.json())
     .then(res=>{
@@ -176,47 +179,49 @@ function loadProfile(){
       currentCoach=res.coach;
       document.getElementById('coachName').textContent=currentCoach.CoachName||currentCoach.Username;
       document.getElementById('coachNameInput').value=currentCoach.CoachName||'';
-      document.getElementById('email').value=currentCoach.Email||'';
+      document.getElementById('email').value=currentCoach.Email;
       document.getElementById('phone').value=currentCoach.Phone||'';
       document.getElementById('bio').value=currentCoach.Bio||'';
       if(currentCoach.Specializations){
-        try{specializations=JSON.parse(currentCoach.Specializations)}catch(e){}
+        try{specializations=JSON.parse(currentCoach.Specializations);}catch(e){}
       }
       renderSpecializations();
       renderExistingImages();
-    }).catch(err=>console.error(err));
+    }).catch(err=>console.error('Load profile error:',err));
 }
 
-// Render uploaded images
 function renderExistingImages(){
   const list=document.getElementById('uploadsList'); list.innerHTML='';
   if(!currentCoach.Files) return;
-  const labels={Profile:"Profile",Before:"Before",After:"After",Certificate:"Certificate"};
+  const labels={Profile:"Profile",Before:"Before",After:"After",Certificate:"Certification"};
   Object.entries(currentCoach.Files).forEach(([type,path])=>{
     const div=document.createElement('div'); div.className='preview-item';
     div.innerHTML=`<img src="${imgUrl(path)}" class="preview-img">
       <div class="preview-caption">${labels[type]}</div>
       <button class="remove-btn" data-type="${type}">X</button>`;
-    div.querySelector('.remove-btn').onclick=()=>{div.remove(); pendingDeletes.add(type);}
+    div.querySelector('.remove-btn').onclick=()=>{div.remove(); pendingDeletes.add(type);};
     list.appendChild(div);
   });
 }
 
-// Specializations
 function renderSpecializations(){
   const list=document.getElementById('specList'); list.innerHTML='';
   specializations.forEach((spec,i)=>{
     const span=document.createElement('span'); span.textContent=spec;
-    span.onclick=()=>{specializations.splice(i,1); renderSpecializations();}
+    span.onclick=()=>{specializations.splice(i,1); renderSpecializations();};
     list.appendChild(span);
   });
 }
+
 document.querySelector('.add-spec-btn').onclick=()=>{
   const val=document.getElementById('newSpec').value.trim();
-  if(val&&!specializations.includes(val)){specializations.push(val); renderSpecializations(); document.getElementById('newSpec').value='';}
+  if(val && !specializations.includes(val)){
+    specializations.push(val);
+    renderSpecializations();
+    document.getElementById('newSpec').value='';
+  }
 };
 
-// File upload zones
 ['profile','before','after','cert'].forEach(t=>{
   const zone=document.getElementById(t+'Upload');
   const input=document.createElement('input'); input.type='file'; input.accept='image/*';
@@ -236,58 +241,54 @@ function previewNewFile(file,type){
     div.innerHTML=`<img src="${e.target.result}" class="preview-img">
       <div class="preview-caption">${type} • ${file.name}</div>
       <button class="remove-btn" data-type="${type}">X</button>`;
-    div.querySelector('.remove-btn').onclick=()=>{div.remove(); newFiles.delete(type);}
+    div.querySelector('.remove-btn').onclick=()=>{div.remove(); newFiles.delete(type);};
+    list.appendChild(div);
   };
   reader.readAsDataURL(file);
-  list.appendChild(div);
 }
 
-// Save form
 document.getElementById('profileForm').onsubmit=async e=>{
   e.preventDefault();
-  const fd=new FormData();
-  fd.append('coachName', document.getElementById('coachNameInput').value);
-  fd.append('email', document.getElementById('email').value);
-  fd.append('phone', document.getElementById('phone').value);
-  fd.append('bio', document.getElementById('bio').value);
-  const pwd=document.getElementById('password').value; if(pwd) fd.append('password',pwd);
-  fd.append('specializations', JSON.stringify(specializations));
-  pendingDeletes.forEach(d=>fd.append('delete[]',d));
-  newFiles.forEach((f,type)=>{fd.append('files[]',f); fd.append('imageType[]',type);});
-
-  try{
-    const res=await fetch(`${API_BASE}/update_coach.php`,{method:'POST',body:fd});
-    const data=await res.json();
-    if(data.success){alert('Profile saved successfully'); pendingDeletes.clear(); newFiles.clear(); loadProfile();}
-    else alert('Error: '+data.message);
-  }catch(err){console.error(err); alert('Network error');}
+  const form=new FormData();
+  form.append('coachName',document.getElementById('coachNameInput').value.trim());
+  form.append('email',document.getElementById('email').value.trim());
+  form.append('phone',document.getElementById('phone').value.trim());
+  form.append('bio',document.getElementById('bio').value);
+  const pw=document.getElementById('password').value; if(pw) form.append('password',pw);
+  form.append('specializations',JSON.stringify(specializations));
+  pendingDeletes.forEach(d=>form.append('delete[]',d));
+  newFiles.forEach((file,type)=>{form.append('files[]',file); form.append('imageType[]',type)});
+  const res=await fetch(`${API_BASE}/update_coach.php`,{method:'POST',body:form});
+  const data=await res.json();
+  if(data.success){alert('Profile saved successfully!'); loadProfile(); pendingDeletes.clear(); newFiles.clear();}
+  else alert('Error: '+data.message);
 };
 
-// View public profile
 document.getElementById('viewProfileBtn').onclick=()=>{
   const modal=document.getElementById('publicProfileModal');
   document.getElementById('modalName').textContent=currentCoach.CoachName||currentCoach.Username;
   document.getElementById('modalEmail').textContent=currentCoach.Email||'';
   document.getElementById('modalBio').textContent=currentCoach.Bio||'';
-  document.getElementById('specializationList').innerHTML='';
+  const profilePic=document.getElementById('modalProfilePic').querySelector('img');
+  profilePic.src=currentCoach.Files?.Profile ? imgUrl(currentCoach.Files.Profile) : '/images/earth_steak.png';
+  const baContainer=document.getElementById('beforeAfterContainer'); baContainer.innerHTML='';
+  ['Before','After'].forEach(t=>{
+    if(currentCoach.Files?.[t]){
+      const div=document.createElement('div'); div.className='ba-pair';
+      const img=document.createElement('img'); img.src=imgUrl(currentCoach.Files[t]); div.appendChild(img);
+      baContainer.appendChild(div);
+    }
+  });
+  const specList=document.getElementById('specializationList'); specList.innerHTML='';
   if(currentCoach.Specializations){
-    try{JSON.parse(currentCoach.Specializations).forEach(s=>{const li=document.createElement('li'); li.textContent=s; document.getElementById('specializationList').appendChild(li);});}catch(e){}
+    try{JSON.parse(currentCoach.Specializations).forEach(s=>{const li=document.createElement('li'); li.textContent=s; specList.appendChild(li);});}catch(e){}
   }
-  const beforeAfter=document.getElementById('beforeAfterContainer'); beforeAfter.innerHTML='';
-  if(currentCoach.Files){
-    ['Before','After'].forEach(k=>{
-      if(currentCoach.Files[k]){
-        const img=document.createElement('img'); img.src=imgUrl(currentCoach.Files[k]); img.alt=k; beforeAfter.appendChild(img);
-      }
-    });
-    if(currentCoach.Files.Profile) document.getElementById('modalProfilePic').querySelector('img').src=imgUrl(currentCoach.Files.Profile);
-    if(currentCoach.Files.Certificate) document.getElementById('certificateContainer').innerHTML=`<img src="${imgUrl(currentCoach.Files.Certificate)}" style="width:220px;border:4px solid var(--red);border-radius:14px">`;
-  }
-  modal.classList.add('active');
+  document.getElementById('publicProfileModal').classList.add('active');
 };
 
-// Logout
-document.getElementById('logoutBtn').onclick=()=>{fetch(`${API_BASE}/logout.php`).then(()=>location.href=API_BASE+'/login.html')};
+document.getElementById('logoutBtn').onclick=()=>{
+  fetch(`${API_BASE}/logout.php`).then(()=>location.href='/webapi/login.html');
+};
 
 loadProfile();
 </script>
