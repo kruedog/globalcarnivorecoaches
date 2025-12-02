@@ -69,7 +69,7 @@ if (isset($_POST['specializations'])) {
 }
 
 $uploadDir = '/opt/render/project/src/webapi/uploads/';
-$webPath   = 'public/webapi/uploads/';
+$webPath = 'public/webapi/uploads/';
 @mkdir($uploadDir, 0755, true);
 
 if (!isset($coach['Files']) || !is_array($coach['Files'])) {
