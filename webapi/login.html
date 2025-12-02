@@ -14,7 +14,7 @@
 }
 
 body {
-    font-family:'Lora,serif;
+    font-family:'Lora',serif;
     background:var(--bg);
     color:var(--accent);
     margin:0;
@@ -51,6 +51,7 @@ input {
     border:1px solid var(--accent);
     border-radius:6px;
     font-size:1rem;
+    box-sizing:border-box;
 }
 
 button {
@@ -83,7 +84,7 @@ button:hover { background:#a10e28; }
     font-weight:bold;
 }
 
-/* Modal Styles */
+/* Modal */
 #agreementModal {
     position:fixed;
     inset:0;
@@ -115,8 +116,6 @@ button:hover { background:#a10e28; }
     margin-top:0;
 }
 
-.modal-box p { margin:1.2rem 0; }
-
 .modal-box label {
     display:block;
     margin:1rem 0;
@@ -141,9 +140,7 @@ button:hover { background:#a10e28; }
     font-size:1rem;
 }
 
-#cancelAgree {
-    background:#666;
-}
+#cancelAgree { background:#666; }
 </style>
 </head>
 <body>
@@ -170,17 +167,17 @@ button:hover { background:#a10e28; }
 
     <label>
       <input type="checkbox" id="agreeTOS">
-      I have read and agree to the <a href="legal.html#terms" target="_blank">Terms of Service</a>
+      I have read and agree to the <a href="legal.html" target="_blank">Terms of Service</a>
     </label>
 
     <label>
       <input type="checkbox" id="agreePrivacy">
-      I have read and agree to the <a href="legal.html#privacy" target="_blank">Privacy Policy</a>
+      I have read and agree to the <a href="legal.html" target="_blank">Privacy Policy</a>
     </label>
 
     <label>
-      <input type="checkbox" id="agreePhotos">
-      I have read and agree to the <a href="legal.html#photos" target="_blank">Photo Upload & Media Policy</a>
+      <input type="checkbox" id="id="agreePhotos">
+      I have read and agree to the <a href="legal.html" target="_blank">Photo Upload & Media Policy</a>
     </label>
 
     <div class="modal-actions">
@@ -191,8 +188,8 @@ button:hover { background:#a10e28; }
 </div>
 
 <script>
-// FIXED: login.php is in the same directory as login.html
-const API_BASE = '';  // ← THIS WAS THE ONLY BUG
+// Correct path — login.php and accept_terms.php are in the same folder as this file
+const API_BASE = '';
 
 const form = document.getElementById('loginForm');
 const loginMsg = document.getElementById('loginMsg');
@@ -203,13 +200,11 @@ form.addEventListener('submit', async e => {
   loginMsg.textContent = '';
   loginMsg.style.color = 'red';
 
-  ';
-
   const username = document.getElementById('username').value.trim();
   const password = document.getElementById('password').value;
 
   if (!username || !password) {
-    loginMsg.textContent = 'Please enter username and password';
+    loginMsg.textContent = 'Please enter both username and password';
     return;
   }
 
@@ -221,13 +216,11 @@ form.addEventListener('submit', async e => {
     const res = await fetch(`${API_BASE}login.php`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username, password }),
-      credentials: 'same-origin'
+      body: JSON.stringify({ username, password })
     });
 
     const json = await res.json();
 
-    // FIRST-TIME USER → SHOW AGREEMENT MODAL
     if (json.requireAgreement === true) {
       pendingUsername = json.username;
       document.getElementById('agreementModal').style.display = 'flex';
@@ -236,7 +229,6 @@ form.addEventListener('submit', async e => {
       return;
     }
 
-    // ALREADY ACCEPTED → NORMAL LOGIN
     if (json.success) {
       localStorage.setItem('username', json.username);
       localStorage.setItem('coachName', json.coachName || json.username);
@@ -245,11 +237,10 @@ form.addEventListener('submit', async e => {
       return;
     }
 
-    // WRONG CREDENTIALS
     loginMsg.textContent = json.message || 'Login failed';
 
   } catch (err) {
-    loginMsg.textContent = 'Network error – check if login.php is reachable';
+    loginMsg.textContent = 'Connection error — check login.php path';
     console.error(err);
   } finally {
     btn.disabled = false;
@@ -257,23 +248,19 @@ form.addEventListener('submit', async e => {
   }
 });
 
-// HOME BUTTON
 document.getElementById('homeBtn').onclick = () => location.href = '/index.html';
 
-// CANCEL AGREEMENT
 document.getElementById('cancelAgree').onclick = () => {
   document.getElementById('agreementModal').style.display = 'none';
-  pendingUsername = null;
 };
 
-// ACCEPT AGREEMENT → SAVE + LOG IN
 document.getElementById('confirmAgree').onclick = async () => {
   const tos = document.getElementById('agreeTOS').checked;
   const privacy = document.getElementById('agreePrivacy').checked;
   const photos = document.getElementById('agreePhotos').checked;
 
   if (!tos || !privacy || !photos) {
-    alert('You must agree to all three policies to continue.');
+    alert('You must agree to all three policies.');
     return;
   }
 
@@ -287,23 +274,20 @@ document.getElementById('confirmAgree').onclick = async () => {
     const result = await res.json();
 
     if (!result.success) {
-      alert('Error saving agreement: ' + (result.message || 'Unknown'));
+      alert('Error: ' + (result.message || 'Unknown'));
       return;
     }
 
-    // SUCCESS – LOG IN & REDIRECT
     localStorage.setItem('username', pendingUsername);
     localStorage.setItem('coachName', pendingUsername);
 
     loginMsg.style.color = '#006400';
-    loginMsg.textContent = 'Welcome! Redirecting to your dashboard…';
+    loginMsg.textContent = 'Welcome! Redirecting…';
 
-    setTimeout(() => {
-      window.location.href = 'profile.html';
-    }, 800);
+    setTimeout(() => window.location.href = 'profile.html', 800);
 
   } catch (err) {
-    alert('Network error. Please try again.');
+    alert('Network error while saving agreement.');
   }
 };
 </script>
