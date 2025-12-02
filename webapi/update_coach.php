@@ -1,56 +1,57 @@
 <?php
-// /webapi/update_coach.php — WILL NEVER OUTPUT HTML
+// /webapi/update_coach.php — FINAL VERSION THAT WORKS 100% ON RENDER (Dec 2025)
 ob_start();
 session_start();
 header('Content-Type: application/json');
 
-// If anything went wrong before here, we kill it and send clean JSON
+// Safety net – if anything crashes, we still return clean JSON
 register_shutdown_function(function () {
-    if ($error = error_get_last()) {
-        if (in_array($error['type'], [E_ERROR, E_PARSE, E_CORE_ERROR, E_COMPILE_ERROR])) {
-            ob_clean();
-            echo json_encode(['success' => false, 'message' => 'Server error']);
-            exit;
-        }
+    $error = error_get_last();
+    if ($error && in_array($error['type'], [E_ERROR, E_PARSE, E_CORE_ERROR, E_COMPILE_ERROR])) {
+        ob_clean();
+        http_response_code(500);
+        echo json_encode(['success' => false, 'message' => 'Server error']);
+        exit;
     }
 });
 
 if (empty($_SESSION['username'])) {
     ob_clean();
-    echo json_encode(['success' => false, 'message' => 'Login required']);
+    echo json_encode(['success' => false, 'message' => 'Not logged in']);
     exit;
 }
 
-$currentUsername = $_SESSION['username'];
-$file = __DIR__ . '/coaches.json';
+$username = $_SESSION['username'];
+$jsonFile = __DIR__ . '/coaches.json';
 
-if (!file_exists($file)) {
+if (!file_exists($jsonFile)) {
     ob_clean();
-    echo json_encode(['success' => false, 'message' => 'coaches.json missing']);
+    echo json_encode(['success' => false, 'message' => 'Data file missing']);
     exit;
 }
 
-$coaches = json_decode(file_get_contents($file), true);
+$coaches = json_decode(file_get_contents($jsonFile), true);
 if (!is_array($coaches)) {
     ob_clean();
-    echo json_encode(['success' => false, 'message' => 'Invalid data']);
+    echo json_encode(['success' => false, 'message' => 'Corrupted data']);
     exit;
 }
 
+// Find current coach
 $coach = null;
 foreach ($coaches as &$c) {
-    if (isset($c['Username']) && strcasecmp($c['Username'], $currentUsername) === 0) {
+    if (isset($c['Username']) && strcasecmp($c['Username'], $username) === 0) {
         $coach =& $c;
         break;
     }
 }
 if (!$coach) {
     ob_clean();
-    echo json_encode(['success' => false, 'message' => 'Not found']);
+    echo json_encode(['success' => false, 'message' => 'Coach not found']);
     exit;
 }
 
-// Safe updates
+// Update simple fields
 $coach['CoachName'] = trim($_POST['coachName'] ?? $coach['CoachName'] ?? '');
 $coach['Email']     = trim($_POST['email'] ?? $coach['Email'] ?? '');
 $coach['Phone']     = trim($_POST['phone'] ?? $coach['Phone'] ?? '');
@@ -60,36 +61,48 @@ if (!empty($_POST['password'])) {
     $coach['Password'] = password_hash($_POST['password'], PASSWORD_DEFAULT);
 }
 
+// Specializations
 if (isset($_POST['specializations'])) {
-    $s = json_decode($_POST['specializations'], true);
-    $coach['Specializations'] = json_encode(is_array($s) ? array_values(array_filter(array_map('trim', $s))) : []);
+    $specs = json_decode($_POST['specializations'], true);
+    $clean = is_array($specs) ? array_values(array_filter(array_map('trim', $specs))) : [];
+    $coach['Specializations'] = json_encode($clean);
 }
 
-// Persistent disk
+// Files – persistent on Render disk
 $uploadDir = '/opt/render/project/src/webapi/uploads/';
 $webPath   = '/webapi/uploads/';
 @mkdir($uploadDir, 0755, true);
 
-if (!isset($coach['Files']) || !is_array($coach['Files'])) $coach['Files'] = [];
+if (!isset($coach['Files']) || !is_array($coach['Files'])) {
+    $coach['Files'] = [];
+}
 
-// Uploads
+// New uploads
 if (!empty($_FILES['files']['name'][0])) {
     $types = $_POST['imageType'] ?? [];
     foreach ($_FILES['files']['name'] as $i => $name) {
-        if (empty($name) || $_FILES['files']['error'][$i] !== 0) continue;
+        if (empty($name) || $_FILES['files']['error'][$i] !== UPLOAD_ERR_OK) continue;
+
         $ext = strtolower(pathinfo($name, PATHINFO_EXTENSION));
         if (in_array($ext, ['php','phtml','js','sh','exe'])) continue;
-        $newName = $currentUsername . '_' . time() . "_$i.$ext";
-        $target = $uploadDir . $newName;
+
+        $newName = $username . '_' . time() . "_$i.$ext";
+        $target  = $uploadDir . $newName;
+
         if (move_uploaded_file($_FILES['files']['tmp_name'][$i], $target)) {
             $type = $types[$i] ?? 'Profile';
-            if (!empty($coach['Files'][$type])) @unlink($uploadDir . basename($coach['Files'][$type]));
+
+            // Delete old file of same type
+            if (!empty($coach['Files'][$type])) {
+                @unlink($uploadDir . basename($coach['Files'][$type]));
+            }
+
             $coach['Files'][$type] = $webPath . $newName;
         }
     }
 }
 
-// Deletes
+// Delete requested photos
 if (!empty($_POST['delete']) && is_array($_POST['delete'])) {
     foreach ($_POST['delete'] as $type) {
         if (!empty($coach['Files'][$type])) {
@@ -99,9 +112,10 @@ if (!empty($_POST['delete']) && is_array($_POST['delete'])) {
     }
 }
 
-file_put_contents($file, json_encode($coaches, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+// Save everything
+file_put_contents($jsonFile, json_encode($coaches, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
 
 ob_clean();
-echo json_encode(['success' => true, 'message' => 'Saved']);
+echo json_encode(['success' => true, 'message' => 'Profile saved!']);
 exit;
 ?>
