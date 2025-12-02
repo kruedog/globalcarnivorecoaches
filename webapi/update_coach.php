@@ -49,9 +49,10 @@ if (isset($_POST['specializations'])) {
     $coach['Specializations'] = json_encode(is_array($s) ? array_values(array_filter(array_map('trim', $s))) : []);
 }
 
-// UPLOADS – persistent disk
+// UPLOADS — PERSISTENT DISK + CORRECT PATH
 $uploadDir = '/opt/render/project/src/webapi/uploads/';
-$webPath   = 'public/webapi/uploads/';
+$webPath   = 'public/webapi/uploads/';   // ← THIS IS THE ONLY LINE THAT MATTERS
+
 @mkdir($uploadDir, 0755, true);
 
 if (!isset($coach['Files']) || !is_array($coach['Files'])) {
@@ -66,13 +67,15 @@ if (!empty($_FILES['files']['name'][0])) {
         $ext = strtolower(pathinfo($name, PATHINFO_EXTENSION));
         if (in_array($ext, ['php','phtml','js','sh','exe'])) continue;
 
-        $newName = $username.'_'.time().'_'.$i.'.'.$ext;
-        $target  = $uploadDir.$newName;
+        $newName = $username . '_' . time() . "_$i.$ext";
+        $target  = $uploadDir . $newName;
 
         if (move_uploaded_file($_FILES['files']['tmp_name'][$i], $target)) {
             $type = $types[$i] ?? 'Profile';
-            if (!empty($coach['Files'][$type])) @unlink($uploadDir.basename($coach['Files'][$type]));
-            $coach['Files'][$type] = $webPath.$newName;
+            if (!empty($coach['Files'][$type])) {
+                @unlink($uploadDir . basename($coach['Files'][$type]));
+            }
+            $coach['Files'][$type] = $webPath . $newName;   // ← THIS SAVES THE CORRECT PATH
         }
     }
 }
