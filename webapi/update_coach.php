@@ -1,13 +1,8 @@
 <?php
-/**
- * update_coach.php — FULLY UPDATED WITH SPECIALIZATIONS SUPPORT
- * Global Carnivore Coaches | November 2025
- */
-
+// update_coach.php — FINAL BULLETPROOF VERSION FOR RENDER
 header('Content-Type: application/json');
 session_start();
 
-// AUTH: Must be logged in
 if (empty($_SESSION['username'])) {
     echo json_encode(['success' => false, 'message' => 'Login required']);
     exit;
@@ -16,13 +11,13 @@ $currentUsername = $_SESSION['username'];
 
 $coachesFile = __DIR__ . '/coaches.json';
 if (!file_exists($coachesFile)) {
-    echo json_encode(['success' => false, 'message' => 'coaches.json not found']);
+    echo json_encode(['success' => false, 'message' => 'coaches.json missing']);
     exit;
 }
 
 $coaches = json_decode(file_get_contents($coachesFile), true);
 if (!is_array($coaches)) {
-    echo json_encode(['success' => false, 'message' => 'Invalid coaches data']);
+    echo json_encode(['success' => false, 'message' => 'Corrupted data']);
     exit;
 }
 
@@ -35,74 +30,56 @@ foreach ($coaches as $i => $c) {
     }
 }
 if ($index === null) {
-    echo json_encode(['success' => false, 'message' => 'Your account not found']);
+    echo json_encode(['success' => false, 'message' => 'Coach not found']);
     exit;
 }
 
-// Track what changed
 $changes = [];
 
-// Text fields
+// TEXT FIELDS
 if (!empty($_POST['coachName'])) {
-    $changes[] = 'name';
     $coaches[$index]['CoachName'] = trim($_POST['coachName']);
+    $changes[] = 'name';
 }
 if (!empty($_POST['email'])) {
-    $changes[] = 'email';
     $coaches[$index]['Email'] = trim($_POST['email']);
+    $changes[] = 'email';
 }
 if (!empty($_POST['password'])) {
-    $changes[] = 'password';
     $coaches[$index]['Password'] = password_hash($_POST['password'], PASSWORD_DEFAULT);
+    $changes[] = 'password';
 }
 if (isset($_POST['phone'])) {
+    $coaches[$index]['Phone'] = trim($_POST['phone'] ?? '');
     $changes[] = 'phone';
-    $coaches[$index]['Phone'] = trim($_POST['phone']);
 }
 if (isset($_POST['bio'])) {
+    $coaches[$index]['Bio'] = $_POST['bio'];
     $changes[] = 'bio';
-    $coaches[$index]['Bio'] = $_POST['bio']; // already sanitized by browser
 }
 
-// SPECIALIZATIONS — NEW FIELD
+// SPECIALIZATIONS
 if (isset($_POST['specializations'])) {
     $raw = $_POST['specializations'];
     $decoded = json_decode($raw, true);
-
     if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
-        // Sanitize each specialization
-        $clean = array_map(function($item) {
-            return trim(strip_tags($item));
-        }, $decoded);
-
-        // Remove empty entries
-        $clean = array_filter($clean, 'strlen');
-
-        $coaches[$index]['Specializations'] = json_encode(array_values($clean));
+        $clean = array_values(array_filter(array_map('trim', $decoded)));
+        $coaches[$index]['Specializations'] = json_encode($clean);
         $changes[] = 'specializations';
-    } else if ($raw === '' || $raw === '[]') {
-        // Allow clearing the field
-        $coaches[$index]['Specializations'] = json_encode([]);
-        $changes[] = 'specializations (cleared)';
     }
 }
 
-// ===================================================================
-// FILE UPLOADS – PERSISTENT ON RENDER DISK
-// ===================================================================
+// PERSISTENT UPLOADS ON RENDER DISK
 $uploadDir = '/opt/render/project/src/webapi/uploads/';
 $webPath   = '/webapi/uploads/';
-
-if (!is_dir($uploadDir)) {
-    mkdir($uploadDir, 0755, true);
-}
+if (!is_dir($uploadDir)) mkdir($uploadDir, 0755, true);
 
 // Ensure Files array exists
 if (!isset($coaches[$index]['Files']) || !is_array($coaches[$index]['Files'])) {
     $coaches[$index]['Files'] = [];
 }
 
-// Process new uploads
+// NEW UPLOADS
 if (!empty($_FILES['files']['name'][0])) {
     $changes[] = 'photos';
     $types = $_POST['imageType'] ?? [];
@@ -111,7 +88,7 @@ if (!empty($_FILES['files']['name'][0])) {
         if (empty($name) || $_FILES['files']['error'][$i] !== UPLOAD_ERR_OK) continue;
 
         $ext = strtolower(pathinfo($name, PATHINFO_EXTENSION));
-        if (in_array($ext, ['php','php7','phtml','exe','sh','js'])) continue;
+        if (in_array($ext, ['php','phtml','js','sh'])) continue;
 
         $newName = $currentUsername . '_' . time() . "_$i.$ext";
         $target  = $uploadDir . $newName;
@@ -119,7 +96,7 @@ if (!empty($_FILES['files']['name'][0])) {
         if (move_uploaded_file($_FILES['files']['tmp_name'][$i], $target)) {
             $type = $types[$i] ?? 'Profile';
 
-            // Delete old photo of same type
+            // Remove old photo of same type
             if (!empty($coaches[$index]['Files'][$type])) {
                 $old = $uploadDir . basename($coaches[$index]['Files'][$type]);
                 if (file_exists($old)) @unlink($old);
@@ -130,40 +107,25 @@ if (!empty($_FILES['files']['name'][0])) {
     }
 }
 
-// File deletes
-foreach ((array)($_POST['delete'] ?? []) as $type) {
-    if (!empty($coaches[$index]['Files'][$type])) {
-        $file = $uploadDir . basename($coaches[$index]['Files'][$type]);
-        if (file_exists($file)) @unlink($file);
-        unset($coaches[$index]['Files'][$type]);
-        $changes[] = "deleted $type photo";
+// DELETES
+if (!empty($_POST['delete']) && is_array($_POST['delete'])) {
+    foreach ($_POST['delete'] as $type) {
+        if (!empty($coaches[$index]['Files'][$type])) {
+            $file = $uploadDir . basename($coaches[$index]['Files'][$type]);
+            if (file_exists($file)) @unlink($file);
+            unset($coaches[$index]['Files'][$type]);
+            $changes[] = "deleted $type";
+        }
     }
 }
 
-// Normalize file paths
-if (isset($coaches[$index]['Files']) && is_array($coaches[$index]['Files'])) {
-    foreach ($coaches[$index]['Files'] as $k => $v) {
-        $coaches[$index]['Files'][$k] = str_replace('\\', '/', $v);
-    }
-}
-
-// Save updated coaches.json
-file_put_contents(
-    $coachesFile,
-    json_encode($coaches, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE)
-);
-
-// LOG THE ACTION
-require_once __DIR__ . '/log_activity.php';
-$detail = $changes
-    ? 'Updated: ' . implode(', ', array_unique($changes))
-    : 'Viewed profile (no changes)';
-log_coach_activity('profile_update', $detail);
+// SAVE JSON
+file_put_contents($coachesFile, json_encode($coaches, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
 
 echo json_encode([
     'success' => true,
-    'message' => 'Profile saved successfully!',
-    'coach'   => $coaches[$index]
+    'message' => 'Profile saved!',
+    'changes' => $changes
 ]);
 exit;
 ?>
