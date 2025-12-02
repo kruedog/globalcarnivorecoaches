@@ -60,23 +60,15 @@ button {
     margin-top:0.8rem;
 }
 button:hover { background:#a10e28; }
-#homeBtn {
-    background:var(--accent);
-    margin-top:0.4rem;
-}
+#homeBtn { background:var(--accent); margin-top:.4rem; }
 #homeBtn:hover { background:#0d123b; }
-#loginMsg {
-    margin-top:1rem;
-    text-align:center;
-    min-height:1.4em;
-    font-weight:bold;
-}
+#loginMsg { margin-top:1rem; text-align:center; min-height:1.4em; font-weight:bold; }
 
 /* Modal */
 #agreementModal {
     position:fixed;
     inset:0;
-    background:rgba(0,0,0,0.7);
+    background:rgba(0,0,0,.7);
     display:none;
     align-items:center;
     justify-content:center;
@@ -92,33 +84,13 @@ button:hover { background:#a10e28; }
     padding:2rem;
     border-radius:12px;
     border:3px solid var(--primary);
-    box-shadow:0 15px 40px rgba(0,0,0,0.3);
+    box-shadow:0 15px 40px rgba(0,0,0,.3);
 }
-.modal-box h3 {
-    font-family:'Cinzel',serif;
-    color:var(--primary);
-    text-align:center;
-    font-size:1.7rem;
-    margin-top:0;
-}
-.modal-box label {
-    display:block;
-    margin:1.2rem 0;
-    font-size:1.05rem;
-}
-.modal-box a {
-    color:var(--primary);
-    text-decoration:underline;
-}
-.modal-actions {
-    margin-top:2rem;
-    text-align:right;
-}
-.modal-actions button {
-    width:auto;
-    padding:0.7rem 1.5rem;
-    margin-left:0.8rem;
-}
+.modal-box h3 { font-family:'Cinzel',serif; color:var(--primary); text-align:center; font-size:1.7rem; margin-top:0; }
+.modal-box label { display:block; margin:1.2rem 0; font-size:1.05rem; }
+.modal-box a { color:var(--primary); text-decoration:underline; }
+.modal-actions { margin-top:2rem; text-align:right; }
+.modal-actions button { width:auto; padding:.7rem 1.5rem; margin-left:.8rem; }
 #cancelAgree { background:#666; }
 </style>
 </head>
@@ -134,7 +106,7 @@ button:hover { background:#a10e28; }
     <button type="button" id="homeBtn">Home</button>
   </form>
 
-  <div id="loginMsg">div>
+  <div id="loginMsg"></div>
 </div>
 
 <!-- AGREEMENT MODAL -->
@@ -166,12 +138,13 @@ button:hover { background:#a10e28; }
 </div>
 
 <script>
-// login.php & accept_terms.php are in the same folder as this file
+// All PHP files are in the same directory as this HTML file
 const API_BASE = '';
 
 const form = document.getElementById('loginForm');
 const loginMsg = document.getElementById('loginMsg');
 let pendingUsername = null;
+let pendingPassword = null; // keep password during agreement step
 
 form.addEventListener('submit', async e => {
   e.preventDefault();
@@ -186,6 +159,9 @@ form.addEventListener('submit', async e => {
     return;
   }
 
+  pendingUsername = username;
+  pendingPassword = password;
+
   const btn = form.querySelector('button[type="submit"]');
   btn.disabled = true;
   btn.textContent = 'Logging in…';
@@ -199,14 +175,15 @@ form.addEventListener('submit', async e => {
 
     const json = await res.json();
 
+    // First-time user → show agreement modal
     if (json.requireAgreement === true) {
-      pendingUsername = json.username;
       document.getElementById('agreementModal').style.display = 'flex';
       btn.disabled = false;
       btn.textContent = 'Login';
       return;
     }
 
+    // Already accepted → normal login
     if (json.success) {
       localStorage.setItem('username', json.username);
       localStorage.setItem('coachName', json.coachName || json.username);
@@ -232,6 +209,7 @@ document.getElementById('cancelAgree').onclick = () => {
   document.getElementById('agreementModal').style.display = 'none';
 };
 
+// ACCEPT & CONTINUE → save agreement + create real session
 document.getElementById('confirmAgree').onclick = async () => {
   const tos = document.getElementById('agreeTOS').checked;
   const privacy = document.getElementById('agreePrivacy').checked;
@@ -243,30 +221,38 @@ document.getElementById('confirmAgree').onclick = async () => {
   }
 
   try {
-    const res = await fetch(`${API_BASE}accept_terms.php`, {
+    // 1. Save agreement
+    const res1 = await fetch(`${API_BASE}accept_terms.php`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ username: pendingUsername })
     });
+    const r1 = await res1.json();
+    if (!r1.success) throw new Error(r1.message || 'Failed to save agreement');
 
-    const result = await res.json();
+    // 2. Perform real login (creates PHP session)
+    const res2 = await fetch(`${API_BASE}login.php`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username: pendingUsername, password: pendingPassword })
+    });
+    const r2 = await res2.json();
 
-    if (!result.success) {
-      alert('Error: ' + (result.message || 'Failed'));
-      return;
-    }
+    if (!r2.success) throw new Error('Login failed after agreement');
 
-    // SUCCESS → LOG IN
-    localStorage.setItem('username', pendingUsername);
-    localStorage.setItem('coachName', pendingUsername);
+    // SUCCESS!
+    localStorage.setItem('username', r2.username);
+    localStorage.setItem('coachName', r2.coachName || r2.username);
+    localStorage.setItem('email', r2.email || '');
 
     loginMsg.style.color = '#006400';
     loginMsg.textContent = 'Welcome! Redirecting…';
-
     setTimeout(() => window.location.href = 'profile.html', 800);
 
   } catch (err) {
-    alert('Network error');
+    console.error(err);
+    alert('Error: ' + err.message + '. Please try logging in again.');
+    window.location.href = 'login.html';
   }
 };
 </script>
