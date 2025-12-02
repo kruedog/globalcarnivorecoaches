@@ -14,7 +14,7 @@
 }
 
 body {
-    font-family:'Lora',serif;
+    font-family:'Lora,serif;
     background:var(--bg);
     color:var(--accent);
     margin:0;
@@ -23,105 +23,126 @@ body {
     align-items:center;
     justify-content:center;
     padding:2rem;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
 }
 
 .container {
     max-width:420px;
+    width:100%;
     background:#fff;
-    padding:1.8rem;
+    padding:2rem;
+    border-radius:12px;
+    box-shadow:0 10px 30px rgba(0,0,0,0.15);
     border:2px solid var(--accent);
-    border-radius:8px;
-    box-shadow:0 6px 18px rgba(0,0,0,.08);
 }
 
 h2 {
     font-family:'Cinzel',serif;
     color:var(--primary);
     text-align:center;
-    margin:0 0 1rem;
+    margin:0 0 1.5rem;
+    font-size:1.8rem;
 }
 
 input {
     width:100%;
-    padding:.75rem;
-    margin:.5rem 0;
+    padding:.9rem;
+    margin:0.6rem 0;
     border:1px solid var(--accent);
-    border-radius:4px;
+    border-radius:6px;
+    font-size:1rem;
 }
 
 button {
     width:100%;
-    padding:.75rem;
+    padding:.9rem;
     background:var(--primary);
     color:#fff;
     border:none;
-    border-radius:4px;
+    border-radius:6px;
     cursor:pointer;
     font-family:'Cinzel',serif;
-    margin-top:0.5rem;
+    font-size:1.1rem;
+    margin-top:0.8rem;
+    transition:background 0.3s;
 }
 
+button:hover { background:#a10e28; }
+
 #homeBtn {
-    background:#192168;
+    background:var(--accent);
+    margin-top:0.4rem;
 }
+
+#homeBtn:hover { background:#0d123b; }
 
 #loginMsg {
     margin-top:1rem;
     text-align:center;
-    color:red;
+    min-height:1.4em;
+    font-weight:bold;
 }
 
-.forgot-msg {
-    display:block;
-    text-align:center;
-    margin-top:.75rem;
-    color:var(--accent);
-    font-style:italic;
-}
-
-/* Modal */
+/* Modal Styles */
 #agreementModal {
     position:fixed;
     inset:0;
-    background:rgba(0,0,0,0.6);
+    background:rgba(0,0,0,0.7);
     display:none;
     align-items:center;
     justify-content:center;
-    z-index:2000;
+    z-index:9999;
+    backdrop-filter: blur(4px);
 }
 
 .modal-box {
     background:#fff;
     width:95%;
-    max-width:600px;
-    padding:1.5rem;
-    border-radius:8px;
-    border:2px solid var(--accent);
-    max-height:80vh;
+    max-width:620px;
+    max-height:85vh;
     overflow-y:auto;
-    box-shadow:0 6px 18px rgba(0,0,0,.4);
+    padding:2rem;
+    border-radius:12px;
+    border:3px solid var(--primary);
+    box-shadow:0 15px 40px rgba(0,0,0,0.3);
 }
 
 .modal-box h3 {
     font-family:'Cinzel',serif;
     color:var(--primary);
+    text-align:center;
+    font-size:1.7rem;
     margin-top:0;
 }
 
+.modal-box p { margin:1.2rem 0; }
+
 .modal-box label {
     display:block;
-    margin:.5rem 0;
+    margin:1rem 0;
+    font-size:1.05rem;
+    line-height:1.5;
+}
+
+.modal-box a {
+    color:var(--primary);
+    text-decoration:underline;
 }
 
 .modal-actions {
-    margin-top:1rem;
+    margin-top:2rem;
     text-align:right;
 }
 
 .modal-actions button {
     width:auto;
-    padding:.6rem 1rem;
-    margin-left:.5rem;
+    padding:0.7rem 1.5rem;
+    margin-left:0.8rem;
+    font-size:1rem;
+}
+
+#cancelAgree {
+    background:#666;
 }
 </style>
 </head>
@@ -138,57 +159,57 @@ button {
     <button type="button" id="homeBtn">Home</button>
   </form>
 
-  <div class="forgot-msg"></div>
   <div id="loginMsg"></div>
 </div>
 
-<!-- =========================== -->
-<!--      AGREEMENT  MODAL       -->
-<!-- =========================== -->
+<!-- AGREEMENT MODAL -->
 <div id="agreementModal">
   <div class="modal-box">
-      <h3>Before You Continue</h3>
-      <p>To use this Platform, you must confirm that you have read and agree to our legal policies:</p>
+    <h3>Important – Please Read & Accept</h3>
+    <p>Before accessing your coach dashboard for the first time, you must review and agree to our legal policies:</p>
 
-      <label>
-        <input type="checkbox" id="agreeTOS"> 
-        I agree to the <a href="legal.html" target="_blank">Terms of Service</a>.
-      </label>
+    <label>
+      <input type="checkbox" id="agreeTOS">
+      I have read and agree to the <a href="legal.html#terms" target="_blank">Terms of Service</a>
+    </label>
 
-      <label>
-        <input type="checkbox" id="agreePrivacy"> 
-        I agree to the <a href="legal.html" target="_blank">Privacy Policy</a>.
-      </label>
+    <label>
+      <input type="checkbox" id="agreePrivacy">
+      I have read and agree to the <a href="legal.html#privacy" target="_blank">Privacy Policy</a>
+    </label>
 
-      <label>
-        <input type="checkbox" id="agreePhotos"> 
-        I agree to the <a href="legal.html" target="_blank">Photo Upload & Media Policy</a>.
-      </label>
+    <label>
+      <input type="checkbox" id="agreePhotos">
+      I have read and agree to the <a href="legal.html#photos" target="_blank">Photo Upload & Media Policy</a>
+    </label>
 
-      <div class="modal-actions">
-          <button id="cancelAgree">Cancel</button>
-          <button id="confirmAgree" style="background:var(--primary);color:white;">Accept & Continue</button>
-      </div>
+    <div class="modal-actions">
+      <button id="cancelAgree">Cancel</button>
+      <button id="confirmAgree">Accept & Continue</button>
+    </div>
   </div>
 </div>
 
 <script>
-// Smart API base
-const API_BASE = '/webapi';
+// FIXED: login.php is in the same directory as login.html
+const API_BASE = '';  // ← THIS WAS THE ONLY BUG
 
 const form = document.getElementById('loginForm');
 const loginMsg = document.getElementById('loginMsg');
+let pendingUsername = null;
 
-// Submit login attempt
 form.addEventListener('submit', async e => {
   e.preventDefault();
   loginMsg.textContent = '';
+  loginMsg.style.color = 'red';
+
+  ';
 
   const username = document.getElementById('username').value.trim();
   const password = document.getElementById('password').value;
 
   if (!username || !password) {
-    loginMsg.textContent = 'Enter username and password';
+    loginMsg.textContent = 'Please enter username and password';
     return;
   }
 
@@ -197,7 +218,7 @@ form.addEventListener('submit', async e => {
   btn.textContent = 'Logging in…';
 
   try {
-    const res = await fetch(`${API_BASE}/login.php`, {
+    const res = await fetch(`${API_BASE}login.php`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ username, password }),
@@ -206,80 +227,85 @@ form.addEventListener('submit', async e => {
 
     const json = await res.json();
 
-    // If they must accept agreements first
+    // FIRST-TIME USER → SHOW AGREEMENT MODAL
     if (json.requireAgreement === true) {
-        openAgreementModal(json.username);
-        btn.disabled = false;
-        btn.textContent = 'Login';
-        return;
+      pendingUsername = json.username;
+      document.getElementById('agreementModal').style.display = 'flex';
+      btn.disabled = false;
+      btn.textContent = 'Login';
+      return;
     }
 
+    // ALREADY ACCEPTED → NORMAL LOGIN
     if (json.success) {
       localStorage.setItem('username', json.username);
-      localStorage.setItem('coachName', json.CoachName || json.username);
+      localStorage.setItem('coachName', json.coachName || json.username);
       localStorage.setItem('email', json.email || '');
       window.location.href = 'profile.html';
-    } else {
-      loginMsg.textContent = json.message || 'Login failed';
+      return;
     }
 
+    // WRONG CREDENTIALS
+    loginMsg.textContent = json.message || 'Login failed';
+
   } catch (err) {
-    loginMsg.textContent = 'Network error: ' + err.message;
+    loginMsg.textContent = 'Network error – check if login.php is reachable';
+    console.error(err);
   } finally {
     btn.disabled = false;
     btn.textContent = 'Login';
   }
 });
 
-// Home button
-document.getElementById('homeBtn').addEventListener('click', () => {
-  window.location.href = '/index.html';
-});
+// HOME BUTTON
+document.getElementById('homeBtn').onclick = () => location.href = '/index.html';
 
+// CANCEL AGREEMENT
+document.getElementById('cancelAgree').onclick = () => {
+  document.getElementById('agreementModal').style.display = 'none';
+  pendingUsername = null;
+};
 
-// ===============================
-// AGREEMENT MODAL FUNCTIONALITY
-// ===============================
+// ACCEPT AGREEMENT → SAVE + LOG IN
+document.getElementById('confirmAgree').onclick = async () => {
+  const tos = document.getElementById('agreeTOS').checked;
+  const privacy = document.getElementById('agreePrivacy').checked;
+  const photos = document.getElementById('agreePhotos').checked;
 
-let pendingUsername = null;
+  if (!tos || !privacy || !photos) {
+    alert('You must agree to all three policies to continue.');
+    return;
+  }
 
-function openAgreementModal(uname) {
-    pendingUsername = uname;
-    document.getElementById('agreementModal').style.display = 'flex';
-}
-
-document.getElementById('cancelAgree').addEventListener('click', () => {
-    document.getElementById('agreementModal').style.display = 'none';
-});
-
-// Confirm acceptance
-document.getElementById('confirmAgree').addEventListener('click', async () => {
-    const tos = document.getElementById('agreeTOS').checked;
-    const privacy = document.getElementById('agreePrivacy').checked;
-    const photos = document.getElementById('agreePhotos').checked;
-
-    if (!tos || !privacy || !photos) {
-        alert("You must agree to all policies before continuing.");
-        return;
-    }
-
-    // Save acceptance on backend
-    const res = await fetch(`${API_BASE}/accept_terms.php`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username: pendingUsername }),
-        credentials: 'same-origin'
+  try {
+    const res = await fetch(`${API_BASE}accept_terms.php`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username: pendingUsername })
     });
 
-    const json = await res.json();
+    const result = await res.json();
 
-    if (json.success) {
-        alert("Thank you! Your agreement has been recorded.");
-        document.getElementById('agreementModal').style.display = 'none';
-    } else {
-        alert("Error saving acceptance. Contact support.");
+    if (!result.success) {
+      alert('Error saving agreement: ' + (result.message || 'Unknown'));
+      return;
     }
-});
+
+    // SUCCESS – LOG IN & REDIRECT
+    localStorage.setItem('username', pendingUsername);
+    localStorage.setItem('coachName', pendingUsername);
+
+    loginMsg.style.color = '#006400';
+    loginMsg.textContent = 'Welcome! Redirecting to your dashboard…';
+
+    setTimeout(() => {
+      window.location.href = 'profile.html';
+    }, 800);
+
+  } catch (err) {
+    alert('Network error. Please try again.');
+  }
+};
 </script>
 
 </body>

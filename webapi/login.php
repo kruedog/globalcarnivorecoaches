@@ -1,7 +1,7 @@
 <?php
 /**
- * login.php — FINAL VERSION WITH UNIVERSAL LOGGING
- * Global Carnivore Coaches | November 2025
+ * login.php — Updated with Agreement Check + Timestamp Support
+ * Global Carnivore Coaches | 2025
  */
 
 header('Content-Type: application/json');
@@ -24,7 +24,7 @@ if ($username === '' || $password === '') {
     exit;
 }
 
-// Load coaches
+// Load coaches.json
 $coachesFile = __DIR__ . '/coaches.json';
 if (!file_exists($coachesFile)) {
     echo json_encode(['success' => false, 'message' => 'System error: coaches.json missing']);
@@ -37,30 +37,55 @@ if (!is_array($coaches)) {
     exit;
 }
 
-// Find coach by username (case-insensitive)
-$coach = null;
-foreach ($coaches as $c) {
+// Locate coach (case-insensitive)
+$coachIndex = null;
+foreach ($coaches as $i => $c) {
     if (isset($c['Username']) && strcasecmp($c['Username'], $username) === 0) {
-        $coach = $c;
+        $coachIndex = $i;
         break;
     }
 }
 
-if (!$coach || !password_verify($password, $coach['Password'] ?? '')) {
-    // Log failed attempt (optional — you can remove if too noisy)
-    // require_once __DIR__ . '/log_activity.php';
-    // log_coach_activity('login_failed', "Username: $username from " . ($_SERVER['REMOTE_ADDR'] ?? 'unknown'));
+if ($coachIndex === null) {
     echo json_encode(['success' => false, 'message' => 'Invalid credentials']);
     exit;
 }
 
-// SUCCESS — Set session
+$coach = $coaches[$coachIndex];
+
+// Password check
+if (!password_verify($password, $coach['Password'] ?? '')) {
+    echo json_encode(['success' => false, 'message' => 'Invalid credentials']);
+    exit;
+}
+
+// ================================
+// AGREEMENT CHECK
+// ================================
+$requiresAgreement = $coach['requireAgreement'] ?? true;
+
+// If they have NOT accepted yet → do NOT log them in
+if ($requiresAgreement === true) {
+    echo json_encode([
+        'success' => false,
+        'requireAgreement' => true,
+        'username' => $coach['Username'],
+        'message' => 'Legal agreements must be accepted'
+    ]);
+    exit;
+}
+
+// ================================
+// Successful login (agreements already accepted)
+// ================================
+
 $coachName = $coach['CoachName'] ?? $coach['Username'];
+
 $_SESSION['username']  = $coach['Username'];
 $_SESSION['coachName'] = $coachName;
 $_SESSION['email']     = $coach['Email'] ?? '';
 
-// LOG SUCCESSFUL LOGIN
+// Log success
 require_once __DIR__ . '/log_activity.php';
 log_coach_activity('login');
 
@@ -68,7 +93,9 @@ echo json_encode([
     'success'   => true,
     'username'  => $coach['Username'],
     'coachName' => $coachName,
-    'email'     => $coach['Email'] ?? ''
+    'email'     => $coach['Email'] ?? '',
+    'agreement_accepted_on' => $coach['agreement_accepted_on'] ?? null
 ]);
+
 exit;
 ?>

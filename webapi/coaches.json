@@ -9,7 +9,8 @@
         "Files": [],
         "reset_token": "843229f709ec7ea2c1e8435b67a8987933be08b77df967d7628c99877b9e2367",
         "reset_expires": "2025-11-16 18:54:58",
-        "Specializations": "[\"coffee\",\"Montreal Style Smoke Meat\"]"
+        "Specializations": "[\"coffee\",\"Montreal Style Smoke Meat\"]",
+        "requireAgreement": true
     },
     {
         "CoachName": "Captain Minou",
@@ -20,7 +21,8 @@
         "Bio": "I'm the Big Bad cat. I used to be so fat, people thought I was a bear. Now I hunt and eat lamb and looking like a champ. I'm back to my ancestral diet kjbk jbk jbk jbk jbk jbk jbk jbk jbkjbkjbkjbkjbkjbkjbk jbkjbkjkb jk jbk jb",
         "Files": {
             "Profile": "uploads/coco_1763445026_0.jpg"
-        }
+        },
+        "requireAgreement": true
     },
     {
         "CoachName": "William Cooke",
@@ -33,7 +35,8 @@
             "Certificate": "uploads/william_1763430369_0.jpg",
             "After": "uploads/william_1763430410_0.jpg",
             "Before": "uploads/william_1763431065_0.jpg"
-        }
+        },
+        "requireAgreement": true
     },
     {
         "CoachName": "NewCoach4",
@@ -42,7 +45,8 @@
         "Password": "$2y$10$8A/Mx.KX8LUXLBUECFfYzOvddla1F4Mj3rDmYQu6ypgvg.Vjrie1y",
         "Phone": "",
         "Bio": "",
-        "Files": []
+        "Files": [],
+        "requireAgreement": true
     },
     {
         "CoachName": "NewCoach5",
@@ -53,7 +57,8 @@
         "Bio": "",
         "Files": {
             "Profile": "uploads/coach005_1763431613_0.jpg"
-        }
+        },
+        "requireAgreement": true
     },
     {
         "CoachName": "NewCoach6",
@@ -62,6 +67,7 @@
         "Password": "$2y$10$y2fYOtHowP2K.N41iggNcuaZjcZ3dERiJhQi/Z4wClg/nEaN2gdmS",
         "Phone": "",
         "Bio": "",
-        "Files": []
+        "Files": [],
+        "requireAgreement": true
     }
 ]
