@@ -2,48 +2,191 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Coach Login | Global Carnivore Coaches</title>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Lora&display=swap" rel="stylesheet">
+
 <style>
-:root{--primary:#C51230;--accent:#192168;--bg:#fff}
-body{font-family:'Lora',serif;background:var(--bg);color:var(--accent);margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2rem}
-.container{max-width:420px;background:#fff;padding:1.8rem;border:2px solid var(--accent);border-radius:8px;box-shadow:0 6px 18px rgba(0,0,0,.08)}
-h2{font-family:'Cinzel',serif;color:var(--primary);text-align:center;margin:0 0 1rem}
-input{width:100%;padding:.75rem;margin:.5rem 0;border:1px solid var(--accent);border-radius:4px}
-button{width:100%;padding:.75rem;background:var(--primary);color:#fff;border:none;border-radius:4px;cursor:pointer;font-family:'Cinzel',serif;margin-top:0.5rem}
-#homeBtn{background:#192168;}
-#loginMsg{margin-top:1rem;text-align:center;color:red}
-.forgot-msg{display:block;text-align:center;margin-top:.75rem;color:var(--accent);font-style:italic}
+:root {
+    --primary:#C51230;
+    --accent:#192168;
+    --bg:#fff;
+}
+
+body {
+    font-family:'Lora',serif;
+    background:var(--bg);
+    color:var(--accent);
+    margin:0;
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:2rem;
+}
+
+.container {
+    max-width:420px;
+    background:#fff;
+    padding:1.8rem;
+    border:2px solid var(--accent);
+    border-radius:8px;
+    box-shadow:0 6px 18px rgba(0,0,0,.08);
+}
+
+h2 {
+    font-family:'Cinzel',serif;
+    color:var(--primary);
+    text-align:center;
+    margin:0 0 1rem;
+}
+
+input {
+    width:100%;
+    padding:.75rem;
+    margin:.5rem 0;
+    border:1px solid var(--accent);
+    border-radius:4px;
+}
+
+button {
+    width:100%;
+    padding:.75rem;
+    background:var(--primary);
+    color:#fff;
+    border:none;
+    border-radius:4px;
+    cursor:pointer;
+    font-family:'Cinzel',serif;
+    margin-top:0.5rem;
+}
+
+#homeBtn {
+    background:#192168;
+}
+
+#loginMsg {
+    margin-top:1rem;
+    text-align:center;
+    color:red;
+}
+
+.forgot-msg {
+    display:block;
+    text-align:center;
+    margin-top:.75rem;
+    color:var(--accent);
+    font-style:italic;
+}
+
+/* Modal */
+#agreementModal {
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,0.6);
+    display:none;
+    align-items:center;
+    justify-content:center;
+    z-index:2000;
+}
+
+.modal-box {
+    background:#fff;
+    width:95%;
+    max-width:600px;
+    padding:1.5rem;
+    border-radius:8px;
+    border:2px solid var(--accent);
+    max-height:80vh;
+    overflow-y:auto;
+    box-shadow:0 6px 18px rgba(0,0,0,.4);
+}
+
+.modal-box h3 {
+    font-family:'Cinzel',serif;
+    color:var(--primary);
+    margin-top:0;
+}
+
+.modal-box label {
+    display:block;
+    margin:.5rem 0;
+}
+
+.modal-actions {
+    margin-top:1rem;
+    text-align:right;
+}
+
+.modal-actions button {
+    width:auto;
+    padding:.6rem 1rem;
+    margin-left:.5rem;
+}
 </style>
 </head>
 <body>
+
 <div class="container">
   <h2>Coach Login</h2>
+
   <form id="loginForm" autocomplete="off">
     <input type="text" id="username" placeholder="Username" required />
     <input type="password" id="password" placeholder="Password" required />
+
     <button type="submit">Login</button>
     <button type="button" id="homeBtn">Home</button>
   </form>
-  <div class="forgot-msg">
-   
-  </div>
+
+  <div class="forgot-msg"></div>
   <div id="loginMsg"></div>
 </div>
 
-<script>
-// Smart API base — automatically works on NAS, Render, or your real domain
-const API_BASE = '/webapi';   // ← ONE LINE TO RULE THEM ALL
+<!-- =========================== -->
+<!--      AGREEMENT  MODAL       -->
+<!-- =========================== -->
+<div id="agreementModal">
+  <div class="modal-box">
+      <h3>Before You Continue</h3>
+      <p>To use this Platform, you must confirm that you have read and agree to our legal policies:</p>
 
-// Login form
+      <label>
+        <input type="checkbox" id="agreeTOS"> 
+        I agree to the <a href="legal.html" target="_blank">Terms of Service</a>.
+      </label>
+
+      <label>
+        <input type="checkbox" id="agreePrivacy"> 
+        I agree to the <a href="legal.html" target="_blank">Privacy Policy</a>.
+      </label>
+
+      <label>
+        <input type="checkbox" id="agreePhotos"> 
+        I agree to the <a href="legal.html" target="_blank">Photo Upload & Media Policy</a>.
+      </label>
+
+      <div class="modal-actions">
+          <button id="cancelAgree">Cancel</button>
+          <button id="confirmAgree" style="background:var(--primary);color:white;">Accept & Continue</button>
+      </div>
+  </div>
+</div>
+
+<script>
+// Smart API base
+const API_BASE = '/webapi';
+
 const form = document.getElementById('loginForm');
+const loginMsg = document.getElementById('loginMsg');
+
+// Submit login attempt
 form.addEventListener('submit', async e => {
   e.preventDefault();
-  const loginMsg = document.getElementById('loginMsg');
   loginMsg.textContent = '';
+
   const username = document.getElementById('username').value.trim();
   const password = document.getElementById('password').value;
+
   if (!username || !password) {
     loginMsg.textContent = 'Enter username and password';
     return;
@@ -63,15 +206,23 @@ form.addEventListener('submit', async e => {
 
     const json = await res.json();
 
+    // If they must accept agreements first
+    if (json.requireAgreement === true) {
+        openAgreementModal(json.username);
+        btn.disabled = false;
+        btn.textContent = 'Login';
+        return;
+    }
+
     if (json.success) {
       localStorage.setItem('username', json.username);
       localStorage.setItem('coachName', json.CoachName || json.username);
       localStorage.setItem('email', json.email || '');
-      // Redirect to profile (relative so it works everywhere)
       window.location.href = 'profile.html';
     } else {
       loginMsg.textContent = json.message || 'Login failed';
     }
+
   } catch (err) {
     loginMsg.textContent = 'Network error: ' + err.message;
   } finally {
@@ -80,10 +231,56 @@ form.addEventListener('submit', async e => {
   }
 });
 
-// Home button — also relative so it works on Render
+// Home button
 document.getElementById('homeBtn').addEventListener('click', () => {
   window.location.href = '/index.html';
 });
+
+
+// ===============================
+// AGREEMENT MODAL FUNCTIONALITY
+// ===============================
+
+let pendingUsername = null;
+
+function openAgreementModal(uname) {
+    pendingUsername = uname;
+    document.getElementById('agreementModal').style.display = 'flex';
+}
+
+document.getElementById('cancelAgree').addEventListener('click', () => {
+    document.getElementById('agreementModal').style.display = 'none';
+});
+
+// Confirm acceptance
+document.getElementById('confirmAgree').addEventListener('click', async () => {
+    const tos = document.getElementById('agreeTOS').checked;
+    const privacy = document.getElementById('agreePrivacy').checked;
+    const photos = document.getElementById('agreePhotos').checked;
+
+    if (!tos || !privacy || !photos) {
+        alert("You must agree to all policies before continuing.");
+        return;
+    }
+
+    // Save acceptance on backend
+    const res = await fetch(`${API_BASE}/accept_terms.php`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: pendingUsername }),
+        credentials: 'same-origin'
+    });
+
+    const json = await res.json();
+
+    if (json.success) {
+        alert("Thank you! Your agreement has been recorded.");
+        document.getElementById('agreementModal').style.display = 'none';
+    } else {
+        alert("Error saving acceptance. Contact support.");
+    }
+});
 </script>
+
 </body>
 </html>
