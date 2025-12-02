@@ -87,24 +87,31 @@ if (isset($_POST['specializations'])) {
     }
 }
 
-// File uploads
-$uploadDir = __DIR__ . '/uploads/';
-$webPath   = 'uploads/';
-if (!is_dir($uploadDir)) mkdir($uploadDir, 0755, true);
+// ===================================================================
+// FILE UPLOADS – PERSISTENT ON RENDER DISK
+// ===================================================================
+$uploadDir = '/opt/render/project/src/webapi/uploads/';
+$webPath   = '/webapi/uploads/';
 
+if (!is_dir($uploadDir)) {
+    mkdir($uploadDir, 0755, true);
+}
+
+// Ensure Files array exists
+if (!isset($coaches[$index]['Files']) || !is_array($coaches[$index]['Files'])) {
+    $coaches[$index]['Files'] = [];
+}
+
+// Process new uploads
 if (!empty($_FILES['files']['name'][0])) {
     $changes[] = 'photos';
-    if (!isset($coaches[$index]['Files']) || !is_array($coaches[$index]['Files'])) {
-        $coaches[$index]['Files'] = [];
-    }
-
     $types = $_POST['imageType'] ?? [];
 
     foreach ($_FILES['files']['name'] as $i => $name) {
         if (empty($name) || $_FILES['files']['error'][$i] !== UPLOAD_ERR_OK) continue;
 
         $ext = strtolower(pathinfo($name, PATHINFO_EXTENSION));
-        if (in_array($ext, ['php', 'php7', 'phtml', 'exe', 'sh', 'js'])) continue; // block dangerous
+        if (in_array($ext, ['php','php7','phtml','exe','sh','js'])) continue;
 
         $newName = $currentUsername . '_' . time() . "_$i.$ext";
         $target  = $uploadDir . $newName;
@@ -112,7 +119,7 @@ if (!empty($_FILES['files']['name'][0])) {
         if (move_uploaded_file($_FILES['files']['tmp_name'][$i], $target)) {
             $type = $types[$i] ?? 'Profile';
 
-            // Delete old file if exists
+            // Delete old photo of same type
             if (!empty($coaches[$index]['Files'][$type])) {
                 $old = $uploadDir . basename($coaches[$index]['Files'][$type]);
                 if (file_exists($old)) @unlink($old);
