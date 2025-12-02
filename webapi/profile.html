@@ -280,31 +280,56 @@ function previewNewFile(file, type) {
   reader.readAsDataURL(file);
 }
 
-// Save changes
-document.getElementById('saveBtn').onclick = e => {
+// SAVE CHANGES — FIXED VERSION
+document.getElementById('saveBtn').addEventListener('click', async (e) => {
   e.preventDefault();
-  const fd = new FormData();
-  fd.append('coachName', document.getElementById('coachNameInput').value);
-  fd.append('email', document.getElementById('email').value);
-  if (document.getElementById('password').value) fd.append('password', document.getElementById('password').value);
-  fd.append('phone', document.getElementById('phone').value);
-  fd.append('bio', document.getElementById('bio').value);
-  fd.append('specializations', JSON.stringify(specializations));
-  pendingDeletes.forEach(t => fd.append('delete[]', t));
-  newFiles.forEach((file, type) => { 
-    fd.append('files[]', file); 
-    fd.append('imageType[]', type); 
-  });
 
-  fetch(`${API_BASE}/update_coach.php`, { 
-    method: 'POST', 
-    body: fd 
-  })
-  .then(r => r.json())
-  .then(res => { 
-    res.success ? (alert('Saved!'), location.reload()) : alert(res.message || 'Error'); 
-  });
-};
+  const saveBtn = e.target;
+  saveBtn.disabled = true;
+  saveBtn.textContent = 'Saving...';
+
+  try {
+    const fd = new FormData();
+    fd.append('coachName', document.getElementById('coachNameInput').value.trim());
+    fd.append('email', document.getElementById('email').value.trim());
+    const pwd = document.getElementById('password').value;
+    if (pwd) fd.append('password', pwd);
+    fd.append('phone', document.getElementById('phone').value.trim());
+    fd.append('bio', document.getElementById('bio').value);
+    fd.append('specializations', JSON.stringify(specializations));
+
+    // Deletes
+    pendingDeletes.forEach(t => fd.append('delete[]', t));
+
+    // New files
+    newFiles.forEach((file, type) => {
+      fd.append('files[]', file);
+      fd.append('imageType[]', type);
+    });
+
+    const res = await fetch(`${API_BASE}/update_coach.php`, {
+      method: 'POST',
+      body: fd
+    });
+
+    const json = await res.json();
+
+    if (json.success) {
+      alert('Profile saved successfully!');
+      pendingDeletes.clear();
+      newFiles.clear();
+      location.reload(); // refresh to show new photos + data
+    } else {
+      alert('Error: ' + (json.message || 'Unknown error'));
+    }
+  } catch (err) {
+    console.error(err);
+    alert('Network error — check console');
+  } finally {
+    saveBtn.disabled = false;
+    saveBtn.textContent = 'Save Changes';
+  }
+});
 
 // View Public Profile Modal
 document.getElementById('viewProfileBtn').onclick = () => {
