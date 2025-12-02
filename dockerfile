@@ -1,6 +1,6 @@
 # -------------------------------
-# Global Carnivore Coaches – Render Dockerfile (Final Version)
-# Direct disk serving via Nginx alias — no symlinks needed
+# Global Carnivore Coaches – Render Dockerfile (Fixed for PHP-FPM Startup)
+# Direct disk serving via Nginx alias — uploads work forever
 # -------------------------------
 
 FROM php:8.2-fpm
@@ -15,6 +15,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     unzip \
     git \
     curl \
+    supervisor \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install gd pdo pdo_mysql \
     && rm -rf /var/lib/apt/lists/*
@@ -50,6 +51,30 @@ server {
 }
 EOF
 
+# Supervisor config (starts PHP-FPM + Nginx in foreground)
+COPY <<EOF /etc/supervisor/conf.d/supervisord.conf
+[supervisord]
+nodaemon=true
+
+[program:php-fpm]
+command=php-fpm -F
+autostart=true
+autorestart=true
+stdout_logfile=/dev/stdout
+stdout_logfile_maxbytes=0
+stderr_logfile=/dev/stderr
+stderr_logfile_maxbytes=0
+
+[program:nginx]
+command=nginx -g 'daemon off;'
+autostart=true
+autorestart=true
+stdout_logfile=/dev/stdout
+stdout_logfile_maxbytes=0
+stderr_logfile=/dev/stderr
+stderr_logfile_maxbytes=0
+EOF
+
 # Permissions
 RUN chown -R www-data:www-data /var/www/html \
     && chmod -R 755 /var/www/html
@@ -57,5 +82,5 @@ RUN chown -R www-data:www-data /var/www/html \
 # Expose port Render expects
 EXPOSE 8080
 
-# Start PHP-FPM + Nginx
-CMD service php8.2-fpm start && nginx -g 'daemon off;'
+# Start everything with Supervisor (replaces broken 'service' command)
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
