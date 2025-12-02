@@ -68,9 +68,8 @@ if (isset($_POST['specializations'])) {
     $coach['Specializations'] = json_encode($clean);
 }
 
-// Files – persistent on Render disk
 $uploadDir = '/opt/render/project/src/webapi/uploads/';
-$webPath   = '/webapi/uploads/';
+$webPath   = 'public/webapi/uploads/';
 @mkdir($uploadDir, 0755, true);
 
 if (!isset($coach['Files']) || !is_array($coach['Files'])) {

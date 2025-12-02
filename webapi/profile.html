@@ -280,7 +280,7 @@ function previewNewFile(file, type) {
   reader.readAsDataURL(file);
 }
 
-// SAVE CHANGES — FIXED VERSION
+// SAVE CHANGES — FINAL VERSION THAT WORKS 100% ON RENDER
 document.getElementById('saveBtn').addEventListener('click', async (e) => {
   e.preventDefault();
 
@@ -288,43 +288,40 @@ document.getElementById('saveBtn').addEventListener('click', async (e) => {
   saveBtn.disabled = true;
   saveBtn.textContent = 'Saving...';
 
+  const fd = new FormData();
+  fd.append('coachName', document.getElementById('coachNameInput').value.trim());
+  fd.append('email', document.getElementById('email').value.trim());
+  if (document.getElementById('password').value) fd.append('password', document.getElementById('password').value);
+  fd.append('phone', document.getElementById('phone').value.trim());
+  fd.append('bio', document.getElementById('bio').value);
+  fd.append('specializations', JSON.stringify(specializations));
+
+  pendingDeletes.forEach(t => fd.append('delete[]', t));
+  newFiles.forEach((file, type) => {
+    fd.append('files[]', file);
+    fd.append('imageType[]', type);
+  });
+
   try {
-    const fd = new FormData();
-    fd.append('coachName', document.getElementById('coachNameInput').value.trim());
-    fd.append('email', document.getElementById('email').value.trim());
-    const pwd = document.getElementById('password').value;
-    if (pwd) fd.append('password', pwd);
-    fd.append('phone', document.getElementById('phone').value.trim());
-    fd.append('bio', document.getElementById('bio').value);
-    fd.append('specializations', JSON.stringify(specializations));
-
-    // Deletes
-    pendingDeletes.forEach(t => fd.append('delete[]', t));
-
-    // New files
-    newFiles.forEach((file, type) => {
-      fd.append('files[]', file);
-      fd.append('imageType[]', type);
-    });
-
-    const res = await fetch(`${API_BASE}/update_coach.php`, {
+    const res = await fetch('/webapi/update_coach.php', {
       method: 'POST',
-      body: fd
+      body: fd,
+      // DO NOT set Content-Type header — let browser set multipart boundary automatically
     });
 
     const json = await res.json();
 
     if (json.success) {
-      alert('Profile saved successfully!');
+      alert('Saved perfectly! Reloading...');
       pendingDeletes.clear();
       newFiles.clear();
-      location.reload(); // refresh to show new photos + data
+      location.reload();
     } else {
-      alert('Error: ' + (json.message || 'Unknown error'));
+      alert('Error: ' + (json.message || 'Unknown'));
     }
   } catch (err) {
+    alert('Network error');
     console.error(err);
-    alert('Network error — check console');
   } finally {
     saveBtn.disabled = false;
     saveBtn.textContent = 'Save Changes';
