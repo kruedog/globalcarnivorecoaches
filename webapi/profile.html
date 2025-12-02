@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>My Profile • Global Carnivore Coaches</title>
 <link rel="icon" type="image/png" href="/images/earth_steak.png">
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
@@ -51,28 +51,45 @@ textarea{resize:vertical;min-height:160px}
 .profile-avatar img{width:100%;height:100%;object-fit:cover}
 .modal-body{flex:1;display:grid;grid-template-columns:1fr 1fr;gap:5.5rem;padding:0 4rem 2rem;align-items:start;overflow-y:auto}
 .left-column{display:flex;flex-direction:column;gap:1.8rem}
-.bio-box{background:#fff;border:5px solid var(--red);border-radius:var(--radius);padding:3rem 4.5rem;max-height:480px;overflow-y:auto;box-shadow:inset 0 8px 25px rgba(175,45,.16);font-size:1.18rem;line-height:2.1}
+.bio-box{
+  background:#fff;border:5px solid var(--red);border-radius:var(--radius);
+  padding:3rem 4.5rem;max-height:480px;overflow-y:auto;
+  box-shadow:inset 0 8px 25px rgba(175,45,.16);
+  font-size:1.18rem;line-height:2.1;
+}
 .bio-box:empty::after{content:"This coach hasn't written a bio yet.";color:#999;font-style:italic;text-align:center;display:block;margin:3rem 0}
 .before-after{display:flex;gap:2.8rem;align-items:flex-start;justify-content:flex-start;margin-top:-1.5rem}
 .ba-pair img{width:230px;height:340px;object-fit:cover;object-position:top;border-radius:18px;box-shadow:0 18px 55px rgba(0,0,0,.5);border:6px solid var(--red)}
 .right-column{display:flex;flex-direction:column;align-items:flex-end;gap:2rem;padding-top:12rem;}
-.specialization-box{background:#fff;border:4px solid var(--red);border-radius:var(--radius);padding:1rem 1.6rem;width:340px;max-width:90%;max-height:120px;overflow-y:auto;text-align:center;box-shadow:0 12px 40px rgba(0,0,0,.35)}
+.specialization-box{
+  background:#fff;border:4px solid var(--red);border-radius:var(--radius);
+  padding:1rem 1.6rem;width:340px;max-width:90%;max-height:120px;overflow-y:auto;
+  text-align:center;box-shadow:0 12px 40px rgba(0,0,0,.35);
+}
 .specialization-box h3{margin:0 0 .5rem;font-family:'Cinzel',serif;font-size:1.5rem;color:var(--red)}
 .specialization-box ul{list-style:none;margin:0;padding:0}
 .specialization-box li{margin:.3rem 0;font-weight:600;color:var(--blue);font-size:1rem}
 #certificateContainer{position:absolute;bottom:140px;right:4rem;text-align:center;z-index:15;}
-.book-btn-fixed{position:absolute;bottom:2.5rem;right:4rem;background:var(--red);color:#fff;padding:1.4rem 4.2rem;font-size:1.6rem;font-weight:800;border-radius:999px;border:none;cursor:pointer;box-shadow:0 22px 65px rgba(175,45,.65);transition:all .4s ease;z-index:20;}
-.book-btn-fixed:hover{background:#c41c2e;transform:translateY(-8px) scale(1.05);box-shadow:0 32px 85px rgba(175,45,.8);}
+.book-btn-fixed{
+  position:absolute;bottom:2.5rem;right:4rem;background:var(--red);color:#fff;
+  padding:1.4rem 4.2rem;font-size:1.6rem;font-weight:800;border-radius:999px;
+  border:none;cursor:pointer;box-shadow:0 22px 65px rgba(175,45,.65);
+  transition:all .4s ease;z-index:20;
+}
+.book-btn-fixed:hover{
+  background:#c41c2e;transform:translateY(-8px) scale(1.05);
+  box-shadow:0 32px 85px rgba(175,45,.8);
+}
 @media (max-width:1000px){
-.modal-body{grid-template-columns:1fr}
-.profile-avatar{top:2rem;right:auto;left:50%;transform:translateX(-50%);width:200px;height:200px}
-.modal-header{text-align:center;padding-top:11rem}
-.modal-header h2{font-size:2.6rem}
-.before-after{justify-content:center;gap:2rem;margin-top:0}
-.right-column{align-items:center;padding:3rem 0}
-.specialization-box{width:90%}
-#certificateContainer{position:relative;bottom:auto;right:auto;margin:2rem auto}
-.book-btn-fixed{right:auto;left:50%;transform:translateX(-50%);bottom:2rem;position:relative;margin-top:2rem;font-size:1.5rem;padding:1.3rem 4rem}
+  .modal-body{grid-template-columns:1fr}
+  .profile-avatar{top:2rem;right:auto;left:50%;transform:translateX(-50%);width:200px;height:200px}
+  .modal-header{text-align:center;padding-top:11rem}
+  .modal-header h2{font-size:2.6rem}
+  .before-after{justify-content:center;gap:2rem;margin-top:0}
+  .right-column{align-items:center;padding:3rem 0}
+  .specialization-box{width:90%}
+  #certificateContainer{position:relative;bottom:auto;right:auto;margin:2rem auto}
+  .book-btn-fixed{right:auto;left:50%;transform:translateX(-50%);bottom:2rem;position:relative;margin-top:2rem;font-size:1.5rem;padding:1.3rem 4rem}
 }
 </style>
 </head>
@@ -80,157 +97,135 @@ textarea{resize:vertical;min-height:160px}
 <div class="wrap">
 <h1>Coach Profile</h1>
 <p class="lead">Welcome back, <strong id="coachName">Coach</strong></p>
-
 <div class="card">
 <form id="profileForm" enctype="multipart/form-data">
-<div class="form-grid">
-<div><label>Full Name</label><input id="coachNameInput" required></div>
-<div><label>Email</label><input id="email" type="email" required></div>
-<div><label>New Password (leave blank to keep current)</label><input id="password" type="password"></div>
-<div><label>Phone</label><input id="phone"></div>
-</div>
-
-<div style="margin-top:2rem">
-<label>Bio</label>
-<textarea id="bio" rows="10" placeholder="Share your carnivore transformation story..."></textarea>
-</div>
-
-<div style="margin-top:2rem">
-<label>Specializations</label>
-<div style="display:flex;gap:1rem;margin-bottom:.5rem">
-<input type="text" id="newSpec" placeholder="Add specialization..." style="flex:1">
-<button type="button" class="btn btn-primary add-spec-btn">Add</button>
-</div>
-<div class="specializations-list" id="specList"></div>
-</div>
-
-<div class="form-grid" style="margin-top:2.5rem">
-<div><label>Profile Photo</label><div class="upload-zone" id="profileUpload">Drop image or click</div></div>
-<div><label>Before Photo</label><div class="upload-zone" id="beforeUpload">Drop image or click</div></div>
-<div><label>After Photo</label><div class="upload-zone" id="afterUpload">Drop image or click</div></div>
-<div><label>Certification</label><div class="upload-zone" id="certUpload">Drop certificate or click</div></div>
-</div>
-
-<div id="uploadsList"></div>
-
-<div style="text-align:center;margin-top:3.5rem">
-<button type="submit" class="btn btn-primary" id="saveBtn">Save Changes</button>
-<button type="button" class="btn btn-secondary" id="viewProfileBtn">View Public Profile</button>
-</div>
+  <div class="form-grid">
+    <div><label>Full Name</label><input id="coachNameInput" required></div>
+    <div><label>Email</label><input id="email" type="email" required></div>
+    <div><label>New Password (leave blank to keep current)</label><input id="password" type="password"></div>
+    <div><label>Phone</label><input id="phone"></div>
+  </div>
+  <div style="margin-top:2rem"><label>Bio</label><textarea id="bio" placeholder="Share your carnivore transformation story..."></textarea></div>
+  <div style="margin-top:2rem">
+    <label>Specializations</label>
+    <div style="display:flex;gap:1rem;margin-bottom:.5rem">
+      <input type="text" id="newSpec" placeholder="Add specialization..." style="flex:1">
+      <button type="button" class="btn btn-primary add-spec-btn">Add</button>
+    </div>
+    <div class="specializations-list" id="specList"></div>
+  </div>
+  <div class="form-grid" style="margin-top:2.5rem">
+    <div><label>Profile Photo</label><div class="upload-zone" id="profileUpload">Drop image or click</div></div>
+    <div><label>Before Photo</label><div class="upload-zone" id="beforeUpload">Drop image or click</div></div>
+    <div><label>After Photo</label><div class="upload-zone" id="afterUpload">Drop image or click</div></div>
+    <div><label>Certification</label><div class="upload-zone" id="certUpload">Drop certificate or click</div></div>
+  </div>
+  <div id="uploadsList"></div>
+  <div style="text-align:center;margin-top:3.5rem">
+    <button type="submit" class="btn btn-primary" id="saveBtn">Save Changes</button>
+    <button type="button" class="btn btn-secondary" id="viewProfileBtn">View Public Profile</button>
+  </div>
 </form>
 </div>
-
 <div style="text-align:center"><button type="button" class="btn" id="logoutBtn" style="background:transparent;color:var(--muted)">Logout</button></div>
 </div>
 
 <!-- PUBLIC PROFILE MODAL -->
 <div id="publicProfileModal">
-<div class="modal-content">
-<a href="#" class="modal-close" onclick="document.getElementById('publicProfileModal').classList.remove('active')">X</a>
-<div class="modal-header">
-<h2 id="modalName">Coach Name</h2>
-<p id="modalEmail">coach@example.com</p>
-<div class="profile-avatar" id="modalProfilePic">
-<img src="/images/earth_steak.png" alt="Coach">
-</div>
-</div>
-<div class="modal-body">
-<div class="left-column">
-<div class="bio-box" id="modalBio"></div>
-<div class="before-after" id="beforeAfterContainer"></div>
-</div>
-<div class="right-column">
-<div class="specialization-box">
-<h3>I Specialize In</h3>
-<ul id="specializationList"></ul>
-<div id="emptySpecMessage" style="color:#999;font-style:italic;font-size:0.95rem;margin-top:0.5rem;display:none;">
-No specializations listed yet.
-</div>
-</div>
-<div id="certificateContainer"></div>
-</div>
-</div>
-<button class="book-btn-fixed" id="bookCoachBtn">Book This Coach</button>
-</div>
+  <div class="modal-content">
+    <a href="#" class="modal-close" onclick="document.getElementById('publicProfileModal').classList.remove('active')">X</a>
+    <div class="modal-header">
+      <h2 id="modalName">Coach Name</h2>
+      <p id="modalEmail">coach@example.com</p>
+      <div class="profile-avatar" id="modalProfilePic"><img src="/images/earth_steak.png"></div>
+    </div>
+    <div class="modal-body">
+      <div class="left-column">
+        <div class="bio-box" id="modalBio"></div>
+        <div class="before-after" id="beforeAfterContainer"></div>
+      </div>
+      <div class="right-column">
+        <div class="specialization-box">
+          <h3>I Specialize In</h3>
+          <ul id="specializationList"></ul>
+          <div id="emptySpecMessage" style="color:#999;font-style:italic;font-size:0.95rem;margin-top:0.5rem;display:none;">No specializations listed yet.</div>
+        </div>
+        <div id="certificateContainer"></div>
+      </div>
+    </div>
+    <button class="book-btn-fixed" id="bookCoachBtn">Book This Coach</button>
+  </div>
 </div>
 
 <script>
 const API_BASE = '/webapi';
-
 let currentCoach = {}, pendingDeletes = new Set(), newFiles = new Map(), specializations = [];
 
+// Helper
 function imgUrl(path){ return path ? `${API_BASE}/${path}?v=${Date.now()}` : ''; }
 
+// Load profile
 function loadProfile(){
   const email = localStorage.getItem('email');
-  if(!email) return location.href='/webapi/login.html';
+  if(!email) return location.href=API_BASE+'/login.html';
 
   fetch(`${API_BASE}/get_coach.php?email=${encodeURIComponent(email)}`)
     .then(r=>r.json())
     .then(res=>{
       if(!res.coach) return alert("Coach not found");
-      currentCoach = res.coach;
-      document.getElementById('coachName').textContent = currentCoach.CoachName||currentCoach.Username;
-      document.getElementById('coachNameInput').value = currentCoach.CoachName||'';
-      document.getElementById('email').value = currentCoach.Email||'';
-      document.getElementById('phone').value = currentCoach.Phone||'';
-      document.getElementById('bio').value = currentCoach.Bio||'';
+      currentCoach=res.coach;
+      document.getElementById('coachName').textContent=currentCoach.CoachName||currentCoach.Username;
+      document.getElementById('coachNameInput').value=currentCoach.CoachName||'';
+      document.getElementById('email').value=currentCoach.Email||'';
+      document.getElementById('phone').value=currentCoach.Phone||'';
+      document.getElementById('bio').value=currentCoach.Bio||'';
       if(currentCoach.Specializations){
-        try{ specializations = JSON.parse(currentCoach.Specializations); }catch(e){}
+        try{specializations=JSON.parse(currentCoach.Specializations)}catch(e){}
       }
       renderSpecializations();
       renderExistingImages();
-    })
-    .catch(err=>console.error(err));
+    }).catch(err=>console.error(err));
 }
 
+// Render uploaded images
 function renderExistingImages(){
-  const list=document.getElementById('uploadsList');
-  list.innerHTML='';
+  const list=document.getElementById('uploadsList'); list.innerHTML='';
   if(!currentCoach.Files) return;
   const labels={Profile:"Profile",Before:"Before",After:"After",Certificate:"Certificate"};
   Object.entries(currentCoach.Files).forEach(([type,path])=>{
-    const div=document.createElement('div');
-    div.className='preview-item';
+    const div=document.createElement('div'); div.className='preview-item';
     div.innerHTML=`<img src="${imgUrl(path)}" class="preview-img">
       <div class="preview-caption">${labels[type]}</div>
       <button class="remove-btn" data-type="${type}">X</button>`;
-    div.querySelector('.remove-btn').onclick=()=>{div.remove();pendingDeletes.add(type);};
+    div.querySelector('.remove-btn').onclick=()=>{div.remove(); pendingDeletes.add(type);}
     list.appendChild(div);
   });
 }
 
+// Specializations
 function renderSpecializations(){
-  const list=document.getElementById('specList');
-  list.innerHTML='';
+  const list=document.getElementById('specList'); list.innerHTML='';
   specializations.forEach((spec,i)=>{
-    const span=document.createElement('span');
-    span.textContent=spec;
-    span.onclick=()=>{specializations.splice(i,1);renderSpecializations();};
+    const span=document.createElement('span'); span.textContent=spec;
+    span.onclick=()=>{specializations.splice(i,1); renderSpecializations();}
     list.appendChild(span);
   });
 }
-
 document.querySelector('.add-spec-btn').onclick=()=>{
   const val=document.getElementById('newSpec').value.trim();
-  if(val && !specializations.includes(val)){
-    specializations.push(val);
-    renderSpecializations();
-    document.getElementById('newSpec').value='';
-  }
+  if(val&&!specializations.includes(val)){specializations.push(val); renderSpecializations(); document.getElementById('newSpec').value='';}
 };
 
 // File upload zones
 ['profile','before','after','cert'].forEach(t=>{
   const zone=document.getElementById(t+'Upload');
-  const input=document.createElement('input');
-  input.type='file'; input.accept='image/*';
+  const input=document.createElement('input'); input.type='file'; input.accept='image/*';
   const typeLabel=t==='cert'?'Certificate':t.charAt(0).toUpperCase()+t.slice(1);
   input.onchange=()=>input.files[0]&&(newFiles.set(typeLabel,input.files[0]),previewNewFile(input.files[0],typeLabel));
   zone.onclick=()=>input.click();
   zone.ondragover=e=>{e.preventDefault(); zone.classList.add('dragover');};
   zone.ondragleave=()=>zone.classList.remove('dragover');
-  zone.ondrop=e=>{e.preventDefault(); zone.classList.remove('dragover'); if(e.dataTransfer.files[0]){ input.files=e.dataTransfer.files; input.dispatchEvent(new Event('change'));}};
+  zone.ondrop=e=>{e.preventDefault(); zone.classList.remove('dragover'); if(e.dataTransfer.files[0]){input.files=e.dataTransfer.files; input.dispatchEvent(new Event('change'));}};
 });
 
 function previewNewFile(file,type){
@@ -241,72 +236,58 @@ function previewNewFile(file,type){
     div.innerHTML=`<img src="${e.target.result}" class="preview-img">
       <div class="preview-caption">${type} • ${file.name}</div>
       <button class="remove-btn" data-type="${type}">X</button>`;
-    div.querySelector('.remove-btn').onclick=()=>{div.remove(); newFiles.delete(type);};
-    list.appendChild(div);
+    div.querySelector('.remove-btn').onclick=()=>{div.remove(); newFiles.delete(type);}
   };
   reader.readAsDataURL(file);
+  list.appendChild(div);
 }
 
-document.getElementById('profileForm').addEventListener('submit',async e=>{
+// Save form
+document.getElementById('profileForm').onsubmit=async e=>{
   e.preventDefault();
-  const saveBtn=document.getElementById('saveBtn'); saveBtn.disabled=true; saveBtn.textContent='Saving...';
-  const form=new FormData();
-  form.append('coachName',document.getElementById('coachNameInput').value);
-  form.append('email',document.getElementById('email').value);
-  form.append('phone',document.getElementById('phone').value);
-  form.append('bio',document.getElementById('bio').value);
-  const pwd=document.getElementById('password').value;
-  if(pwd) form.append('password',pwd);
-  form.append('specializations',JSON.stringify(specializations));
-  if(pendingDeletes.size) form.append('delete',JSON.stringify(Array.from(pendingDeletes)));
-  newFiles.forEach((file,type)=>form.append('files[]',file));
-  const typesArr=Array.from(newFiles.keys());
-  if(typesArr.length) form.append('imageType',JSON.stringify(typesArr));
-  try{
-    const res=await fetch(`${API_BASE}/update_coach.php`,{method:'POST',body:form});
-    const data=await res.json();
-    alert(data.message);
-    if(data.success){pendingDeletes.clear(); newFiles.clear(); loadProfile();}
-  }catch(err){console.error(err); alert('Error saving profile');}
-  finally{saveBtn.disabled=false; saveBtn.textContent='Save Changes';}
-});
+  const fd=new FormData();
+  fd.append('coachName', document.getElementById('coachNameInput').value);
+  fd.append('email', document.getElementById('email').value);
+  fd.append('phone', document.getElementById('phone').value);
+  fd.append('bio', document.getElementById('bio').value);
+  const pwd=document.getElementById('password').value; if(pwd) fd.append('password',pwd);
+  fd.append('specializations', JSON.stringify(specializations));
+  pendingDeletes.forEach(d=>fd.append('delete[]',d));
+  newFiles.forEach((f,type)=>{fd.append('files[]',f); fd.append('imageType[]',type);});
 
+  try{
+    const res=await fetch(`${API_BASE}/update_coach.php`,{method:'POST',body:fd});
+    const data=await res.json();
+    if(data.success){alert('Profile saved successfully'); pendingDeletes.clear(); newFiles.clear(); loadProfile();}
+    else alert('Error: '+data.message);
+  }catch(err){console.error(err); alert('Network error');}
+};
+
+// View public profile
 document.getElementById('viewProfileBtn').onclick=()=>{
-  if(!currentCoach) return;
+  const modal=document.getElementById('publicProfileModal');
   document.getElementById('modalName').textContent=currentCoach.CoachName||currentCoach.Username;
   document.getElementById('modalEmail').textContent=currentCoach.Email||'';
   document.getElementById('modalBio').textContent=currentCoach.Bio||'';
-  // Before/After
-  const container=document.getElementById('beforeAfterContainer'); container.innerHTML='';
-  ['Before','After'].forEach(t=>{
-    if(currentCoach.Files && currentCoach.Files[t]){
-      const div=document.createElement('div'); div.className='ba-pair';
-      const img=document.createElement('img'); img.src=imgUrl(currentCoach.Files[t]);
-      div.appendChild(img); container.appendChild(div);
-    }
-  });
-  // Profile pic
-  const prof=document.querySelector('#modalProfilePic img'); prof.src=imgUrl(currentCoach.Files?.Profile)||'/images/earth_steak.png';
-  // Specializations
-  const specList=document.getElementById('specializationList'); specList.innerHTML='';
+  document.getElementById('specializationList').innerHTML='';
   if(currentCoach.Specializations){
-    let specs=[];
-    try{specs=JSON.parse(currentCoach.Specializations);}catch(e){}
-    if(specs.length){
-      specs.forEach(s=>{ const li=document.createElement('li'); li.textContent=s; specList.appendChild(li);});
-      document.getElementById('emptySpecMessage').style.display='none';
-    } else document.getElementById('emptySpecMessage').style.display='block';
-  } else document.getElementById('emptySpecMessage').style.display='block';
-  // Certificate
-  const certC=document.getElementById('certificateContainer'); certC.innerHTML='';
-  if(currentCoach.Files?.Certificate){
-    const img=document.createElement('img'); img.src=imgUrl(currentCoach.Files.Certificate); img.style.width='280px'; img.style.borderRadius='16px';
-    certC.appendChild(img);
+    try{JSON.parse(currentCoach.Specializations).forEach(s=>{const li=document.createElement('li'); li.textContent=s; document.getElementById('specializationList').appendChild(li);});}catch(e){}
   }
-  document.getElementById('publicProfileModal').classList.add('active');
+  const beforeAfter=document.getElementById('beforeAfterContainer'); beforeAfter.innerHTML='';
+  if(currentCoach.Files){
+    ['Before','After'].forEach(k=>{
+      if(currentCoach.Files[k]){
+        const img=document.createElement('img'); img.src=imgUrl(currentCoach.Files[k]); img.alt=k; beforeAfter.appendChild(img);
+      }
+    });
+    if(currentCoach.Files.Profile) document.getElementById('modalProfilePic').querySelector('img').src=imgUrl(currentCoach.Files.Profile);
+    if(currentCoach.Files.Certificate) document.getElementById('certificateContainer').innerHTML=`<img src="${imgUrl(currentCoach.Files.Certificate)}" style="width:220px;border:4px solid var(--red);border-radius:14px">`;
+  }
+  modal.classList.add('active');
 };
 
-document.getElementById('logoutBtn').onclick=()=>fetch(`${API_BASE}/logout.php`).finally(()=>location.href='/webapi/login.html');
+// Logout
+document.getElementById('logoutBtn').onclick=()=>{fetch(`${API_BASE}/logout.php`).then(()=>location.href=API_BASE+'/login.html')};
 
 loadProfile();
 </script>
