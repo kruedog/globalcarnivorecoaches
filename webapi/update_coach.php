@@ -1,7 +1,5 @@
 <?php
-// update_coach.php — FINAL BULLETPROOF VERSION (Dec 2025)
-// This one will NEVER create a 0-byte coaches.json again
-ob_start();
+// update_coach.php — Render-ready version (Dec 2025)
 session_start();
 header('Content-Type: application/json');
 
@@ -18,16 +16,15 @@ if (!file_exists($file)) {
     exit;
 }
 
-$coaches = json_decode(file_get_contents($file), true);
+// Load JSON safely
+$content = @file_get_contents($file);
+$coaches = json_decode($content, true);
 if (!is_array($coaches)) $coaches = [];
 
-// Find coach
+// Find coach reference
 $coach = null;
 foreach ($coaches as &$c) {
-    if (isset($c['Username']) && strcasecmp($c['Username'], $username) === 0) {
-        $coach =& $c;
-        break;
-    }
+    if (isset($c['Username']) && strcasecmp($c['Username'],$username)===0) { $coach =& $c; break; }
 }
 if (!$coach) {
     echo json_encode(['success'=>false,'message'=>'Coach not found']);
@@ -44,38 +41,31 @@ if (!empty($_POST['password'])) {
     $coach['Password'] = password_hash($_POST['password'], PASSWORD_DEFAULT);
 }
 
+// Specializations
 if (isset($_POST['specializations'])) {
     $s = json_decode($_POST['specializations'], true);
     $coach['Specializations'] = json_encode(is_array($s) ? array_values(array_filter(array_map('trim', $s))) : []);
 }
 
-// UPLOADS — PERSISTENT DISK + CORRECT PATH
+// Uploads
 $uploadDir = '/opt/render/project/src/webapi/uploads/';
-$webPath   = 'public/webapi/uploads/';   // ← THIS IS THE ONLY LINE THAT MATTERS
-
+$webPath   = 'uploads/';
 @mkdir($uploadDir, 0755, true);
+if (!isset($coach['Files']) || !is_array($coach['Files'])) $coach['Files'] = [];
 
-if (!isset($coach['Files']) || !is_array($coach['Files'])) {
-    $coach['Files'] = [];
-}
-
+// Add new files
 if (!empty($_FILES['files']['name'][0])) {
     $types = $_POST['imageType'] ?? [];
     foreach ($_FILES['files']['name'] as $i => $name) {
-        if (empty($name) || $_FILES['files']['error'][$i] !== UPLOAD_ERR_OK) continue;
-
+        if (empty($name) || $_FILES['files']['error'][$i]!==UPLOAD_ERR_OK) continue;
         $ext = strtolower(pathinfo($name, PATHINFO_EXTENSION));
-        if (in_array($ext, ['php','phtml','js','sh','exe'])) continue;
-
-        $newName = $username . '_' . time() . "_$i.$ext";
-        $target  = $uploadDir . $newName;
-
+        if (in_array($ext,['php','phtml','js','sh','exe'])) continue;
+        $newName = $username.'_'.time().'_'.$i.'.'.$ext;
+        $target = $uploadDir.$newName;
         if (move_uploaded_file($_FILES['files']['tmp_name'][$i], $target)) {
             $type = $types[$i] ?? 'Profile';
-            if (!empty($coach['Files'][$type])) {
-                @unlink($uploadDir . basename($coach['Files'][$type]));
-            }
-            $coach['Files'][$type] = $webPath . $newName;   // ← THIS SAVES THE CORRECT PATH
+            if (!empty($coach['Files'][$type])) @unlink($uploadDir.basename($coach['Files'][$type]));
+            $coach['Files'][$type] = $webPath.$newName;
         }
     }
 }
@@ -90,16 +80,10 @@ if (!empty($_POST['delete']) && is_array($_POST['delete'])) {
     }
 }
 
-// THIS IS THE KEY LINE — NEVER REMOVE JSON_UNESCAPED_SLASHES
+// Save JSON safely
 $json = json_encode($coaches, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
-if ($json === false) {
-    // Safety fallback — this prevents 0-byte file
-    $json = '[]';
-}
-
+if ($json===false) $json='[]';
 file_put_contents($file, $json);
 
-ob_clean();
 echo json_encode(['success'=>true,'message'=>'Saved']);
-exit;
 ?>
