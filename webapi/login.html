@@ -10,12 +10,10 @@
 :root {
     --primary:#C51230;
     --accent:#192168;
-    --bg:#fff;
 }
-
 body {
     font-family:'Lora',serif;
-    background:var(--bg);
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
     color:var(--accent);
     margin:0;
     min-height:100vh;
@@ -23,9 +21,7 @@ body {
     align-items:center;
     justify-content:center;
     padding:2rem;
-    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
 }
-
 .container {
     max-width:420px;
     width:100%;
@@ -35,7 +31,6 @@ body {
     box-shadow:0 10px 30px rgba(0,0,0,0.15);
     border:2px solid var(--accent);
 }
-
 h2 {
     font-family:'Cinzel',serif;
     color:var(--primary);
@@ -43,8 +38,7 @@ h2 {
     margin:0 0 1.5rem;
     font-size:1.8rem;
 }
-
-input {
+input[type=text], input[type=password] {
     width:100%;
     padding:.9rem;
     margin:0.6rem 0;
@@ -53,7 +47,6 @@ input {
     font-size:1rem;
     box-sizing:border-box;
 }
-
 button {
     width:100%;
     padding:.9rem;
@@ -65,18 +58,13 @@ button {
     font-family:'Cinzel',serif;
     font-size:1.1rem;
     margin-top:0.8rem;
-    transition:background 0.3s;
 }
-
 button:hover { background:#a10e28; }
-
 #homeBtn {
     background:var(--accent);
     margin-top:0.4rem;
 }
-
 #homeBtn:hover { background:#0d123b; }
-
 #loginMsg {
     margin-top:1rem;
     text-align:center;
@@ -93,9 +81,8 @@ button:hover { background:#a10e28; }
     align-items:center;
     justify-content:center;
     z-index:9999;
-    backdrop-filter: blur(4px);
+    backdrop-filter:blur(4px);
 }
-
 .modal-box {
     background:#fff;
     width:95%;
@@ -107,7 +94,6 @@ button:hover { background:#a10e28; }
     border:3px solid var(--primary);
     box-shadow:0 15px 40px rgba(0,0,0,0.3);
 }
-
 .modal-box h3 {
     font-family:'Cinzel',serif;
     color:var(--primary);
@@ -115,31 +101,24 @@ button:hover { background:#a10e28; }
     font-size:1.7rem;
     margin-top:0;
 }
-
 .modal-box label {
     display:block;
-    margin:1rem 0;
+    margin:1.2rem 0;
     font-size:1.05rem;
-    line-height:1.5;
 }
-
 .modal-box a {
     color:var(--primary);
     text-decoration:underline;
 }
-
 .modal-actions {
     margin-top:2rem;
     text-align:right;
 }
-
 .modal-actions button {
     width:auto;
     padding:0.7rem 1.5rem;
     margin-left:0.8rem;
-    font-size:1rem;
 }
-
 #cancelAgree { background:#666; }
 </style>
 </head>
@@ -151,12 +130,11 @@ button:hover { background:#a10e28; }
   <form id="loginForm" autocomplete="off">
     <input type="text" id="username" placeholder="Username" required />
     <input type="password" id="password" placeholder="Password" required />
-
     <button type="submit">Login</button>
     <button type="button" id="homeBtn">Home</button>
   </form>
 
-  <div id="loginMsg"></div>
+  <div id="loginMsg">div>
 </div>
 
 <!-- AGREEMENT MODAL -->
@@ -176,7 +154,7 @@ button:hover { background:#a10e28; }
     </label>
 
     <label>
-      <input type="checkbox" id="id="agreePhotos">
+      <input type="checkbox" id="agreePhotos">
       I have read and agree to the <a href="legal.html" target="_blank">Photo Upload & Media Policy</a>
     </label>
 
@@ -188,7 +166,7 @@ button:hover { background:#a10e28; }
 </div>
 
 <script>
-// Correct path — login.php and accept_terms.php are in the same folder as this file
+// login.php & accept_terms.php are in the same folder as this file
 const API_BASE = '';
 
 const form = document.getElementById('loginForm');
@@ -204,7 +182,7 @@ form.addEventListener('submit', async e => {
   const password = document.getElementById('password').value;
 
   if (!username || !password) {
-    loginMsg.textContent = 'Please enter both username and password';
+    loginMsg.textContent = 'Enter username and password';
     return;
   }
 
@@ -240,7 +218,7 @@ form.addEventListener('submit', async e => {
     loginMsg.textContent = json.message || 'Login failed';
 
   } catch (err) {
-    loginMsg.textContent = 'Connection error — check login.php path';
+    loginMsg.textContent = 'Connection error';
     console.error(err);
   } finally {
     btn.disabled = false;
@@ -274,10 +252,11 @@ document.getElementById('confirmAgree').onclick = async () => {
     const result = await res.json();
 
     if (!result.success) {
-      alert('Error: ' + (result.message || 'Unknown'));
+      alert('Error: ' + (result.message || 'Failed'));
       return;
     }
 
+    // SUCCESS → LOG IN
     localStorage.setItem('username', pendingUsername);
     localStorage.setItem('coachName', pendingUsername);
 
@@ -287,7 +266,7 @@ document.getElementById('confirmAgree').onclick = async () => {
     setTimeout(() => window.location.href = 'profile.html', 800);
 
   } catch (err) {
-    alert('Network error while saving agreement.');
+    alert('Network error');
   }
 };
 </script>
