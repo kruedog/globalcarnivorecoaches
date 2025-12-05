@@ -1,237 +1,213 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>My Profile • Global Carnivore Coaches</title>
-<link rel="icon" type="image/png" href="../images/earth_steak.png">
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Coach Profile</title>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+<link rel="icon" type="image/png" href="../images/earth_steak.png">
+
 <style>
-:root {
-  --white:#fff; --parch:#D0D2D5; --text:#192168; --blue:#192168; --red:#AF1E2D; --muted:#555;
-  --shadow:0 12px 40px rgba(0,0,0,.22); --radius:16px; --glass:rgba(255,255,255,.75);
-}
-*{box-sizing:border-box;margin:0;padding:0}
-body{min-height:100vh;font-family:'Inter',sans-serif;background:radial-gradient(circle at 10% 10%,#F8F9FA 0%,var(--parch) 40%,#B0B3BA 100%);color:var(--text);padding:2rem 1rem;line-height:1.6}
-.wrap{max-width:1160px;margin:auto}
-h1{font-family:'Cinzel',serif;font-size:3rem;color:var(--blue);text-align:center;margin-bottom:.4rem}
-.lead{text-align:center;color:var(--muted);font-size:1.15rem;margin-bottom:3rem}
-.card{background:var(--glass);backdrop-filter:blur(16px);padding:3rem;border-radius:var(--radius);box-shadow:var(--shadow);margin-bottom:2.5rem;border:1px solid rgba(255,255,255,.4)}
-.form-grid{display:grid;gap:2rem;grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
-label{font-weight:600;margin-bottom:.6rem;display:block;color:var(--blue)}
-input,textarea{width:100%;padding:1.1rem 1.2rem;border:2px solid var(--blue);border-radius:var(--radius);background:#fff;font-size:1.05rem;transition:border .3s}
-input:focus, textarea:focus{border-color:var(--red);outline:none;box-shadow:0 0 0 4px rgba(175,30,45,.15)}
-textarea{resize:vertical;min-height:160px}
-.upload-zone{border:3px dashed var(--blue);padding:3rem 2rem;text-align:center;cursor:pointer;border-radius:var(--radius);background:rgba(25,33,104,.05);transition:all .3s;font-weight:600;color:var(--blue)}
-.upload-zone:hover{border-color:var(--red);background:rgba(175,30,45,.08)}
-.upload-zone.dragover{background:rgba(175,30,45,.15);border-color:var(--red)}
-.btn{padding:1.1rem 3rem;font-weight:700;border:none;border-radius:999px;cursor:pointer;font-size:1.1rem;transition:all .3s;margin:0 .5rem}
-.btn-primary{background:var(--red);color:#fff;box-shadow:0 8px 25px rgba(175,30,45,.35)}
-.btn-primary:hover{background:#8b1624;transform:translateY(-3px)}
-.btn-secondary{background:transparent;border:2px solid var(--blue);color:var(--blue)}
-.btn-secondary:hover{background:var(--blue);color:#fff}
-#uploadsList{margin-top:2.5rem;display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1.5rem}
-.preview-item{position:relative;overflow:hidden;border-radius:var(--radius);box-shadow:0 6px 20px rgba(0,0,0,.15)}
-.preview-img{width:100%;height:220px;object-fit:cover}
-.preview-caption{background:rgba(25,33,104,.88);color:#fff;padding:.9rem;font-weight:600;text-align:center;position:absolute;bottom:0;width:100%}
-.remove-btn{position:absolute;top:10px;right:10px;background:var(--red);color:#fff;width:36px;height:36px;border-radius:50%;border:none;font-size:1.5rem;line-height:1;cursor:pointer;z-index:5}
-.specializations-list{margin-top:1rem;display:flex;flex-wrap:wrap;gap:.6rem}
-.specializations-list span{background:var(--red);color:#fff;padding:.4rem .9rem;border-radius:20px;font-size:.9rem;font-weight:600;cursor:pointer}
-.add-spec-btn{margin-top:.5rem;padding:.6rem 1.2rem;font-size:.95rem}
+  body {
+    margin: 0;
+    font-family: "Inter", sans-serif;
+    background: #f4f5f7;
+    color: #1a1a1a;
+  }
+  header {
+    background: #192168;
+    color: #fff;
+    padding: 16px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  header h1 {
+    margin: 0;
+    font-family: "Cinzel", serif;
+    font-size: 1.3rem;
+  }
+  button {
+    cursor: pointer;
+  }
+  .profile-wrap {
+    max-width: 900px;
+    margin: 30px auto;
+    background: #fff;
+    padding: 22px;
+    border-radius: 10px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+  }
+  .profile-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 25px;
+  }
+  .profile-row img {
+    width: 160px;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 3px solid #192168;
+  }
+  .info {
+    flex: 1;
+  }
+  .info h2 {
+    margin: 0 0 6px 0;
+    font-family: "Cinzel", serif;
+    font-size: 1.4rem;
+    color: #192168;
+  }
+  .label {
+    font-weight: 700;
+    margin-top: 12px;
+    display: block;
+  }
+  .cta-row {
+    margin-top: 20px;
+    display: flex;
+    gap: 12px;
+  }
+  .button-primary {
+    background: #AF1E2D;
+    color: #fff;
+    border: none;
+    padding: 10px 16px;
+    font-weight: 700;
+    border-radius: 6px;
+  }
+  .button-secondary {
+    background: transparent;
+    border: 2px solid #192168;
+    padding: 8px 14px;
+    font-weight: 700;
+    color: #192168;
+    border-radius: 6px;
+  }
 
-
+  /* Arena Spotlight Modal Override */
+  .modal-target {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(10px);
+    background: radial-gradient(circle at center, rgba(255,255,255,0.95) 0%, rgba(240,243,255,0.92) 65%, rgba(220,225,255,0.88) 100%);
+    padding: 40px;
+    z-index: 9999;
+  }
+  .modal-target.hidden {
+    display: none !important;
+  }
 </style>
+
 </head>
 <body>
-<div class="wrap">
+
+<header>
   <h1>Coach Profile</h1>
-  <p class="lead">Welcome back, <strong id="coachName">Coach</strong></p>
-  <div class="card">
-    <form id="profileForm" enctype="multipart/form-data">
-      <div class="form-grid">
-        <div><label>Full Name</label><input id="coachNameInput" required></div>
-        <div><label>Email</label><input id="email" type="email" required></div>
-        <div><label>New Password (leave blank to keep current)</label><input id="password" type="password"></div>
-        <div><label>Phone</label><input id="phone"></div>
+  <button id="logout-btn" style="background:#AF1E2D;color:#fff;border:none;padding:8px 12px;border-radius:4px;font-weight:700;">
+    Logout
+  </button>
+</header>
+
+<div class="profile-wrap">
+  <div class="profile-row">
+    <img id="profileImage" src="../images/WolfCoach_Profile.png" alt="Coach profile photo">
+    <div class="info">
+      <h2 id="coachName">Loading...</h2>
+
+      <span class="label">Username</span>
+      <div id="username">---</div>
+
+      <span class="label">Email</span>
+      <div id="email">---</div>
+
+      <div class="cta-row">
+        <button class="button-primary" id="viewProfileBtn">View Public Profile</button>
       </div>
-      <div style="margin-top:2rem"><label>Bio</label><textarea id="bio" rows="10" placeholder="Share your carnivore transformation story..."></textarea></div>
-      <div style="margin-top:2rem">
-        <label>Specializations</label>
-        <div style="display:flex;gap:1rem;margin-bottom:.5rem">
-          <input type="text" id="newSpec" placeholder="Add specialization..." style="flex:1">
-          <button type="button" class="btn btn-primary add-spec-btn">Add</button>
-        </div>
-        <div class="specializations-list" id="specList"></div>
-      </div>
-      <div class="form-grid" style="margin-top:2.5rem">
-        <div><label>Profile Photo</label><div class="upload-zone" id="profileUpload">Drop image or click</div></div>
-        <div><label>Before Photo</label><div class="upload-zone" id="beforeUpload">Drop image or click</div></div>
-        <div><label>After Photo</label><div class="upload-zone" id="afterUpload">Drop image or click</div></div>
-        <div><label>Certification</label><div class="upload-zone" id="certUpload">Drop certificate or click</div></div>
-      </div>
-      <div id="uploadsList"></div>
-      <div style="text-align:center;margin-top:3.5rem">
-        <button type="submit" class="btn btn-primary" id="saveBtn">Save Changes</button>
-        <button type="button" class="btn btn-secondary" id="viewProfileBtn">View Public Profile</button>
-      </div>
-    </form>
-  </div>
-  <div style="text-align:center">
-    <button type="button" class="btn" id="logoutBtn" style="background:transparent;color:var(--muted)">Logout</button>
+
+    </div>
   </div>
 </div>
 
-<!-- This container will receive the shared modal from components/modal-coach.html -->
-<div id="publicProfileModal"></div>
+<!-- Root for JS-filled modal -->
+<div id="modalsRoot"></div>
 
-<!-- Shared modal behaviour (same file used on index.html) -->
 <script src="../js/modals.js"></script>
 
 <script>
-const API_BASE = '/webapi';
-let currentCoach = {}, pendingDeletes = new Set(), newFiles = new Map(), specializations = [];
+const API_BASE_URL = window.location.protocol === 'https:'
+  ? `https://${window.location.hostname}:477/webapi`
+  : `http://${window.location.hostname}:8080/webapi`;
 
-function imgUrl(path){ 
-  return path ? `/${path}?v=${Date.now()}` : '';
-}
+/* =============================
+   FIX: Load coach data
+============================= */
+async function loadCoachProfile() {
+  try {
+    const res = await fetch('/webapi/get_coach.php', {
+      credentials: 'include'
+    });
+    const data = await res.json();
 
-function loadProfile() {
-  const email = localStorage.getItem('email');
-  if (!email) return location.href='/webapi/login.html';
-  fetch(`${API_BASE}/get_coach.php?email=${encodeURIComponent(email)}`)
-    .then(r=>r.json())
-    .then(res=>{
-      if(!res.coach) return alert("Coach not found");
-      currentCoach = res.coach;
-      document.getElementById('coachName').textContent = currentCoach.CoachName || currentCoach.Username;
-      document.getElementById('coachNameInput').value = currentCoach.CoachName || '';
-      document.getElementById('email').value = currentCoach.Email;
-      document.getElementById('phone').value = currentCoach.Phone || '';
-      document.getElementById('bio').value = currentCoach.Bio || '';
-      if(currentCoach.Specializations){
-        try{specializations = JSON.parse(currentCoach.Specializations);}catch(e){}
-      }
-      renderSpecializations();
-      renderExistingImages();
-    }).catch(err=>console.error('Load profile error:',err));
-}
+    if (!data.success || !data.coach) return;
 
-function renderExistingImages(){
-  const list = document.getElementById('uploadsList'); list.innerHTML='';
-  if(!currentCoach.Files) return;
-  const labels = {Profile:"Profile",Before:"Before",After:"After",Certificate:"Certification"};
-  Object.entries(currentCoach.Files).forEach(([type,path])=>{
-    const div = document.createElement('div'); div.className='preview-item';
-    div.innerHTML = `<img src="${imgUrl(path)}" class="preview-img">
-      <div class="preview-caption">${labels[type]}</div>
-      <button class="remove-btn" data-type="${type}">X</button>`;
-    div.querySelector('.remove-btn').onclick = ()=>{div.remove(); pendingDeletes.add(type);};
-    list.appendChild(div);
-  });
-}
+    const coach = data.coach;
+    window.currentCoach = coach; // needed for popup
 
-function renderSpecializations(){
-  const list = document.getElementById('specList'); list.innerHTML='';
-  specializations.forEach((spec,i)=>{
-    const span = document.createElement('span'); span.textContent = spec;
-    span.onclick = ()=>{specializations.splice(i,1); renderSpecializations();};
-    list.appendChild(span);
-  });
-}
+    const files = coach.Files || {};
 
-document.querySelector('.add-spec-btn').onclick = ()=>{
-  const val = document.getElementById('newSpec').value.trim();
-  if(val && !specializations.includes(val)){
-    specializations.push(val);
-    renderSpecializations();
-    document.getElementById('newSpec').value = '';
+    document.getElementById('coachName').textContent =
+      coach.CoachName || coach.Username || 'No name';
+
+    document.getElementById('username').textContent =
+      coach.Username || 'Unknown';
+
+    document.getElementById('email').textContent =
+      coach.Email || 'Unknown';
+
+    const profileSrc = files.Profile
+      ? `/webapi/${files.Profile}`
+      : '../images/WolfCoach_Profile.png';
+
+    document.getElementById('profileImage').src = profileSrc;
+
+  } catch (err) {
+    console.error('Error loading coach profile:', err);
   }
-};
+}
 
-['profile','before','after','cert'].forEach(t=>{
-  const zone = document.getElementById(t+'Upload');
-  const input = document.createElement('input'); input.type='file'; input.accept='image/*';
-  const typeLabel = t==='cert'?'Certificate':t.charAt(0).toUpperCase()+t.slice(1);
-  input.onchange = ()=>input.files[0] && (newFiles.set(typeLabel,input.files[0]), previewNewFile(input.files[0],typeLabel));
-  zone.onclick = ()=>input.click();
-  zone.ondragover = e=>{e.preventDefault(); zone.classList.add('dragover');};
-  zone.ondragleave = ()=>zone.classList.remove('dragover');
-  zone.ondrop = e=>{e.preventDefault(); zone.classList.remove('dragover'); if(e.dataTransfer.files[0]){input.files=e.dataTransfer.files; input.dispatchEvent(new Event('change'));}};
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', loadCoachProfile);
+} else {
+  loadCoachProfile();
+}
+
+/* =============================
+   FIX: Logout working again
+============================= */
+document.getElementById('logout-btn').addEventListener('click', async () => {
+  try {
+    await fetch('/webapi/logout.php', { credentials: 'include' });
+    window.location.href = 'login.html';
+  } catch (err) {
+    console.error('Logout failed:', err);
+    window.location.href = 'login.html';
+  }
 });
 
-function previewNewFile(file,type){
-  const list = document.getElementById('uploadsList');
-  const div = document.createElement('div'); div.className='preview-item';
-  const reader = new FileReader();
-  reader.onload = e=>{
-    div.innerHTML = `<img src="${e.target.result}" class="preview-img">
-      <div class="preview-caption">${type} • ${file.name}</div>
-      <button class="remove-btn" data-type="${type}">X</button>`;
-    div.querySelector('.remove-btn').onclick = ()=>{div.remove(); newFiles.delete(type);};
-    list.appendChild(div);
-  };
-  reader.readAsDataURL(file);
-}
-
-document.getElementById('profileForm').onsubmit = async e=>{
-  e.preventDefault();
-  const form = new FormData();
-  form.append('coachName',document.getElementById('coachNameInput').value.trim());
-  form.append('email',document.getElementById('email').value.trim());
-  form.append('phone',document.getElementById('phone').value.trim());
-  form.append('bio',document.getElementById('bio').value);
-  const pw = document.getElementById('password').value; if(pw) form.append('password',pw);
-  form.append('specializations',JSON.stringify(specializations));
-  pendingDeletes.forEach(d=>form.append('delete[]',d));
-  newFiles.forEach((file,type)=>{form.append('files[]',file); form.append('imageType[]',type)});
-  const res = await fetch(`${API_BASE}/update_coach.php`,{method:'POST',body:form});
-  const data = await res.json();
-  if(data.success){
-    alert('Profile saved successfully!');
-    pendingDeletes.clear(); newFiles.clear();
-    loadProfile();
-  } else alert('Error: '+data.message);
-};
-
-
+/* =============================
+   Open Public Profile Modal (uses shared modal)
+============================= */
 document.getElementById('viewProfileBtn').onclick = () => {
   if (window.GCCModals && typeof window.GCCModals.openCoachModal === 'function') {
-    GCCModals.openCoachModal(currentCoach);
+    GCCModals.openCoachModal(window.currentCoach);
   }
 };
-
-  const profile = files.Profile ? `/webapi/${files.Profile}` : '../images/earth_steak.png';
-  const before = files.Before ? `/webapi/${files.Before}` : null;
-  const after = files.After ? `/webapi/${files.After}` : profile;
-  const cert = files.Certificate ? `/webapi/${files.Certificate}` : '../images/toon_cert.jpg';
-  const name = currentCoach.CoachName || currentCoach.Username;
-  const bioParagraphs = (currentCoach.Bio || 'No bio yet. This coach is forged in ribeye and ice.')
-    .split(/\r?\n\r?\n/).map(p => `<p>${p.trim()}</p>`).join('');
-
-  const photos = before || after ? `
-    <div class="photo-container">
-      ${before ? `<img src="${before}" alt="${name} before" class="photo-old">` : ''}
-      <img src="${after}" alt="${name} after" class="photo-new">
-    </div>` : '';
-
-  const modalHtml = template
-    .replace(/{{username}}/g, 'preview')
-    .replace('{{name}}', name)
-    .replace('{{bio}}', bioParagraphs)
-    .replace('{{cert}}', cert)
-    .replace('{{photos}}', photos);
-
-  const container = document.getElementById('publicProfileModal');
-  container.innerHTML = modalHtml;
-  container.classList.add('active');
-  history.pushState(null, '', '#coach-preview');
-};
-
-document.getElementById('logoutBtn').onclick = ()=>{
-  fetch(`${API_BASE}/logout.php`).then(()=>location.href='/webapi/login.html');
-};
-
-loadProfile();
 </script>
+
 </body>
 </html>
