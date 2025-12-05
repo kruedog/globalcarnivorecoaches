@@ -153,7 +153,7 @@ textarea{resize:vertical;min-height:160px}
 </div>
 
 <script>
-const API_BASE = '/webapi';
+const API_BASE = '/webapi/';
 let currentCoach = {};
 let specializations = [];
 let pendingDeletes = new Set();
@@ -294,7 +294,7 @@ document.getElementById('profileForm').onsubmit = async e => {
     pendingDeletes.forEach(t => form.append('delete[]', t));
     newFiles.forEach((file,t)=>{ form.append('files[]', file); form.append('imageType[]', t); });
 
-    const res = await fetch(`${API_BASE}/update_coach.php`, {method:'POST', body:form});
+    const res = await fetch(`${API_BASE}update_coach.php`, {
     const data = await res.json();
 
     if(data.success){
