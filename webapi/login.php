@@ -1,57 +1,42 @@
 <?php
+// Username-only login (Dec 2025)
 header('Content-Type: application/json');
-header('Access-Control-Allow-Origin: *');
-ini_set('display_errors', 0); // Prevent HTML warnings from breaking JSON
-
 session_start();
 
-$email = trim($_POST['email'] ?? '');
+$username = trim($_POST['username'] ?? '');
 $password = trim($_POST['password'] ?? '');
 
-if ($email === '' || $password === '') {
-    echo json_encode(['success' => false, 'message' => 'Missing login details']);
+if ($username === '' || $password === '') {
+    echo json_encode(['success'=>false,'message'=>'Username and password required']);
     exit;
 }
 
-// Read from persistent disk
-$coachesFile = "/data/coaches.json";
-if (!file_exists($coachesFile)) {
-    echo json_encode(['success' => false, 'message' => 'coaches.json missing']);
-    exit;
-}
+$file = __DIR__.'/coaches.json';
+if(!file_exists($file)){ echo json_encode(['success'=>false,'message'=>'No coach data']); exit; }
 
-$coaches = json_decode(file_get_contents($coachesFile), true);
-if (!is_array($coaches)) {
-    echo json_encode(['success' => false, 'message' => 'Invalid coaches data']);
-    exit;
-}
+$coaches = json_decode(file_get_contents($file),true);
+if(!is_array($coaches)) $coaches=[];
 
-// Find coach by email
-$found = null;
-foreach ($coaches as $coach) {
-    if (isset($coach['Email']) && strcasecmp($coach['Email'], $email) === 0) {
-        $found = $coach;
-        break;
+$found=null;
+foreach($coaches as $c){
+    if(isset($c['Username']) && strcasecmp($c['Username'],$username)==0){
+        $found=$c; break;
     }
 }
+if(!$found){ echo json_encode(['success'=>false,'message'=>'Invalid username']); exit; }
 
-if (!$found) {
-    echo json_encode(['success' => false, 'message' => 'Invalid credentials']);
+if(!password_verify($password,$found['Password'])){
+    echo json_encode(['success'=>false,'message'=>'Incorrect password']);
     exit;
 }
 
-// Secure password verification (supports hashed passwords)
-if (!isset($found['Password']) || !password_verify($password, $found['Password'])) {
-    echo json_encode(['success' => false, 'message' => 'Invalid credentials']);
-    exit;
-}
-
-// Login success — store session
-$_SESSION['email'] = $found['Email'];
+// Set session
+$_SESSION['username']=$found['Username'];
 
 echo json_encode([
-    'success' => true,
-    'coach'   => $found
-], JSON_UNESCAPED_SLASHES);
-exit;
+    'success'=>true,
+    'username'=>$found['Username'],
+    'coachName'=>$found['CoachName'] ?? $found['Username'],
+    'requireAgreement'=>$found['requireAgreement'] ?? false
+]);
 ?>
