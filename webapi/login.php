@@ -1,101 +1,57 @@
 <?php
-/**
- * login.php — Updated with Agreement Check + Timestamp Support
- * Global Carnivore Coaches | 2025
- */
-
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Credentials: true');
+ini_set('display_errors', 0); // Prevent HTML warnings from breaking JSON
 
 session_start();
 
-$input = json_decode(file_get_contents('php://input'), true);
-if (!is_array($input)) {
-    echo json_encode(['success' => false, 'message' => 'Invalid JSON']);
+$email = trim($_POST['email'] ?? '');
+$password = trim($_POST['password'] ?? '');
+
+if ($email === '' || $password === '') {
+    echo json_encode(['success' => false, 'message' => 'Missing login details']);
     exit;
 }
 
-$username = trim($input['username'] ?? '');
-$password = $input['password'] ?? '';
-
-if ($username === '' || $password === '') {
-    echo json_encode(['success' => false, 'message' => 'Username and password required']);
-    exit;
-}
-
-// Load coaches.json
-$coachesFile = __DIR__ . '/coaches.json';
+// Read from persistent disk
+$coachesFile = "/data/coaches.json";
 if (!file_exists($coachesFile)) {
-    echo json_encode(['success' => false, 'message' => 'System error: coaches.json missing']);
+    echo json_encode(['success' => false, 'message' => 'coaches.json missing']);
     exit;
 }
 
 $coaches = json_decode(file_get_contents($coachesFile), true);
 if (!is_array($coaches)) {
-    echo json_encode(['success' => false, 'message' => 'Corrupted coaches data']);
+    echo json_encode(['success' => false, 'message' => 'Invalid coaches data']);
     exit;
 }
 
-// Locate coach (case-insensitive)
-$coachIndex = null;
-foreach ($coaches as $i => $c) {
-    if (isset($c['Username']) && strcasecmp($c['Username'], $username) === 0) {
-        $coachIndex = $i;
+// Find coach by email
+$found = null;
+foreach ($coaches as $coach) {
+    if (isset($coach['Email']) && strcasecmp($coach['Email'], $email) === 0) {
+        $found = $coach;
         break;
     }
 }
 
-if ($coachIndex === null) {
+if (!$found) {
     echo json_encode(['success' => false, 'message' => 'Invalid credentials']);
     exit;
 }
 
-$coach = $coaches[$coachIndex];
-
-// Password check
-if (!password_verify($password, $coach['Password'] ?? '')) {
+// Secure password verification (supports hashed passwords)
+if (!isset($found['Password']) || !password_verify($password, $found['Password'])) {
     echo json_encode(['success' => false, 'message' => 'Invalid credentials']);
     exit;
 }
 
-// ================================
-// AGREEMENT CHECK
-// ================================
-$requiresAgreement = $coach['requireAgreement'] ?? true;
-
-// If they have NOT accepted yet → do NOT log them in
-if ($requiresAgreement === true) {
-    echo json_encode([
-        'success' => false,
-        'requireAgreement' => true,
-        'username' => $coach['Username'],
-        'message' => 'Legal agreements must be accepted'
-    ]);
-    exit;
-}
-
-// ================================
-// Successful login (agreements already accepted)
-// ================================
-
-$coachName = $coach['CoachName'] ?? $coach['Username'];
-
-$_SESSION['username']  = $coach['Username'];
-$_SESSION['coachName'] = $coachName;
-$_SESSION['email']     = $coach['Email'] ?? '';
-
-// Log success
-require_once __DIR__ . '/log_activity.php';
-log_coach_activity('login');
+// Login success — store session
+$_SESSION['email'] = $found['Email'];
 
 echo json_encode([
-    'success'   => true,
-    'username'  => $coach['Username'],
-    'coachName' => $coachName,
-    'email'     => $coach['Email'] ?? '',
-    'agreement_accepted_on' => $coach['agreement_accepted_on'] ?? null
-]);
-
+    'success' => true,
+    'coach'   => $found
+], JSON_UNESCAPED_SLASHES);
 exit;
 ?>
