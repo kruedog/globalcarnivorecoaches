@@ -7,57 +7,30 @@
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Lora&display=swap" rel="stylesheet">
 
 <style>
-:root {
-    --primary:#C51230;
-    --accent:#192168;
-}
+:root { --primary:#C51230; --accent:#192168; }
 body {
     font-family:'Lora',serif;
     background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-    color:var(--accent);
-    margin:0;
-    min-height:100vh;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    padding:2rem;
+    color:var(--accent); margin:0; min-height:100vh;
+    display:flex; align-items:center; justify-content:center; padding:2rem;
 }
 .container {
-    max-width:420px;
-    width:100%;
-    background:#fff;
-    padding:2rem;
-    border-radius:12px;
-    box-shadow:0 10px 30px rgba(0,0,0,0.15);
+    max-width:420px; width:100%; background:#fff; padding:2rem;
+    border-radius:12px; box-shadow:0 10px 30px rgba(0,0,0,0.15);
     border:2px solid var(--accent);
 }
 h2 {
-    font-family:'Cinzel',serif;
-    color:var(--primary);
-    text-align:center;
-    margin:0 0 1.5rem;
-    font-size:1.8rem;
+    font-family:'Cinzel',serif; color:var(--primary);
+    text-align:center; margin:0 0 1.5rem; font-size:1.8rem;
 }
-input[type=text], input[type=password] {
-    width:100%;
-    padding:.9rem;
-    margin:0.6rem 0;
-    border:1px solid var(--accent);
-    border-radius:6px;
-    font-size:1rem;
-    box-sizing:border-box;
+input {
+    width:100%; padding:.9rem; margin:0.6rem 0;
+    border:1px solid var(--accent); border-radius:6px; font-size:1rem;
 }
 button {
-    width:100%;
-    padding:.9rem;
-    background:var(--primary);
-    color:#fff;
-    border:none;
-    border-radius:6px;
-    cursor:pointer;
-    font-family:'Cinzel',serif;
-    font-size:1.1rem;
-    margin-top:0.8rem;
+    width:100%; padding:.9rem; font-size:1.1rem;
+    background:var(--primary); color:#fff; border:none; border-radius:6px;
+    cursor:pointer; font-family:'Cinzel',serif;
 }
 button:hover { background:#a10e28; }
 #homeBtn { background:var(--accent); margin-top:.4rem; }
@@ -66,27 +39,19 @@ button:hover { background:#a10e28; }
 
 /* Modal */
 #agreementModal {
-    position:fixed;
-    inset:0;
-    background:rgba(0,0,0,.7);
-    display:none;
-    align-items:center;
-    justify-content:center;
-    z-index:9999;
-    backdrop-filter:blur(4px);
+    position:fixed; inset:0; background:rgba(0,0,0,.7);
+    display:none; align-items:center; justify-content:center;
+    z-index:9999; backdrop-filter:blur(4px);
 }
 .modal-box {
-    background:#fff;
-    width:95%;
-    max-width:620px;
-    max-height:85vh;
-    overflow-y:auto;
-    padding:2rem;
-    border-radius:12px;
-    border:3px solid var(--primary);
+    background:#fff; width:95%; max-width:620px; max-height:85vh;
+    overflow-y:auto; padding:2rem; border-radius:12px; border:3px solid var(--primary);
     box-shadow:0 15px 40px rgba(0,0,0,.3);
 }
-.modal-box h3 { font-family:'Cinzel',serif; color:var(--primary); text-align:center; font-size:1.7rem; margin-top:0; }
+.modal-box h3 {
+    font-family:'Cinzel',serif; color:var(--primary);
+    text-align:center; font-size:1.7rem; margin-top:0;
+}
 .modal-box label { display:block; margin:1.2rem 0; font-size:1.05rem; }
 .modal-box a { color:var(--primary); text-decoration:underline; }
 .modal-actions { margin-top:2rem; text-align:right; }
@@ -98,14 +63,12 @@ button:hover { background:#a10e28; }
 
 <div class="container">
   <h2>Coach Login</h2>
-
   <form id="loginForm" autocomplete="off">
-    <input type="text" id="username" placeholder="Username" required />
-    <input type="password" id="password" placeholder="Password" required />
-    <button type="submit">Login</button>
+    <input type="text" id="username" placeholder="Username" required autocomplete="username">
+    <input type="password" id="password" placeholder="Password" required autocomplete="current-password">
+    <button type="submit" id="loginBtn">Login</button>
     <button type="button" id="homeBtn">Home</button>
   </form>
-
   <div id="loginMsg"></div>
 </div>
 
@@ -113,22 +76,11 @@ button:hover { background:#a10e28; }
 <div id="agreementModal">
   <div class="modal-box">
     <h3>Important – Please Read & Accept</h3>
-    <p>Before accessing your coach dashboard for the first time, you must review and agree to our legal policies:</p>
+    <p>Before accessing your coach dashboard for the first time, you must accept:</p>
 
-    <label>
-      <input type="checkbox" id="agreeTOS">
-      I have read and agree to the <a href="legal.html" target="_blank">Terms of Service</a>
-    </label>
-
-    <label>
-      <input type="checkbox" id="agreePrivacy">
-      I have read and agree to the <a href="legal.html" target="_blank">Privacy Policy</a>
-    </label>
-
-    <label>
-      <input type="checkbox" id="agreePhotos">
-      I have read and agree to the <a href="legal.html" target="_blank">Photo Upload & Media Policy</a>
-    </label>
+    <label><input type="checkbox" id="agreeTOS"> I agree to Terms of Service</label>
+    <label><input type="checkbox" id="agreePrivacy"> I agree to Privacy Policy</label>
+    <label><input type="checkbox" id="agreePhotos"> I agree to Photo Upload & Media Policy</label>
 
     <div class="modal-actions">
       <button id="cancelAgree">Cancel</button>
@@ -138,124 +90,91 @@ button:hover { background:#a10e28; }
 </div>
 
 <script>
-// All PHP files are in the same directory as this HTML file
-const API_BASE = '';
-
-const form = document.getElementById('loginForm');
+const API = '/webapi/';
 const loginMsg = document.getElementById('loginMsg');
-let pendingUsername = null;
-let pendingPassword = null; // keep password during agreement step
+let pendingUsername = null, pendingPassword = null;
 
-form.addEventListener('submit', async e => {
+document.getElementById('loginForm').addEventListener('submit', async e => {
   e.preventDefault();
   loginMsg.textContent = '';
-  loginMsg.style.color = 'red';
 
   const username = document.getElementById('username').value.trim();
   const password = document.getElementById('password').value;
 
-  if (!username || !password) {
-    loginMsg.textContent = 'Enter username and password';
+  if(!username || !password){
+    loginMsg.textContent='Enter username & password';
     return;
   }
 
   pendingUsername = username;
   pendingPassword = password;
 
-  const btn = form.querySelector('button[type="submit"]');
-  btn.disabled = true;
-  btn.textContent = 'Logging in…';
+  const btn = document.getElementById('loginBtn');
+  btn.disabled = true; btn.textContent = 'Logging in…';
 
   try {
-    const res = await fetch(`${API_BASE}login.php`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username, password })
-    });
+    const body = new URLSearchParams({ username, password });
 
+    const res = await fetch(API+'login.php',{
+      method:'POST',
+      headers:{'Content-Type':'application/x-www-form-urlencoded'},
+      body
+    });
     const json = await res.json();
 
-    // First-time user → show agreement modal
-    if (json.requireAgreement === true) {
-      document.getElementById('agreementModal').style.display = 'flex';
-      btn.disabled = false;
-      btn.textContent = 'Login';
+    if(json.requireAgreement === true){
+      document.getElementById('agreementModal').style.display='flex';
+      btn.disabled=false; btn.textContent='Login';
       return;
     }
 
-    // Already accepted → normal login
-    if (json.success) {
+    if(json.success){
       localStorage.setItem('username', json.username);
-      localStorage.setItem('coachName', json.coachName || json.username);
-      localStorage.setItem('email', json.email || '');
-      window.location.href = 'profile.html';
+      localStorage.setItem('coachName', json.coachName||json.username);
+      window.location.href='profile.html';
       return;
     }
+    loginMsg.textContent=json.message||'Login failed';
 
-    loginMsg.textContent = json.message || 'Login failed';
-
-  } catch (err) {
-    loginMsg.textContent = 'Connection error';
-    console.error(err);
+  } catch(err){
+    loginMsg.textContent='Server error';
   } finally {
-    btn.disabled = false;
-    btn.textContent = 'Login';
+    btn.disabled=false; btn.textContent='Login';
   }
 });
 
-document.getElementById('homeBtn').onclick = () => location.href = '/index.html';
+document.getElementById('homeBtn').onclick=()=>location.href='/index.html';
+document.getElementById('cancelAgree').onclick=()=>document.getElementById('agreementModal').style.display='none';
+document.getElementById('confirmAgree').onclick=saveAgreement;
 
-document.getElementById('cancelAgree').onclick = () => {
-  document.getElementById('agreementModal').style.display = 'none';
-};
-
-// ACCEPT & CONTINUE → save agreement + create real session
-document.getElementById('confirmAgree').onclick = async () => {
-  const tos = document.getElementById('agreeTOS').checked;
-  const privacy = document.getElementById('agreePrivacy').checked;
-  const photos = document.getElementById('agreePhotos').checked;
-
-  if (!tos || !privacy || !photos) {
-    alert('You must agree to all three policies.');
-    return;
+async function saveAgreement(){
+  if(!document.getElementById('agreeTOS').checked ||
+     !document.getElementById('agreePrivacy').checked ||
+     !document.getElementById('agreePhotos').checked){
+    alert('You must agree to all policies.'); return;
   }
 
   try {
-    // 1. Save agreement
-    const res1 = await fetch(`${API_BASE}accept_terms.php`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username: pendingUsername })
+    await fetch(API+'accept_terms.php',{
+      method:'POST',
+      headers:{'Content-Type':'application/x-www-form-urlencoded'},
+      body:new URLSearchParams({username:pendingUsername})
     });
-    const r1 = await res1.json();
-    if (!r1.success) throw new Error(r1.message || 'Failed to save agreement');
 
-    // 2. Perform real login (creates PHP session)
-    const res2 = await fetch(`${API_BASE}login.php`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username: pendingUsername, password: pendingPassword })
+    const res2 = await fetch(API+'login.php',{
+      method:'POST',
+      headers:{'Content-Type':'application/x-www-form-urlencoded'},
+      body:new URLSearchParams({username:pendingUsername,password:pendingPassword})
     });
     const r2 = await res2.json();
+    if(r2.success){
+      localStorage.setItem('username', r2.username);
+      localStorage.setItem('coachName', r2.coachName||r2.username);
+      location.href='profile.html';
+    }
 
-    if (!r2.success) throw new Error('Login failed after agreement');
-
-    // SUCCESS!
-    localStorage.setItem('username', r2.username);
-    localStorage.setItem('coachName', r2.coachName || r2.username);
-    localStorage.setItem('email', r2.email || '');
-
-    loginMsg.style.color = '#006400';
-    loginMsg.textContent = 'Welcome! Redirecting…';
-    setTimeout(() => window.location.href = 'profile.html', 800);
-
-  } catch (err) {
-    console.error(err);
-    alert('Error: ' + err.message + '. Please try logging in again.');
-    window.location.href = 'login.html';
-  }
-};
+  }catch(err){ alert('Error: please login again'); location.href='login.html'; }
+}
 </script>
-
 </body>
 </html>
