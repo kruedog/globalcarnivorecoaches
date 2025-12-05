@@ -1,7 +1,10 @@
 <!-- components/modal-image.html -->
-<div class="modal-target" id="lightbox-{{id}}" aria-modal="true" role="dialog">
-  <div class="modal-content">
-    <a href="#" class="modal-close" aria-label="Close">&times;</a>
-    <img src="{{src}}" alt="{{alt}}" loading="lazy">
+<div class="modal-target" id="modal-image-{{id}}" role="dialog" aria-modal="true" data-modal-type="image">
+  <div class="modal-content" role="document">
+    <button class="modal-close" aria-label="Close image">&times;</button>
+    <h3 class="modal-title">{{title}}</h3>
+    <div class="modal-image-wrap">
+      <img id="modal-image-img-{{id}}" src="{{src}}" alt="{{title}}">
+    </div>
   </div>
 </div>

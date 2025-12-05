@@ -1,23 +1,17 @@
 <!-- components/modal-coach.html -->
-<div class="modal-target" id="coach-{{username}}" aria-modal="true" role="dialog">
-  <div class="modal-content">
-    <a href="#" class="modal-close" aria-label="Close">&times;</a>
-    <h3>{{name}}</h3>
-    {{bio}}
-    <div class="cert-container">
-      <a class="cert-tile" href="#img-cert-{{username}}" id="tile-cert-{{username}}">
-        <img src="{{cert}}" alt="Certificate" loading="lazy">
+<div class="modal-target" id="modal-coach-{{username}}" role="dialog" aria-modal="true" data-modal-type="coach">
+  <div class="modal-content" role="document">
+    <button class="modal-close" aria-label="Close profile">&times;</button>
+    <h3 class="modal-title">{{name}}</h3>
+    <div class="modal-bio">
+      {{bio}}
+    </div>
+    <div class="cert-container" style="margin-top: 16px;">
+      <a class="cert-tile" href="#" data-cert-src="{{certSrc}}">
+        <img src="{{certSrc}}" alt="Certification for {{name}}" loading="lazy">
       </a>
-      <div class="cert-caption">Kiltz Health Coaching Certificate</div>
+      <div class="cert-caption">Coaching Certificate</div>
     </div>
     {{photos}}
-  </div>
-</div>
-
-<!-- Certificate lightbox for this coach -->
-<div class="modal-target" id="img-cert-{{username}}" aria-modal="true" role="dialog">
-  <div class="modal-content">
-    <a href="#" class="modal-close" aria-label="Close">&times;</a>
-    <img src="{{cert}}" alt="Large view of certificate" loading="lazy">
   </div>
 </div>

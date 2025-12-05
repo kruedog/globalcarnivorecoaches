@@ -39,9 +39,7 @@ textarea{resize:vertical;min-height:160px}
 .specializations-list span{background:var(--red);color:#fff;padding:.4rem .9rem;border-radius:20px;font-size:.9rem;font-weight:600;cursor:pointer}
 .add-spec-btn{margin-top:.5rem;padding:.6rem 1.2rem;font-size:.95rem}
 
-/* PUBLIC PROFILE MODAL – now uses the shared modal from components/modal-coach.html */
-#publicProfileModal{position:fixed;inset:0;background:rgba(25,33,104,.97);backdrop-filter:blur(16px);display:none;align-items:center;justify-content:center;padding:2rem;z-index:9999}
-#publicProfileModal.active{display:flex}
+
 </style>
 </head>
 <body>
@@ -195,12 +193,13 @@ document.getElementById('profileForm').onsubmit = async e=>{
   } else alert('Error: '+data.message);
 };
 
-document.getElementById('viewProfileBtn').onclick = async () => {
-  // Load the shared coach modal template
-  const templateResp = await fetch('../components/modal-coach.html');
-  const template = await templateResp.text();
 
-  const files = currentCoach.Files || {};
+document.getElementById('viewProfileBtn').onclick = () => {
+  if (window.GCCModals && typeof window.GCCModals.openCoachModal === 'function') {
+    GCCModals.openCoachModal(currentCoach);
+  }
+};
+
   const profile = files.Profile ? `/webapi/${files.Profile}` : '../images/earth_steak.png';
   const before = files.Before ? `/webapi/${files.Before}` : null;
   const after = files.After ? `/webapi/${files.After}` : profile;
