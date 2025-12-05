@@ -1,14 +1,15 @@
 <?php
-// update_coach.php — JSON + Persistent Disk — Dec 2025
+// update_coach.php — JSON + Persistent Disk — Final Dec 2025
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
-ini_set('display_errors', 0); // Prevent HTML errors in JSON responses
+ini_set('display_errors', 0); // Never break JSON output
 
 $uploadDir = "/data/uploads/";
 if (!is_dir($uploadDir)) {
     mkdir($uploadDir, 0775, true);
 }
 
+// Identify coach by email
 $email = $_POST['email'] ?? '';
 if (!$email) {
     echo json_encode(["success" => false, "message" => "Missing email"]);
@@ -25,6 +26,7 @@ if (!file_exists($coachesFile)) {
 $data = json_decode(file_get_contents($coachesFile), true);
 if (!is_array($data)) $data = [];
 
+// Find coach
 $index = null;
 foreach ($data as $i => $c) {
     if (isset($c['Email']) && strcasecmp($c['Email'], $email) === 0) {
@@ -40,21 +42,22 @@ if ($index === null) {
 
 $coach = $data[$index];
 
-// Update profile fields
-$coach['CoachName'] = trim($_POST['coachName'] ?? '');
-$coach['Phone']     = trim($_POST['phone'] ?? '');
-$coach['Bio']       = trim($_POST['bio'] ?? '');
+// Update fields
+$coach['CoachName'] = trim($_POST['coachName'] ?? ($coach['CoachName'] ?? ''));
+$coach['Phone']     = trim($_POST['phone'] ?? ($coach['Phone'] ?? ''));
+$coach['Bio']       = trim($_POST['bio'] ?? ($coach['Bio'] ?? ''));
 
+// Specializations
 if (!empty($_POST['specializations'])) {
     $coach['Specializations'] = json_decode($_POST['specializations'], true);
 }
 
-// Handle existing Files array
+// Existing files array
 if (!isset($coach['Files']) || !is_array($coach['Files'])) {
     $coach['Files'] = [];
 }
 
-// Remove deleted entries
+// Remove deleted
 if (!empty($_POST['delete'])) {
     foreach ($_POST['delete'] as $type) {
         unset($coach['Files'][$type]);
@@ -74,13 +77,15 @@ if (!empty($_FILES['files'])) {
         $tmp = $_FILES['files']['tmp_name'][$idx];
 
         if (move_uploaded_file($tmp, $uploadDir . $newFilename)) {
+            // Save ONLY filename, not path
             $coach['Files'][$type] = $newFilename;
         }
     }
 }
 
-// Save changes back into JSON array
+// Write back JSON
 $data[$index] = $coach;
 file_put_contents($coachesFile, json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
 
 echo json_encode(["success" => true, "coach" => $coach]);
+exit;
