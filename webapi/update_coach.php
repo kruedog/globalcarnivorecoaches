@@ -1,49 +1,53 @@
 <?php
+// update_coach.php — FINAL (Dec 2025)
+// Saves profile changes + uploads to persistent disk
+
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
-ini_set('display_errors', 0);
 
-$uploadDir = "/data/uploads/";
-
-$email = trim($_POST['email'] ?? '');
-if (!$email) {
-    echo json_encode(['success'=>false,'message'=>'Missing email']);
+// Ensure POST with username
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    echo json_encode(['success'=>false,'message'=>'Invalid method']);
     exit;
 }
 
-$coachesFile = __DIR__ . '/coaches.json';
+$username = trim($_POST['username'] ?? '');
+if ($username === '') {
+    echo json_encode(['success'=>false,'message'=>'Missing username']);
+    exit;
+}
+
+$coachesFile = '/data/uploads/coaches.json';
+$uploadsDir  = '/data/uploads/';
+
 if (!file_exists($coachesFile)) {
-    echo json_encode(['success'=>false,'message'=>'coaches.json missing']);
+    echo json_encode(['success'=>false,'message'=>'Coaches file missing']);
     exit;
 }
 
-$data = json_decode(file_get_contents($coachesFile), true);
-if (!is_array($data)) $data = [];
+// Load and decode JSON
+$json = file_get_contents($coachesFile);
+$coaches = json_decode($json, true);
+if (!is_array($coaches)) $coaches = [];
 
-$index = null;
-foreach ($data as $i=>$c) {
-    if (isset($c['Email']) && strcasecmp($c['Email'],$email)===0) {
-        $index = $i; break;
-    }
-}
-if ($index === null) {
+// Find coach record
+$index = array_search($username, array_column($coaches, 'Username'));
+if ($index === false) {
     echo json_encode(['success'=>false,'message'=>'Coach not found']);
     exit;
 }
 
-$coach = $data[$index];
+$coach = $coaches[$index];
 
-// Safe defaults
-$coach['CoachName'] = trim($_POST['coachName'] ?? ($coach['CoachName'] ?? ''));
-$coach['Phone']     = trim($_POST['phone'] ?? ($coach['Phone'] ?? ''));
-$coach['Bio']       = trim($_POST['bio'] ?? ($coach['Bio'] ?? ''));
+// Update basic fields
+$coach['CoachName'] = trim($_POST['coachName'] ?? $coach['CoachName']);
+$coach['Phone']     = trim($_POST['phone']     ?? $coach['Phone']);
+$coach['Bio']       = trim($_POST['bio']       ?? $coach['Bio']);
 
-// Specializations safe decode
+// Update specializations
 if (isset($_POST['specializations'])) {
-    $spec = json_decode($_POST['specializations'], true);
-    $coach['Specializations'] = is_array($spec) ? $spec : [];
-} elseif (!isset($coach['Specializations'])) {
-    $coach['Specializations'] = [];
+    $specs = json_decode($_POST['specializations'], true);
+    if (is_array($specs)) $coach['Specializations'] = $specs;
 }
 
 // Ensure Files array exists
@@ -51,33 +55,48 @@ if (!isset($coach['Files']) || !is_array($coach['Files'])) {
     $coach['Files'] = [];
 }
 
-// Remove old images
-if (!empty($_POST['delete'])) {
-    foreach ($_POST['delete'] as $t) unset($coach['Files'][$t]);
-}
-
-// Username for filenames
-$uBase = $coach['Username'] ?? $coach['CoachName'] ?? 'coach';
-$uBase = strtolower(preg_replace('/\W+/','',$uBase));
-if (!$uBase) $uBase = 'coach';
-
-// Handle file uploads
-if (!empty($_FILES['files'])) {
-    foreach ($_FILES['files']['name'] as $i=>$name) {
-        $type = $_POST['imageType'][$i] ?? null;
-        if (!$type) continue;
-
-        $ext = strtolower(pathinfo($name, PATHINFO_EXTENSION) ?: 'jpg');
-        $newFile = "{$uBase}_" . time() . "_{$i}.{$ext}";
-        if (move_uploaded_file($_FILES['files']['tmp_name'][$i], $uploadDir . $newFile)) {
-            $coach['Files'][$type] = $newFile;
+// Handle deletions from UI
+if (!empty($_POST['delete']) && is_array($_POST['delete'])) {
+    foreach ($_POST['delete'] as $type) {
+        if (!empty($coach['Files'][$type])) {
+            $oldFile = $uploadsDir . $coach['Files'][$type];
+            if (file_exists($oldFile)) unlink($oldFile);
+            unset($coach['Files'][$type]);
         }
     }
 }
 
-$data[$index] = $coach;
-file_put_contents($coachesFile, json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+// Handle new uploads
+if (!empty($_FILES['files']) && !empty($_POST['imageType'])) {
+    $files = $_FILES['files'];
+    $types = $_POST['imageType'];
 
-echo json_encode(['success'=>true,'coach'=>$coach]);
+    for ($i = 0; $i < count($files['name']); $i++) {
+        if ($files['error'][$i] !== UPLOAD_ERR_OK) continue;
+
+        $type = $types[$i];
+        $ext  = strtolower(pathinfo($files['name'][$i], PATHINFO_EXTENSION));
+        if (!in_array($ext, ['jpg','jpeg','png','webp'])) continue;
+
+        $safeName = $username . '_' . time() . '_' . $i . '.' . $ext;
+        $dest = $uploadsDir . $safeName;
+
+        if (!move_uploaded_file($files['tmp_name'][$i], $dest)) continue;
+
+        // If replacing existing file, delete old one
+        if (!empty($coach['Files'][$type])) {
+            $old = $uploadsDir . $coach['Files'][$type];
+            if (file_exists($old)) unlink($old);
+        }
+
+        $coach['Files'][$type] = $safeName;
+    }
+}
+
+// Save JSON
+$coaches[$index] = $coach;
+file_put_contents($coachesFile, json_encode($coaches, JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES));
+
+echo json_encode(['success'=>true, 'coach'=>$coach]);
 exit;
 ?>
