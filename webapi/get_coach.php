@@ -40,15 +40,13 @@ if (!$foundCoach) {
     exit;
 }
 
-// Normalize Files values: they should be *filenames only*
-// and frontend displays them as `/uploads/<filename>`
-if (!empty($foundCoach['Files']) && is_array($foundCoach['Files'])) {
-    foreach ($foundCoach['Files'] as $type => $filename) {
-        if (!$filename) continue;
-        $filename = basename($filename); // ensure no paths leak through
-        $foundCoach['Files'][$type] = $filename;
+// normalize file paths
+if (isset($foundCoach['Files']) && is_array($foundCoach['Files'])) {
+    foreach ($foundCoach['Files'] as $type => $file) {
+        $foundCoach['Files'][$type] = basename($file);
     }
 }
+
 
 echo json_encode([
     'success' => true,
