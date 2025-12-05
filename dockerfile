@@ -1,11 +1,10 @@
 # ─────────────────────────────────────────────────────────
 # GLOBAL CARNIVORE COACHES — FINAL DOCKERFILE (2025)
-# Persistent uploads + Correct PHP routing
+# Persistent storage + correct routing
 # ─────────────────────────────────────────────────────────
-
 FROM php:8.3-fpm
 
-# Install nginx + GD for image processing
+# Install nginx + GD for images
 RUN apt-get update && apt-get install -y \
     nginx \
     libpng-dev libjpeg-dev libfreetype6-dev \
@@ -13,20 +12,16 @@ RUN apt-get update && apt-get install -y \
     && docker-php-ext-install -j$(nproc) gd \
     && rm -rf /var/lib/apt/lists/*
 
-# Allow uploads up to 20MB
+# Upload limits
 RUN echo "upload_max_filesize = 20M" > /usr/local/etc/php/conf.d/uploads.ini \
  && echo "post_max_size = 25M"     >> /usr/local/etc/php/conf.d/uploads.ini \
  && echo "memory_limit = 256M"     >> /usr/local/etc/php/conf.d/uploads.ini
 
-# Copy application into place
 COPY . /var/www/html
 WORKDIR /var/www/html
 
-# ───────────────────────────
-# NGINX CONFIGURATION
-# ───────────────────────────
+# NGINX CONFIG — enable PHP routing + direct uploads serving
 RUN rm -f /etc/nginx/sites-enabled/default
-
 COPY <<EOF /etc/nginx/conf.d/gcc.conf
 server {
     listen 8080;
@@ -37,12 +32,10 @@ server {
 
     client_max_body_size 25M;
 
-    # Try static files first, fallback to PHP
     location / {
         try_files \$uri \$uri/ /index.php?\$query_string;
     }
 
-    # PHP handling
     location ~ \.php$ {
         include fastcgi_params;
         fastcgi_param SCRIPT_FILENAME \$document_root\$fastcgi_script_name;
@@ -50,7 +43,6 @@ server {
         fastcgi_index index.php;
     }
 
-    # Serve uploaded images directly from persistent disk
     location ^~ /uploads/ {
         alias /data/uploads/;
         autoindex off;
@@ -59,19 +51,17 @@ server {
 }
 EOF
 
-# ───────────────────────────
-# Persistent Upload Storage
-# ───────────────────────────
+# Persistent disks
 RUN mkdir -p /data/uploads \
- && chmod -R 775 /data/uploads \
- && chown -R www-data:www-data /data/uploads
+ && mkdir -p /data \
+ && chmod -R 775 /data \
+ && chown -R www-data:www-data /data
 
-# Render uses port 8080
+# Render port
 EXPOSE 8080
 
-# ───────────────────────────
-# Startup Command
-# ───────────────────────────
+# Create symlinks at boot
 CMD ln -sf /data/uploads /var/www/html/uploads \
+ && ln -sf /data/coaches.json /var/www/html/webapi/coaches.json \
  && php-fpm -D \
  && nginx -g 'daemon off;'
