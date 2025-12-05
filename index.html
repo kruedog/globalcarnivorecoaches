@@ -254,86 +254,77 @@ flex; align-items: center; justify-content: center; }
       50% { opacity: 0.6; }
       100% { opacity: 0.3; }
     }
-    
-/* ---------- modal / lightbox ---------- */
-.modal-target {
-  position: fixed;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 24px;
-  z-index: 1200;
-  background: radial-gradient(
-    circle at center,
-    rgba(255, 255, 255, 0.90) 0%,
-    rgba(235, 245, 255, 0.78) 65%,
-    rgba(210, 225, 245, 0.72) 100%
-  );
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-  opacity: 0;
-  visibility: hidden;
-  pointer-events: none;
-  transition: opacity 260ms ease, visibility 260ms ease;
-}
-.modal-target.show {
-  opacity: 1;
-  visibility: visible;
-  pointer-events: auto;
-}
-.modal-content {
-  max-width: min(90vw, 640px);
-  max-height: min(90vh, 640px);
-  border-radius: 10px;
-  overflow: auto;
-  background: linear-gradient(180deg, var(--white), #ECECEC);
-  box-shadow: 0 30px 80px rgba(0,0,0,0.45);
-  position: relative;
-  padding: 20px 24px;
-}
-.modal-title {
-  font-family: "Cinzel", serif;
-  font-size: 1.4rem;
-  color: var(--primary-blue);
-  margin: 0 0 10px 0;
-  text-transform: uppercase;
-  letter-spacing: 0.6px;
-}
-.modal-content p {
-  font-size: 0.95rem;
-  color: var(--text-color);
-  margin: 6px 0;
-}
-.modal-image-wrap img {
-  display: block;
-  max-width: 100%;
-  height: auto;
-  margin: 12px auto 0;
-  object-fit: contain;
-}
-.modal-close {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 20px;
-  background: var(--white);
-  color: var(--accent-red);
-  border: 2px solid var(--primary-blue);
-  text-decoration: none;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.35);
-  cursor: pointer;
-}
-.modal-close:hover {
-  transform: rotate(10deg) scale(1.06);
-}
-/* ---------- buttons ---------- */
+    /* ---------- modal / lightbox ---------- */
+    .modal-target {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      display: flex; align-items: center; justify-content: center;
+      background-color: rgba(25,33,104,0.92); padding: 28px; z-index: 1200;
+      visibility: hidden; opacity: 0; pointer-events: none;
+      transition: opacity 260ms ease, visibility 260ms;
+    }
+    .modal-target:target, .modal-target.show {
+      visibility: visible; opacity: 1; pointer-events: auto;
+    }
+    .modal-content {
+      max-width: min(80vw, 600px);
+      max-height: min(80vh, 600px);
+      aspect-ratio: 1 / 1;
+      border-radius: 10px;
+      overflow: auto;
+      background: linear-gradient(180deg, var(--white), #ECECEC);
+      box-shadow: 0 30px 80px rgba(0,0,0,0.6);
+      position: relative;
+      padding: 20px;
+    }
+    .modal-content img {
+      display: block;
+      max-width: 100%;
+      max-height: 60vh;
+      object-fit: contain;
+    }
+    .modal-content h3 {
+      font-family: "Cinzel", serif;
+      font-size: 1.3rem;
+      color: var(--primary-blue);
+      margin: 0 0 10px 0;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+    }
+    .modal-content p {
+      font-size: 0.9rem;
+      color: var(--text-color);
+      margin: 6px 0;
+    }
+    .modal-close {
+      position: absolute;
+      top: 12px; right: 12px;
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      background: var(--white);
+      color: var(--accent-red);
+      border: 2px solid var(--primary-blue);
+      text-decoration: none;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.35);
+    }
+    .modal-close:hover { transform: rotate(10deg) scale(1.06); }
+    @media (max-width: 560px) {
+      .modal-target { padding: 16px; }
+      .modal-content {
+        max-width: 95vw;
+        max-height: 85vh;
+        aspect-ratio: auto;
+        padding: 16px;
+      }
+      .modal-close { width: 32px; height: 32px; font-size: 18px; }
+      .modal-content h3 { font-size: 1.2rem; }
+      .modal-content p { font-size: 0.85rem; }
+      .modal-content img { max-height: 50vh; }
+    }
+    /* ---------- buttons ---------- */
     .cta { display: flex; gap: 18px; align-items: center; justify-content: center; margin-top: 12px; }
     .btn {
       background: linear-gradient(180deg, var(--accent-red), #8C1925);
@@ -678,56 +669,135 @@ plan that fits your life.</p>
       </div>
       <p style="text-align:center; color:var(--muted); margin-top:12px; font-weight:700;">Limited 1:1 coaching slots available — start today.</p>
     </section>
-      </main>
-
-<script src="js/modals.js"></script>
+    <!-- Image Modals -->
+    <div id="img-1" class="modal-target" aria-modal="true" role="dialog">
+      <div class="modal-content" role="document" aria-labelledby="modal-1-title">
+        <a href="#tile-1" class="modal-close" aria-label="Close image view">&times;</a>
+        <img src="images/meatzza.jpg" alt="Large view of Meatzza Bomb">
+      </div>
+    </div>
+    <div id="img-2" class="modal-target" aria-modal="true" role="dialog"><div class="modal-content"><a href="#tile-2" class="modal-close" aria-label="Close image view">&times;</a><img src="images/image004.jpg" alt="Large view
+of slow-cooked beef haunches"></div></div>
+    <div id="img-3" class="modal-target" aria-modal="true" role="dialog"><div class="modal-content"><a href="#tile-3" class="modal-close" aria-label="Close image view">&times;</a><img src="images/image005.jpg" alt="Large view
+of plated slow-forged beef haunches"></div></div>
+    <div id="img-4" class="modal-target" aria-modal="true" role="dialog"><div class="modal-content"><a href="#tile-4" class="modal-close" aria-label="Close image view">&times;</a><img src="images/image008.jpg" alt="Large view
+of smoked trout fillet"></div></div>
+    <div id="img-5" class="modal-target" aria-modal="true" role="dialog"><div class="modal-content"><a href="#tile-5" class="modal-close" aria-label="Close image view">&times;</a><img src="images/image011.jpg" alt="Large view
+of simple carnivore plate"></div></div>
+    <div id="img-new1" class="modal-target" aria-modal="true" role="dialog"><div class="modal-content"><a href="#tile-new1" class="modal-close" aria-label="Close image view">&times;</a><img src="images/image001.jpg" alt=
+"Large view of smoked brisket slices"></div></div>
+    <div id="img-new2" class="modal-target" aria-modal="true" role="dialog"><div class="modal-content"><a href="#tile-new2" class="modal-close" aria-label="Close image view">&times;</a><img src="images/image002.jpg" alt=
+"Large view of brisket pile"></div></div>
+    <div id="img-new3" class="modal-target" aria-modal="true" role="dialog"><div class="modal-content"><a href="#tile-new3" class="modal-close" aria-label="Close image view">&times;</a><img src="images/image003.jpg" alt=
+"Large view of meat platter"></div></div>
+    <div id="img-new4" class="modal-target" aria-modal="true" role="dialog"><div class="modal-content"><a href="#tile-new4" class="modal-close" aria-label="Close image view">&times;</a><img src="images/image006.jpg" alt=
+"Large view of brisket with pepper bark"></div></div>
+    <div id="img-new5" class="modal-target" aria-modal="true" role="dialog"><div class="modal-content"><a href="#tile-new5" class="modal-close" aria-label="Close image view">&times;</a><img src="images/image007.jpg" alt=
+"Large view of brisket point"></div></div>
+    <div id="img-new6" class="modal-target" aria-modal="true" role="dialog"><div class="modal-content"><a href="#tile-new6" class="modal-close" aria-label="Close image view">&times;</a><img src="images/image009.jpg" alt=
+"Large view of brisket being sliced"></div></div>
+    <div id="img-new7" class="modal-target" aria-modal="true" role="dialog"><div class="modal-content"><a href="#tile-new7" class="modal-close" aria-label="Close image view">&times;</a><img src="images/image010.jpg" alt=
+"Large view of brisket plate"></div></div>
+    <div id="img-cert" class="modal-target" aria-modal="true" role="dialog">
+      <div class="modal-content">
+        <a href="#tile-cert" class="modal-close" aria-label="Close certificate view">&times;</a>
+        <img src="images/toon_cert.jpg" alt="Large view of Kiltz Health Coaching Certificate">
+      </div>
+    </div>
+    <div id="modalsContainer">
+      <!-- Dynamic modals will be inserted here -->
+    </div>
+  </main>
 <script>
 const API_BASE_URL = window.location.protocol === 'https:'
   ? `https://${window.location.hostname}:477/webapi`
   : `http://${window.location.hostname}:8080/webapi`;
-
 async function loadCoaches() {
   try {
     const response = await fetch('/webapi/get_coaches.php');
-    const data = await response.json();
+const data = await response.json();
     if (data.success) {
       const gallery = document.getElementById('coachGallery');
-      if (!gallery) return;
+      const modalsContainer = document.getElementById('modalsContainer');
       gallery.innerHTML = '';
+      modalsContainer.innerHTML = '';
       data.coaches.forEach(coach => {
-        const username = (coach.Username || '').toLowerCase();
-        const fullName = coach.CoachName || coach.Username || 'Coach';
-        const displayName = coach.CoachName
-          ? coach.CoachName
-          : (coach.Username ? coach.Username.charAt(0).toUpperCase() + coach.Username.slice(1) : 'Coach');
+        const username = coach.Username.toLowerCase();
+        const fullName = coach.CoachName || coach.Username;
+        const displayName = coach.CoachName ? coach.CoachName : (coach.Username.charAt(0).toUpperCase() + coach.Username.slice(1)); // Use CoachName; fallback to capitalized username
         const bio = coach.Bio || 'No bio yet. This coach is forged in ribeye and ice.';
         const files = coach.Files || {};
-        const profileSrc = files.Profile ? `/webapi/${files.Profile}` : '/images/WolfCoach_Profile.png';
-
-        const tile = document.createElement('button');
-        tile.type = 'button';
-        tile.className = 'tile';
-        tile.innerHTML = `
-          <img src="${profileSrc}" alt="${fullName}" loading="lazy">
-          <span class="caption">${displayName}</span>
-        `;
-
+        // Image sources with /webapi/ prefix for uploads
+        // FIX media path
+function fixMediaPath(p){return p?'/'+p.replace(/^public\//,'').replace(/^\/+/,''):'';}
+const profileSrc = files.Profile ? fixMediaPath(files.Profile) : '/images/WolfCoach_Profile.png';
+const beforeSrc  = files.Before  ? fixMediaPath(files.Before)  : '';
+const afterSrc   = files.After   ? fixMediaPath(files.After)   : '';
+const certSrc    = files.Certificate ? fixMediaPath(files.Certificate) : '/images/toon_cert.jpg';
+	// Gallery tile with button
+	const tile = document.createElement('a');
+	tile.className = 'tile';
+	tile.href = `#coach-${username}`;
+	tile.innerHTML = `
+	  <img src="${profileSrc}" alt="${fullName}" loading="lazy">
+	  <span class="caption">${displayName}</span>
+	  <button class="view-btn" aria-label="View ${displayName}'s info">View Info</button>
+	`;
+        // Handle load for CSS pulse animation
         const img = tile.querySelector('img');
-        if (img) {
-          img.addEventListener('load', () => tile.classList.add('loaded'), { once: true });
-          img.addEventListener('error', () => {
-            img.src = '/images/WolfCoach_Profile.jpg';
-            tile.classList.add('loaded');
+        img.addEventListener('load', () => tile.classList.add('loaded'), { once: true });
+        img.addEventListener('error', () => {
+          img.src = '/images/WolfCoach_Profile.jpg'; // Fallback on error
+          tile.classList.add('loaded');
+        });
+        gallery.appendChild(tile);
+        // Modal
+        let photoHtml = '';
+        if (beforeSrc || afterSrc || files.Profile) {
+          let oldImg = beforeSrc ? `<img src="${beforeSrc}" alt="${fullName} before carnivore lifestyle" class="photo-old" onerror="this.style.display='none'">` : '';
+          let newImg = '';
+          if (afterSrc) {
+            newImg = `<img src="${afterSrc}" alt="${fullName} after carnivore lifestyle" class="photo-new" onerror="this.style.display='none'">`;
+          } else if (files.Profile) {
+            newImg = `<img src="${profileSrc}" alt="${fullName} after carnivore lifestyle" class="photo-new" onerror="this.style.display='none'">`;
+          }
+          photoHtml = `
+            <div class="photo-container">
+              ${oldImg}${newImg}
+            </div>
+          `;
+        }
+        // Split bio into paragraphs (handles \r\n\r\n in JSON)
+        const paragraphs = bio.split(/\r?\n\r?\n/g).filter(p => p.trim()).map(p => `<p>${p.trim().replace(/\r?\n/g, ' ')}</p>`).join('');
+        const modal = document.createElement('div');
+        modal.id = `coach-${username}`;
+        modal.className = 'modal-target';
+        modal.setAttribute('aria-modal', 'true');
+        modal.setAttribute('role', 'dialog');
+        modal.innerHTML = `
+          <div class="modal-content">
+            <a href="#" class="modal-close" aria-label="Close bio view">&times;</a>
+            <h3>${fullName}</h3>
+            ${paragraphs}
+            <div class="cert-container">
+              <a class="cert-tile" href="#img-cert" id="tile-cert-${username}" aria-label="Open Coaching Certificate">
+                <img src="${certSrc}" alt="Kiltz Health Coaching Certificate" loading="lazy">
+              </a>
+              <div class="cert-caption">Kiltz Health Coaching Certificate</div>
+            </div>
+            ${photoHtml}
+          </div>
+        `;
+        // Handle cert image load
+        const certImg = modal.querySelector('.cert-tile img');
+        if (certImg) {
+          certImg.addEventListener('load', () => modal.querySelector('.cert-tile').classList.add('loaded'), { once: true });
+          certImg.addEventListener('error', () => {
+            certImg.src = 'images/toon_cert.jpg';
+            modal.querySelector('.cert-tile').classList.add('loaded');
           });
         }
-
-        tile.addEventListener('click', () => {
-          if (window.GCCModals && typeof window.GCCModals.openCoachModal === 'function') {
-            window.GCCModals.openCoachModal(coach);
-          }
-        });
-
-        gallery.appendChild(tile);
+        modalsContainer.appendChild(modal);
       });
     } else {
       console.error('Error loading coaches:', data.message);
@@ -736,35 +806,26 @@ async function loadCoaches() {
     console.error('Network error loading coaches:', err);
   }
 }
-
 // Load on page ready
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', loadCoaches);
 } else {
   loadCoaches();
 }
+// Modal close on escape key
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    const modals = document.querySelectorAll('.modal-target:target');
+    modals.forEach(modal => {
+      const url = new URL(window.location);
+      url.hash = '';
+      window.location = url.toString();
+    });
+  }
+});
 </script>
   <footer>
     <p>&copy; 2025 Global Carnivore Coaches. All rights reserved.</p>
   </footer>
-
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-  const gallery = document.querySelector('#mealideas .gallery');
-  if (!gallery) return;
-  gallery.querySelectorAll('.tile img').forEach(img => {
-    const parent = img.closest('.tile');
-    if (!parent) return;
-    parent.addEventListener('click', (e) => {
-      e.preventDefault();
-      if (window.GCCModals && typeof window.GCCModals.openImageModal === 'function') {
-        const captionEl = parent.querySelector('.caption');
-        const title = captionEl ? captionEl.textContent.trim() : (img.alt || '');
-        GCCModals.openImageModal(img.src, title);
-      }
-    });
-  });
-});
-</script>
 </body>
 </html>
