@@ -1,27 +1,44 @@
 <?php
 header('Content-Type: application/json');
 
+// Require username only
 $username = trim($_GET['username'] ?? '');
-if ($username==='') {
+if ($username === '') {
     echo json_encode(['success'=>false,'message'=>'Username required']);
     exit;
 }
 
 $file = '/data/uploads/coaches.json';
-if(!file_exists($file)){
+if (!file_exists($file)) {
     echo json_encode(['success'=>false,'message'=>'No coach data']);
     exit;
 }
 
 $coaches = json_decode(file_get_contents($file), true);
-if(!is_array($coaches)) $coaches=[];
+if (!is_array($coaches)) {
+    echo json_encode(['success'=>false,'message'=>'Invalid coach data']);
+    exit;
+}
 
-foreach($coaches as $c){
-    if(isset($c['Username']) && strcasecmp($c['Username'], $username)==0){
-        echo json_encode(['success'=>true,'coach'=>$c],JSON_UNESCAPED_SLASHES);
+// Case-insensitive username lookup
+foreach ($coaches as $c) {
+    if (isset($c['Username']) && strcasecmp($c['Username'], $username) === 0) {
+
+        // ✔ normalize file paths (just filename → -> uploads/filename)
+        if (isset($c['Files']) && is_array($c['Files'])) {
+            foreach ($c['Files'] as $type => $path) {
+                if ($path) {
+                    $c['Files'][$type] = 'uploads/' . basename($path);
+                }
+            }
+        }
+
+        echo json_encode(['success'=>true,'coach'=>$c], JSON_UNESCAPED_SLASHES);
         exit;
     }
 }
 
+// Not found
 echo json_encode(['success'=>false,'message'=>'Coach not found']);
+exit;
 ?>
