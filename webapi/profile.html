@@ -588,8 +588,9 @@ function imgUrl(path) {
 }
 
 function loadProfile() {
-  const email = localStorage.getItem('email');
-  if (!email) return location.href = '/webapi/login.html';
+	const username = localStorage.getItem('username');
+	fetch(`${API_BASE}/get_coach.php?username=${encodeURIComponent(username)}`)
+
 
   fetch(`${API_BASE}/get_coach.php?email=${encodeURIComponent(email)}`)
     .then(r => r.json())
