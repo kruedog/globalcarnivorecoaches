@@ -1,0 +1,23 @@
+<!-- components/modal-coach.html -->
+<div class="modal-target" id="coach-{{username}}" aria-modal="true" role="dialog">
+  <div class="modal-content">
+    <a href="#" class="modal-close" aria-label="Close">&times;</a>
+    <h3>{{name}}</h3>
+    {{bio}}
+    <div class="cert-container">
+      <a class="cert-tile" href="#img-cert-{{username}}" id="tile-cert-{{username}}">
+        <img src="{{cert}}" alt="Certificate" loading="lazy">
+      </a>
+      <div class="cert-caption">Kiltz Health Coaching Certificate</div>
+    </div>
+    {{photos}}
+  </div>
+</div>
+
+<!-- Certificate lightbox for this coach -->
+<div class="modal-target" id="img-cert-{{username}}" aria-modal="true" role="dialog">
+  <div class="modal-content">
+    <a href="#" class="modal-close" aria-label="Close">&times;</a>
+    <img src="{{cert}}" alt="Large view of certificate" loading="lazy">
+  </div>
+</div>
