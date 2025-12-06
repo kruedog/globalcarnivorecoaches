@@ -1,22 +1,29 @@
 <?php
-// login.php — Stateless login with JSON body only
+// login.php — Accept BOTH JSON and regular POST
 
 ini_set('display_errors', 0);
 error_reporting(E_ALL);
 
 header('Content-Type: application/json');
 
-// Read JSON input
+// Default (empty)
+$username = '';
+$password = '';
+
+// Try JSON first
 $raw = file_get_contents("php://input");
 $data = json_decode($raw, true);
 
-if (!is_array($data)) {
-    echo json_encode(['success' => false, 'message' => 'Invalid JSON']);
-    exit;
+if (is_array($data)) {
+    $username = trim($data['username'] ?? '');
+    $password = $data['password'] ?? '';
 }
 
-$username = trim($data['username'] ?? '');
-$password = $data['password'] ?? '';
+// Fall back to normal form POST
+if ($username === '' && !empty($_POST)) {
+    $username = trim($_POST['username'] ?? '');
+    $password = $_POST['password'] ?? '';
+}
 
 if ($username === '' || $password === '') {
     echo json_encode(['success' => false, 'message' => 'Username & password required']);
@@ -49,6 +56,6 @@ if (!$found || !password_verify($password, $found['Password'])) {
     exit;
 }
 
-unset($found['Password']); // never send hash back
+unset($found['Password']); // Never expose password hash
 
 echo json_encode(['success' => true, 'coach' => $found]);
