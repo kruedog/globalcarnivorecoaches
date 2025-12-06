@@ -1,352 +1,163 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Coach Profile • Global Carnivore Coaches</title>
-<link rel="icon" type="image/png" href="/images/earth_steak.png">
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Coach Profile</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Lora&display=swap" rel="stylesheet">
 
 <style>
-:root {
-  --white:#fff; --parch:#D0D2D5; --text:#192168; --blue:#192168; --red:#AF1E2D; --muted:#555;
-  --shadow:0 12px 40px rgba(0,0,0,.22); --radius:14px; --glass:rgba(255,255,255,.75);
-}
-*{box-sizing:border-box;margin:0;padding:0}
-body{min-height:100vh;font-family:'Inter',sans-serif;background:radial-gradient(circle at 10% 10%,#F8F9FA 0%,var(--parch) 40%,#B0B3BA 100%);color:var(--text);padding:2rem 1rem;line-height:1.6}
-.wrap{max-width:1160px;margin:auto}
-h1{font-family:'Cinzel',serif;font-size:2.7rem;color:var(--blue);text-align:center;margin-bottom:.4rem}
-.lead{text-align:center;color:var(--muted);font-size:1.15rem;margin-bottom:2.4rem}
-.card{background:var(--glass);backdrop-filter:blur(16px);padding:2.4rem;border-radius:var(--radius);box-shadow:var(--shadow);margin-bottom:2rem;border:1px solid rgba(255,255,255,.4)}
-label{font-weight:600;margin-bottom:.6rem;display:block;color:var(--blue)}
-.form-grid{display:grid;gap:1.4rem;grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
-input,textarea{width:100%;padding:1rem 1.1rem;border:2px solid var(--blue);border-radius:var(--radius);background:#fff;font-size:1rem;transition:border .3s,box-shadow .3s}
-input:focus,textarea:focus{border-color:var(--red);outline:none;box-shadow:0 0 0 4px rgba(175,30,45,.15)}
-textarea{resize:vertical;min-height:140px}
-.btn{padding:.9rem 2.4rem;font-weight:700;border:none;border-radius:999px;cursor:pointer;font-size:1rem;transition:all .3s;margin:.25rem .4rem;display:inline-block}
-.btn-primary{background:var(--red);color:#fff;box-shadow:0 8px 25px rgba(175,30,45,.35)}
-.btn-secondary{background:transparent;border:2px solid var(--blue);color:var(--blue)}
-.btn-primary:hover{background:#8b1624;transform:translateY(-2px)}
-.btn-secondary:hover{background:var(--blue);color:#fff}
-.upload-zone{border:3px dashed var(--blue);padding:2rem 1.4rem;text-align:center;cursor:pointer;border-radius:var(--radius);background:rgba(25,33,104,.05);transition:all .3s;font-weight:600;color:var(--blue);font-size:.95rem}
-.upload-zone:hover{border-color:var(--red);background:rgba(175,30,45,.08)}
-.upload-zone.dragover{background:rgba(175,30,45,.15);border-color:var(--red)}
-#uploadsList{margin-top:2rem;display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1.4rem}
-.preview-item{position:relative;overflow:hidden;border-radius:var(--radius);box-shadow:0 6px 20px rgba(0,0,0,.15);background:#000}
-.preview-img{width:100%;height:220px;object-fit:cover}
-.preview-caption{background:rgba(25,33,104,.88);color:#fff;padding:.8rem;font-weight:600;text-align:center;position:absolute;bottom:0;width:100%;font-size:.9rem}
-.remove-btn{position:absolute;top:10px;right:10px;background:var(--red);color:#fff;width:32px;height:32px;border-radius:50%;border:none;font-size:1.3rem;line-height:1;cursor:pointer;z-index:5}
-.specializations-list{margin-top:.7rem;display:flex;flex-wrap:wrap;gap:.6rem}
-.specializations-list span{background:var(--red);color:#fff;padding:.35rem .9rem;border-radius:20px;font-size:.9rem;font-weight:600;cursor:pointer}
-.footer-actions{text-align:center;margin-top:2rem}
-
-/* MODAL */
-#publicProfileModal{position:fixed;inset:0;background:rgba(25,33,104,.97);display:none;align-items:center;justify-content:center;padding:2rem;z-index:9999}
-.modal-shell{background:var(--glass);border:6px solid var(--red);border-radius:28px;max-width:1500px;width:100%;max-height:96vh;overflow:hidden;position:relative;box-shadow:0 40px 100px rgba(0,0,0,.6);display:flex;flex-direction:column}
-.modal-close{position:absolute;top:1.8rem;right:2.5rem;font-size:3rem;color:#ddd;text-decoration:none;z-index:10;transition:.3s;line-height:1}
-.modal-close:hover{color:#fff;transform:scale(1.08)}
-.modal-header{text-align:left;padding:2.5rem 4rem 0}
-.modal-header h2{font-family:'Cinzel',serif;font-size:2.4rem;color:var(--red)}
-.modal-body{display:grid;grid-template-columns:1.1fr .9fr;gap:3.5rem;padding:0 4rem 2.5rem;overflow-y:auto}
-.profile-avatar{position:absolute;top:2.2rem;right:5rem;width:220px;height:220px;border:8px solid var(--red);border-radius:50%;overflow:hidden;background:#000;box-shadow:0 25px 70px rgba(0,0,0,.65)}
-.profile-avatar img{width:100%;height:100%;object-fit:cover}
-.bio-box{background:#fff;border:5px solid var(--red);border-radius:var(--radius);padding:2rem 2.5rem;max-height:420px;overflow-y:auto;box-shadow:inset 0 8px 25px rgba(175,45,.16)}
-.before-after{display:flex;gap:1.8rem;flex-wrap:wrap}
-.ba-pair img{width:210px;height:300px;object-fit:cover;border-radius:18px;border:6px solid var(--red);background:#000}
-.specialization-box{background:#fff;border:4px solid var(--red);border-radius:var(--radius);padding:1rem 1.4rem;width:320px;max-width:100%;max-height:160px;overflow-y:auto;text-align:center}
-#certificateContainer img{max-width:260px;border:4px solid var(--red);border-radius:12px;box-shadow:0 14px 45px rgba(0,0,0,.5)}
-.book-btn-fixed{position:absolute;bottom:1.8rem;right:3.5rem;background:var(--red);color:#fff;padding:1rem 3.2rem;font-size:1.2rem;font-weight:800;border-radius:999px;border:none;cursor:pointer;box-shadow:0 22px 65px rgba(175,45,.65)}
+  body {
+    font-family:'Lora',serif;
+    background:#f4f4f4;
+    margin:0;
+    padding:20px;
+    color:#192168;
+  }
+  .container {
+    max-width:850px;
+    margin:auto;
+    background:#fff;
+    padding:30px;
+    border-radius:16px;
+    box-shadow:0 4px 14px rgba(0,0,0,0.15);
+  }
+  h1 { font-family:'Cinzel',serif; margin-bottom:20px; color:#C51230; }
+  label { display:block; margin-top:1rem; font-weight:bold; }
+  input,textarea {
+    width:100%;
+    padding:.5rem;
+    border-radius:6px;
+    border:1px solid #ccc;
+    font-size:1rem;
+    margin-top:.3rem;
+  }
+  textarea { height:120px; }
+  button {
+    margin-top:20px;
+    padding:12px 24px;
+    background:#AF1E2D;
+    color:#fff;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+    font-size:1rem;
+  }
+  .profile-img {
+    width:160px;
+    height:160px;
+    object-fit:cover;
+    border-radius:12px;
+    border:2px solid #C51230;
+    margin-bottom:10px;
+  }
 </style>
 </head>
 
 <body>
-<div class="wrap">
-  <h1>Coach Profile</h1>
-  <p class="lead">Welcome back, <strong id="coachName">Coach</strong>.</p>
+<div class="container">
+  <h1>My Profile</h1>
 
-  <div class="card">
-    <form id="profileForm" enctype="multipart/form-data">
-      <div class="form-grid">
-        <div><label>Full Name</label><input id="coachNameInput" required></div>
-        <div><label>Email</label><input id="email" type="email"></div>
-        <div><label>Phone</label><input id="phone"></div>
-      </div>
+  <!-- Profile Image -->
+  <label>Profile Image</label>
+  <img id="profilePreview" class="profile-img" src="" alt="Profile Image">
+  <input type="file" id="profileImg">
 
-      <div style="margin-top:1.8rem"><label>Bio</label><textarea id="bio"></textarea></div>
+  <!-- Profile Fields -->
+  <label>Username</label>
+  <input type="text" id="username" readonly>
 
-      <div style="margin-top:1.8rem">
-        <label>Specializations</label>
-        <div style="display:flex;gap:1rem;margin-bottom:.5rem;flex-wrap:wrap">
-          <input type="text" id="newSpec" placeholder="Add specialization..." style="flex:1;min-width:220px">
-          <button type="button" class="btn btn-primary add-spec-btn">Add</button>
-        </div>
-        <div class="specializations-list" id="specList"></div>
-      </div>
+  <label>Coach Name</label>
+  <input type="text" id="coachName">
 
-      <div class="form-grid" style="margin-top:2rem">
-        <div><label>Profile Photo</label><div class="upload-zone" id="profileUpload">Drop or click</div></div>
-        <div><label>Before Photo</label><div class="upload-zone" id="beforeUpload">Drop or click</div></div>
-        <div><label>After Photo</label><div class="upload-zone" id="afterUpload">Drop or click</div></div>
-        <div><label>Certification</label><div class="upload-zone" id="certUpload">Drop or click</div></div>
-      </div>
+  <label>Email</label>
+  <input type="email" id="email">
 
-      <div id="uploadsList"></div>
+  <label>Bio</label>
+  <textarea id="bio"></textarea>
 
-      <div class="footer-actions">
-        <button type="submit" class="btn btn-primary">Save Changes</button>
-        <button type="button" class="btn btn-secondary" id="viewProfileBtn">Preview Public Profile</button>
-      </div>
-    </form>
-  </div>
+  <label>Certifications</label>
+  <textarea id="certifications"></textarea>
 
-  <div style="text-align:center">
-    <button class="btn" id="logoutBtn" style="background:transparent;color:var(--muted)">Logout</button>
-  </div>
+  <label>Specialties (comma separated)</label>
+  <input type="text" id="specializations">
+
+  <button type="button" id="saveBtn">Save Changes</button>
 </div>
 
-<!-- PUBLIC PROFILE MODAL -->
-<div id="publicProfileModal">
-  <div class="modal-shell">
-    <a href="#" class="modal-close" id="closeModal">×</a>
-    <div class="modal-header">
-      <h2 id="modalName">Coach</h2>
-      <p><a id="modalEmail" style="color:var(--red);text-decoration:none;font-weight:bold;"></a></p>
-      <div class="profile-avatar"><img id="modalProfilePic" src="/images/earth_steak.png"></div>
-    </div>
-    <div class="modal-body">
-      <div>
-        <div class="bio-box" id="modalBio"></div>
-        <div class="before-after" id="beforeAfterContainer"></div>
-      </div>
-      <div class="right-column">
-        <div class="specialization-box"><h3>I Specialize In</h3><ul id="specializationList"></ul></div>
-        <div id="certificateContainer"></div>
-      </div>
-    </div>
-    <button class="book-btn-fixed">Book This Coach</button>
-  </div>
-</div>
 
 <script>
-// API Base
-const API_BASE = window.location.origin + '/webapi/';
+const API_BASE = ''; // same folder, no full URL needed
 
-let currentCoach = {};
-let specializations = [];
-const pendingDeletes = new Set();
-const newFiles = new Map();
+// Load data from coaches.json
+async function loadProfile() {
+  const res = await fetch('/get_coach.php?username=thor');
+  const data = await res.json();
+  if (!data.success) return;
 
-function imgUrl(p){
-  if(!p) return '';
-  return '/' + p.replace(/^\/+/, '') + '?v=' + Date.now();
+  const coach = data.coach;
+
+  document.getElementById('username').value = coach.Username || '';
+  document.getElementById('coachName').value = coach.CoachName || '';
+  document.getElementById('email').value = coach.Email || '';
+  document.getElementById('bio').value = coach.Bio || '';
+  document.getElementById('certifications').value = coach.Certifications || '';
+  document.getElementById('specializations').value = Array.isArray(coach.Specialties)
+    ? coach.Specialties.join(', ')
+    : '';
+
+  if (coach.ProfileImage) {
+    document.getElementById('profilePreview').src = '/data/uploads/' + coach.ProfileImage;
+  } else {
+    document.getElementById('profilePreview').src = '/images/user_default.png';
+  }
 }
 
-async function loadProfile(){
-  const username = localStorage.getItem('username');
-  if (!username) {
-    location.href = '/webapi/login.html';
-    return;
+loadProfile();
+
+// Save Profile Handler
+document.getElementById('saveBtn').onclick = async () => {
+  const formData = new FormData();
+  formData.append('username', document.getElementById('username').value);
+  formData.append('CoachName', document.getElementById('coachName').value);
+  formData.append('Email', document.getElementById('email').value);
+  formData.append('Bio', document.getElementById('bio').value);
+  formData.append('Certifications', document.getElementById('certifications').value);
+
+  // Specialties as JSON array
+  const specs = document.getElementById('specializations').value
+    .split(',')
+    .map(s => s.trim())
+    .filter(s => s.length > 0);
+  formData.append('Specialties', JSON.stringify(specs));
+
+  const imgInput = document.getElementById('profileImg');
+  if (imgInput.files.length > 0) {
+    formData.append('ProfileImage', imgInput.files[0]);
   }
 
   try {
-    const r = await fetch(`${API_BASE}get_coach.php?username=${encodeURIComponent(username)}`, {
-      credentials: 'include',
-      cache: 'no-store'
+    const res = await fetch('/update_coach.php', {
+      method: 'POST',
+      body: formData
     });
-    const data = await r.json();
-    if (!data.success || !data.coach) {
-      alert('Coach not found');
-      location.href = '/webapi/login.html';
+
+    const data = await res.json();
+    console.log(data);
+
+    if (!data.success) {
+      alert('Save failed: ' + (data.message || 'Unknown error'));
       return;
     }
 
-    currentCoach = data.coach;
-
-    document.getElementById('coachName').textContent = currentCoach.CoachName || currentCoach.Username;
-    document.getElementById('coachNameInput').value  = currentCoach.CoachName || '';
-    document.getElementById('email').value           = currentCoach.Email || '';
-    document.getElementById('phone').value           = currentCoach.Phone || '';
-    document.getElementById('bio').value             = currentCoach.Bio || '';
-
-    specializations = Array.isArray(currentCoach.Specializations)
-      ? currentCoach.Specializations.slice()
-      : [];
-    renderSpecializations();
-    renderExistingImages();
-
+    alert('Profile updated!');
+    loadProfile(); // refresh UI without reloading page
   } catch (err) {
-    console.error('Load error:', err);
+    console.error(err);
+    alert('Error saving profile.');
   }
-}
-
-function renderSpecializations(){
-  const list=document.getElementById('specList');
-  list.innerHTML='';
-  specializations.forEach((s,i)=>{
-    const tag=document.createElement('span');
-    tag.textContent=s;
-    tag.onclick=()=>{ specializations.splice(i,1); renderSpecializations(); };
-    list.appendChild(tag);
-  });
-}
-
-function renderExistingImages(){
-  const list=document.getElementById('uploadsList');
-  list.innerHTML='';
-  if(!currentCoach.Files) return;
-  const labels={Profile:"Profile",Before:"Before",After:"After",Certificate:"Certificate"};
-  Object.entries(currentCoach.Files).forEach(([type,file])=>{
-    if(!file) return;
-    const div=document.createElement('div');
-    div.className='preview-item';
-    div.innerHTML=`
-      <img src="${imgUrl(file)}" class="preview-img">
-      <div class="preview-caption">${labels[type]}</div>
-      <button class="remove-btn" data-type="${type}">×</button>`;
-    div.querySelector('.remove-btn').onclick=()=>{div.remove();pendingDeletes.add(type);};
-    list.appendChild(div);
-  });
-}
-
-// Add specialization
-document.querySelector('.add-spec-btn').onclick=()=>{
-  const i=document.getElementById('newSpec');const v=i.value.trim();
-  if(v && !specializations.includes(v)){specializations.push(v);renderSpecializations();}
-  i.value='';
 };
-
-// Upload handling
-['profile','before','after','cert'].forEach(base=>{
-  const zone=document.getElementById(base+'Upload');
-  const input=document.createElement('input');input.type='file';input.accept='image/*';
-  const labelMap={profile:'Profile',before:'Before',after:'After',cert:'Certificate'};
-  const type=labelMap[base];
-
-  input.onchange=()=>{
-    if(input.files[0]){
-      newFiles.set(type,input.files[0]);
-      pendingDeletes.delete(type);
-      previewFile(input.files[0],type);
-    }
-  };
-  zone.onclick = ()=> input.click();
-  zone.ondragover = e=>{e.preventDefault();zone.classList.add('dragover');};
-  zone.ondragleave=()=> zone.classList.remove('dragover');
-  zone.ondrop = e=>{
-    e.preventDefault();zone.classList.remove('dragover');
-    if(e.dataTransfer.files[0]){
-      input.files=e.dataTransfer.files;
-      input.dispatchEvent(new Event('change'));
-    }
-  };
-});
-
-function previewFile(file,type){
-  const list=document.getElementById('uploadsList');
-  const div=document.createElement('div');
-  div.className='preview-item';
-  const r=new FileReader();
-  r.onload=e=>{
-    div.innerHTML=`
-      <img src="${e.target.result}" class="preview-img">
-      <div class="preview-caption">${type} • ${file.name}</div>
-      <button class="remove-btn" data-type="${type}">×</button>`;
-    div.querySelector('.remove-btn').onclick=()=>{div.remove();newFiles.delete(type);};
-    list.appendChild(div);
-  };
-  r.readAsDataURL(file);
-}
-
-// SAVE
-document.getElementById('profileForm').onsubmit=async e=>{
-  e.preventDefault();
-  const username = localStorage.getItem('username');
-  if(!username) return;
-
-  const form=new FormData();
-  form.append('username',username);
-  form.append('coachName',document.getElementById('coachNameInput').value.trim());
-  form.append('email',document.getElementById('email').value.trim());
-  form.append('phone',document.getElementById('phone').value.trim());
-  form.append('bio',document.getElementById('bio').value);
-  form.append('specializations',JSON.stringify(specializations));
-
-  pendingDeletes.forEach(t=>form.append('delete[]',t));
-  newFiles.forEach((file,t)=>{ form.append(`files[${t}]`,file); });
-
-  try{
-    const r=await fetch(`${API_BASE}update_coach.php`,{method:'POST',body:form,credentials:'include'});
-    const txt=await r.text();
-    let data;
-    try { data=JSON.parse(txt); }
-    catch(err){ console.error('Bad JSON', txt); alert('Save failed: server error'); return; }
-    if(data.success){ alert('Saved!'); pendingDeletes.clear(); newFiles.clear(); loadProfile(); }
-    else alert('Save error: '+data.message);
-  }catch(err){ console.error(err); alert('Save failed'); }
-};
-
-// Modal View
-document.getElementById('viewProfileBtn').onclick=()=>{
-  const modal=document.getElementById('publicProfileModal');
-  document.getElementById('modalName').textContent=currentCoach.CoachName || currentCoach.Username;
-  const email = currentCoach.Email || '';
-  const emailLink = document.getElementById('modalEmail');
-  emailLink.textContent = email;
-  emailLink.href = email ? `mailto:${email}` : '#';
-
-  const p=document.getElementById('modalProfilePic');
-  p.src = currentCoach.Files?.Profile ? imgUrl(currentCoach.Files.Profile) : '/images/earth_steak.png';
-
-  const b=document.getElementById('modalBio');
-  b.innerHTML='';
-  (currentCoach.Bio||'').split(/\r?\n\r?\n/).forEach(p=>{
-    if(p.trim()){const el=document.createElement('p');el.textContent=p;b.appendChild(el);}
-  });
-
-  const ba=document.getElementById('beforeAfterContainer');
-  ba.innerHTML='';
-  ['Before','After'].forEach(t=>{
-    if(currentCoach.Files?.[t]){
-      const img=document.createElement('img');
-      img.src=imgUrl(currentCoach.Files[t]);
-      const wrap=document.createElement('div');
-      wrap.className='ba-pair';
-      wrap.appendChild(img);
-      ba.appendChild(wrap);
-    }
-  });
-
-  const sl=document.getElementById('specializationList');
-  sl.innerHTML='';
-  (currentCoach.Specializations||[]).forEach(s=>{
-    const li=document.createElement('li');
-    li.textContent=s;
-    sl.appendChild(li);
-  });
-
-  const cert=document.getElementById('certificateContainer');
-  cert.innerHTML='';
-  if(currentCoach.Files?.Certificate){
-    const c=document.createElement('img');
-    c.src=imgUrl(currentCoach.Files.Certificate);
-    cert.appendChild(c);
-  }
-
-  modal.style.display='flex';
-};
-
-document.getElementById('closeModal').onclick=e=>{
-  e.preventDefault();
-  document.getElementById('publicProfileModal').style.display='none';
-};
-
-document.getElementById('logoutBtn').onclick=()=>{
-  localStorage.clear();
-  fetch(`${API_BASE}logout.php`,{credentials:'include'})
-    .finally(()=>location.href='/webapi/login.html');
-};
-
-loadProfile();
 </script>
+
 </body>
 </html>
