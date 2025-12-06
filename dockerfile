@@ -1,11 +1,11 @@
-# ───────────────────────────────────────────────
-# Global Carnivore Coaches — Dockerfile (FIXED)
-# Render + Nginx + PHP-FPM + Persistent Disk Support
-# ───────────────────────────────────────────────
+# ────────────────────────────────────────────────
+# Global Carnivore Coaches — Render Deployment
+# nginx + PHP-FPM + Persistent Disk (/data/uploads)
+# ────────────────────────────────────────────────
 
 FROM php:8.3-fpm
 
-# Install nginx + dependencies for image uploads
+# Install nginx + image processing libs (GD)
 RUN apt-get update && apt-get install -y \
     nginx \
     libpng-dev libjpeg-dev libfreetype6-dev \
@@ -13,35 +13,31 @@ RUN apt-get update && apt-get install -y \
     && docker-php-ext-install -j$(nproc) gd \
     && rm -rf /var/lib/apt/lists/*
 
-# --- PHP Upload configuration ---
-RUN mkdir -p /tmp && chmod 1777 /tmp && \
-    mkdir -p /usr/local/etc/php/conf.d && \
-    { \
-      echo "file_uploads = On"; \
-      echo "upload_max_filesize = 20M"; \
-      echo "post_max_size = 40M"; \
-      echo "memory_limit = 256M"; \
-      echo "max_file_uploads = 20"; \
-      echo "upload_tmp_dir = /tmp"; \
-    } > /usr/local/etc/php/conf.d/uploads.ini
+# PHP upload limits
+RUN { \
+    echo "upload_max_filesize = 50M"; \
+    echo "post_max_size = 60M"; \
+    echo "memory_limit = 512M"; \
+    echo "max_file_uploads = 20"; \
+} > /usr/local/etc/php/conf.d/uploads.ini
 
-# Set working directory
+# App source code
 WORKDIR /var/www/html
 COPY . .
 
-# Nginx config
+# Nginx: Replace default config with ours
 RUN rm -f /etc/nginx/sites-enabled/default
-COPY nginx.conf /etc/nginx/sites-enabled/default
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-# Persistent upload disk mount
-# /data/uploads provided by Render persistent disk
+# Ensure persistent uploads dir exists + is writable
+# Render disk mount path: /data/uploads
 RUN mkdir -p /data/uploads \
-    && chown -R www-data:www-data /data/uploads \
+    && chmod -R 777 /data/uploads \
     && ln -sf /data/uploads /var/www/html/uploads \
-    && chown -R www-data:www-data /var/www/html
+    && chown -R www-data:www-data /var/www/html /data/uploads
 
-# Expose Render port
+# Expose for Render runtime
 EXPOSE 8080
 
-# Start both services
+# Start PHP-FPM + nginx together
 CMD php-fpm -D && nginx -g 'daemon off;'
