@@ -264,8 +264,10 @@ document.getElementById('profileForm').onsubmit = async e => {
   pendingDeletes.forEach(t => form.append('delete[]', t));
   newFiles.forEach((file, t) => {
     // IMPORTANT: this matches PHP's $_FILES['files']['name'][t]
-    form.append(`files[${t}]`, file);
-  });
+  newFiles.forEach((file, t) => {
+  form.append(`files[${t}]`, file);
+});
+
 
   try {
     const r = await fetch(`${API_BASE}update_coach.php`, {
