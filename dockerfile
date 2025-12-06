@@ -1,11 +1,11 @@
 # ───────────────────────────────────────────────
-# Global Carnivore Coaches — Stable Dockerfile
-# For Render + Nginx + PHP-FPM + Persistent Upload Disk
+# Global Carnivore Coaches — Dockerfile (FIXED)
+# Render + Nginx + PHP-FPM + Persistent Disk Support
 # ───────────────────────────────────────────────
 
 FROM php:8.3-fpm
 
-# Install nginx + image dependencies
+# Install nginx + dependencies for image uploads
 RUN apt-get update && apt-get install -y \
     nginx \
     libpng-dev libjpeg-dev libfreetype6-dev \
@@ -13,27 +13,35 @@ RUN apt-get update && apt-get install -y \
     && docker-php-ext-install -j$(nproc) gd \
     && rm -rf /var/lib/apt/lists/*
 
-# Increase upload limits
-RUN echo "upload_max_filesize = 20M" > /usr/local/etc/php/conf.d/uploads.ini \
- && echo "post_max_size = 25M"     >> /usr/local/etc/php/conf.d/uploads.ini \
- && echo "memory_limit = 256M"     >> /usr/local/etc/php/conf.d/uploads.ini
+# --- PHP Upload configuration ---
+RUN mkdir -p /tmp && chmod 1777 /tmp && \
+    mkdir -p /usr/local/etc/php/conf.d && \
+    { \
+      echo "file_uploads = On"; \
+      echo "upload_max_filesize = 20M"; \
+      echo "post_max_size = 40M"; \
+      echo "memory_limit = 256M"; \
+      echo "max_file_uploads = 20"; \
+      echo "upload_tmp_dir = /tmp"; \
+    } > /usr/local/etc/php/conf.d/uploads.ini
 
-# Copy application
+# Set working directory
 WORKDIR /var/www/html
 COPY . .
 
-# Nginx Config (STATIC FILE SERVING + PHP)
+# Nginx config
 RUN rm -f /etc/nginx/sites-enabled/default
 COPY nginx.conf /etc/nginx/sites-enabled/default
 
-# Ensure uploads + coaches.json areas exist & writable
+# Persistent upload disk mount
+# /data/uploads provided by Render persistent disk
 RUN mkdir -p /data/uploads \
-    && touch /data/uploads/coaches.json \
+    && chown -R www-data:www-data /data/uploads \
     && ln -sf /data/uploads /var/www/html/uploads \
-    && chown -R www-data:www-data /var/www/html /data/uploads
+    && chown -R www-data:www-data /var/www/html
 
-# Expose Runtime Port
+# Expose Render port
 EXPOSE 8080
 
-# Start services inside the same container
-CMD php-fpm -D && nginx -g 'daemon off;'
+# Start both services
+CMD service php-fpm start && nginx -g 'daemon off;'
