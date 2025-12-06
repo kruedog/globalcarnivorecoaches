@@ -1,14 +1,21 @@
 <?php
 /**
- * update_coach.php — FINAL VERSION
- * Global Carnivore Coaches — Dec 2025
+ * update_coach.php — FINAL STABLE VERSION
+ * Global Carnivore Coaches — December 2025
+ *
+ * Saves:
+ * ✔ CoachName / Email / Phone / Bio / Specializations
+ * ✔ Profile / Before / After / Certificate images
+ * ✔ Deletes replaced images
+ *
+ * Reads/writes: /data/uploads/coaches.json (persistent disk)
  */
 
 header('Content-Type: application/json');
 ini_set('log_errors', 1);
 ini_set('error_log', '/data/uploads/php_errors.log');
 
-// Debug logs (append)
+// Debug logging
 file_put_contents('/data/uploads/debug_post.log', print_r($_POST, true), FILE_APPEND);
 file_put_contents('/data/uploads/debug_files.log', print_r($_FILES, true), FILE_APPEND);
 
@@ -21,7 +28,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 // Username required
 $username = trim($_POST['username'] ?? '');
 if (!$username) {
-    echo json_encode(['success' => false, 'message' => 'Username missing']);
+    echo json_encode(['success' => false, 'message' => 'Username required']);
     exit;
 }
 
@@ -37,7 +44,7 @@ if (!is_array($coaches)) {
     exit;
 }
 
-// Find coach by Username
+// Find coach record
 $index = null;
 foreach ($coaches as $i => $coach) {
     if (($coach['Username'] ?? '') === $username) {
@@ -50,95 +57,97 @@ if ($index === null) {
     exit;
 }
 
-// === TEXT FIELDS ===
+// === TEXT FIELDS FROM FRONTEND ===
 $map = [
     'coachName' => 'CoachName',
     'email'     => 'Email',
     'phone'     => 'Phone',
-    'bio'       => 'Bio'
+    'bio'       => 'Bio',
 ];
-foreach ($map as $k => $field) {
-    if (isset($_POST[$k])) {
-        $coaches[$index][$field] = trim($_POST[$k]);
+
+foreach ($map as $posted => $field) {
+    if (isset($_POST[$posted])) {
+        $coaches[$index][$field] = trim($_POST[$posted]);
     }
 }
 
-// Specializations
+// Specializations saved as JSON array
 if (isset($_POST['specializations'])) {
-    $arr = json_decode($_POST['specializations'], true);
-    if (is_array($arr)) {
-        $coaches[$index]['Specializations'] = array_values($arr);
+    $specs = json_decode($_POST['specializations'], true);
+    if (is_array($specs)) {
+        $coaches[$index]['Specializations'] = array_values($specs);
     }
 }
 
-// Ensure Files array exists
+// Ensure Files structure exists
 if (!isset($coaches[$index]['Files']) || !is_array($coaches[$index]['Files'])) {
     $coaches[$index]['Files'] = [
-        "Profile" => null,
-        "Before" => null,
-        "After" => null,
-        "Certificate" => null
+        'Profile' => null,
+        'Before' => null,
+        'After' => null,
+        'Certificate' => null,
     ];
 }
 
-// Helper: extract file from grouped array (files[Profile])
-function get_upload(string $type) {
-    if (!empty($_FILES['files']['name'][$type])) {
+// Upload Dir (persistent)
+$uploadDir = '/data/uploads/';
+if (!is_dir($uploadDir)) {
+    mkdir($uploadDir, 0775, true);
+}
+
+// Helper – extract file for slot from grouped array: files[Slot]
+function get_upload($slot) {
+    if (!empty($_FILES['files']['name'][$slot] ?? null)) {
         return [
-            'name' => $_FILES['files']['name'][$type],
-            'tmp'  => $_FILES['files']['tmp_name'][$type],
-            'err'  => $_FILES['files']['error'][$type],
+            'name' => $_FILES['files']['name'][$slot],
+            'tmp'  => $_FILES['files']['tmp_name'][$slot],
+            'err'  => $_FILES['files']['error'][$slot],
         ];
     }
     return null;
 }
 
-// === IMAGE UPLOAD LOOP ===
+// === IMAGE UPLOAD ===
 $slots = ['Profile', 'Before', 'After', 'Certificate'];
-$updated = [];
+$updatedSlots = [];
 
 foreach ($slots as $slot) {
-    $f = get_upload($slot);
-    if (!$f) continue;
-    if ($f['err'] !== UPLOAD_ERR_OK || !is_uploaded_file($f['tmp'])) continue;
+    $file = get_upload($slot);
+    if (!$file) continue;
 
-    $ext = strtolower(pathinfo($f['name'], PATHINFO_EXTENSION));
-    if (!in_array($ext, ['jpg', 'jpeg', 'png', 'webp'])) continue;
+    if ($file['err'] === UPLOAD_ERR_OK && is_uploaded_file($file['tmp'])) {
+        $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+        if (!in_array($ext, ['jpg','jpeg','png','webp'])) continue;
 
-    $newName = $username . "_" . $slot . "_" . time() . "." . $ext;
-	
-    $dest = '/data/uploads/' . $newName;
-	file_put_contents(
-    '/data/uploads/upload_debug.log',
-    "$slot\n" . print_r($f, true) . "\n",
-    FILE_APPEND
-);
+        $newName = $username . '_' . $slot . '_' . time() . '.' . $ext;
+        $target = $uploadDir . $newName;
 
-    if (move_uploaded_file($f['tmp'], $dest)) {
+        if (move_uploaded_file($file['tmp'], $target)) {
 
-        // delete old file
-        $old = $coaches[$index]['Files'][$slot] ?? null;
-        if ($old) {
-            $oldPath = '/data/uploads/' . $old;
-            if (file_exists($oldPath)) @unlink($oldPath);
+            // Delete old if exists
+            $oldName = $coaches[$index]['Files'][$slot] ?? null;
+            if ($oldName) {
+                $oldPath = $uploadDir . $oldName;
+                if (file_exists($oldPath)) @unlink($oldPath);
+            }
+
+            $coaches[$index]['Files'][$slot] = $newName;
+            $updatedSlots[] = $slot;
         }
-
-        $coaches[$index]['Files'][$slot] = $newName;
-        $updated[] = $slot;
     }
 }
 
-// === SAVE BACK TO JSON ===
+// Save JSON back
 if (file_put_contents($coachesFile, json_encode($coaches, JSON_PRETTY_PRINT)) === false) {
-    echo json_encode(['success' => false, 'message' => 'Failed to save coaches.json']);
+    echo json_encode(['success' => false, 'message' => 'Failed to update JSON']);
     exit;
 }
 
-// SUCCESS RESPONSE
+// Success response
 echo json_encode([
     'success' => true,
     'message' => 'Profile updated',
-    'updated_files' => $updated,
-    'files_state' => $coaches[$index]['Files']
+    'updated_slots' => $updatedSlots,
+    'files' => $coaches[$index]['Files']
 ]);
 exit;
