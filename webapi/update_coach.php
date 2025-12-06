@@ -1,12 +1,13 @@
 <?php
-// update_coach.php — FINAL NESTED $_FILES HANDLER
-// Uses /data/uploads as persistent disk and "uploads/" as public path
-
 file_put_contents(
     '/data/uploads/debug_files.log',
     print_r($_FILES, true) . "\n\n",
     FILE_APPEND
 );
+// update_coach.php — FINAL NESTED $_FILES HANDLER
+// Uses /data/uploads as persistent disk and "uploads/" as public path
+
+
 
 
 ini_set('display_errors', '0');
