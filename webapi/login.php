@@ -15,38 +15,23 @@ if ($username === '' || $password === '') {
     exit;
 }
 
-// Resolve coaches.json location
-$possibleFiles = [
-    __DIR__ . '/../coaches.json',     // normal
-    '/data/coaches.json',            // common mount
-    '/data/uploads/coaches.json',    // some render configs
-];
+// Persistent storage location
+$coachesFile = __DIR__ . '/../uploads/coaches.json';
 
-$coachesFile = null;
-foreach ($possibleFiles as $f) {
-    if (file_exists($f)) { $coachesFile = $f; break; }
-}
-
-if (!$coachesFile) {
-    echo json_encode([
-        'success' => false,
-        'message' => 'System error: coaches.json not found'
-    ]);
+if (!file_exists($coachesFile)) {
+    echo json_encode(['success' => false, 'message' => 'System error: coaches.json missing']);
     exit;
 }
 
 $coaches = json_decode(file_get_contents($coachesFile), true);
 if (!is_array($coaches)) {
-    echo json_encode([
-        'success' => false,
-        'message' => 'Invalid coaches.json'
-    ]);
+    echo json_encode(['success' => false, 'message' => 'Invalid coaches.json']);
     exit;
 }
 
 $found = null;
 foreach ($coaches as $coach) {
-    if (strtolower($coach['Username']) === strtolower($username)) {
+    if (strcasecmp($coach['Username'], $username) === 0) {
         $found = $coach;
         break;
     }
