@@ -1,48 +1,46 @@
 # ───────────────────────────────────────────────
-# Global Carnivore Coaches — PRODUCTION Dockerfile
-# Works with Render Persistent Disk (/data/uploads)
-# nginx + PHP-FPM 8.3 + secure writable uploads
+# Global Carnivore Coaches — Stable Dockerfile
+# Render + Nginx + PHP-FPM + Persistent Upload Disk
 # ───────────────────────────────────────────────
 
 FROM php:8.3-fpm
 
-# Install nginx + GD image dependencies
+# Install nginx and image libraries
 RUN apt-get update && apt-get install -y \
     nginx \
     libpng-dev libjpeg-dev libfreetype6-dev \
-    && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install -j$(nproc) gd \
-    && rm -rf /var/lib/apt/lists/*
+ && docker-php-ext-configure gd --with-freetype --with-jpeg \
+ && docker-php-ext-install -j$(nproc) gd \
+ && rm -rf /var/lib/apt/lists/*
 
-# PHP upload limits for images
-RUN { \
-    echo "upload_max_filesize = 100M"; \
-    echo "post_max_size = 120M"; \
-    echo "memory_limit = 512M"; \
-    echo "max_file_uploads = 20"; \
-} > /usr/local/etc/php/conf.d/uploads.ini
+# PHP limits
+RUN echo "upload_max_filesize = 50M" > /usr/local/etc/php/conf.d/uploads.ini \
+ && echo "post_max_size = 55M"       >> /usr/local/etc/php/conf.d/uploads.ini \
+ && echo "memory_limit = 512M"       >> /usr/local/etc/php/conf.d/uploads.ini
 
-# App source
+# Copy application
 WORKDIR /var/www/html
 COPY . .
 
-# Nginx configuration
-RUN rm -f /etc/nginx/sites-enabled/default \
-    && rm -f /etc/nginx/conf.d/default.conf
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+# Nginx config
+RUN rm -f /etc/nginx/sites-enabled/default
+COPY nginx.conf /etc/nginx/sites-enabled/default
 
-# Persistent disk mount path on Render: /data/uploads
-# Ensure writable by PHP (www-data)
+# Create persistent disk mount directory and uploads symlink
 RUN mkdir -p /data/uploads \
-    && rm -rf /var/www/html/uploads \
-    && ln -sf /data/uploads /var/www/html/uploads \
-    && chown -R www-data:www-data /data/uploads /var/www/html \
-    && chmod -R 775 /data/uploads \
-    && find /data/uploads -type d -exec chmod 775 {} \; \
-    && find /data/uploads -type f -exec chmod 664 {} \;
+ && ln -sf /data/uploads /var/www/html/uploads \
+ && chown -R www-data:www-data /var/www/html /data/uploads
 
-# Expose service port for Render
+# 🔥 Force correct recursive permissions
+RUN chmod -R 775 /var/www/html /data/uploads \
+ && find /var/www/html -type d -exec chmod 775 {} \; \
+ && find /var/www/html -type f -exec chmod 664 {} \; \
+ && chmod -R 775 /data/uploads
+
+# Copy entrypoint & ensure it's executable
+COPY docker-entrypoint.sh /docker-entrypoint.sh
+RUN chmod +x /docker-entrypoint.sh
+
 EXPOSE 8080
 
-# Start PHP-FPM + nginx together
-CMD php-fpm -D && nginx -g 'daemon off;'
+CMD ["/docker-entrypoint.sh"]
