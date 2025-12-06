@@ -1,170 +1,92 @@
 <?php
-// ----------------------------------------------
-// update_coach.php — FINAL, PRODUCTION VERSION
-// Global Carnivore Coaches
-// ----------------------------------------------
-<?php
-header("Access-Control-Allow-Origin: https://globalcarnivorecoaches.onrender.com");
-header("Access-Control-Allow-Credentials: true");
-header("Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With");
-header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
-
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    http_response_code(200);
-    exit();
-}
-
-session_set_cookie_params([
-    'path' => '/',
-    'domain' => 'globalcarnivorecoaches.onrender.com',
-    'secure' => true,
-    'httponly' => true,
-    'samesite' => 'None'
-]);
-
-session_start();
-
+// update_coach.php — stateless update + image upload
 
 ini_set('display_errors', 0);
 error_reporting(E_ALL);
 
 header('Content-Type: application/json');
-header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Credentials: true');
 
 function fail($msg) {
     echo json_encode(['success' => false, 'message' => $msg]);
     exit;
 }
 
-function ok($coach) {
-    echo json_encode(['success' => true, 'coach' => $coach]);
+function ok($c) {
+    echo json_encode(['success' => true, 'coach' => $c]);
     exit;
 }
 
-// ----------------------------------------------
-// Validate POST
-// ----------------------------------------------
-if (empty($_POST['username'])) {
-    fail("Missing username");
-}
+$username = trim($_POST['username'] ?? '');
+if ($username === '') fail('Missing username');
 
-$username = trim($_POST['username']);
-
-// ----------------------------------------------
-// Load coaches file
-// ----------------------------------------------
 $coachesFile = __DIR__ . '/coaches.json';
-if (!file_exists($coachesFile)) {
-    fail("coaches.json missing");
-}
-
+if (!file_exists($coachesFile)) fail('coaches.json missing');
 $coaches = json_decode(file_get_contents($coachesFile), true);
-if (!is_array($coaches)) {
-    fail("coaches.json corrupted");
-}
+if (!is_array($coaches)) fail('Invalid coaches.json');
 
-// ----------------------------------------------
-// Find coach by username
-// ----------------------------------------------
+// Find coach
 $ci = null;
-foreach ($coaches as $i => $coach) {
-    if (!empty($coach['Username']) &&
-        strtolower($coach['Username']) === strtolower($username)) {
+foreach ($coaches as $i => $c) {
+    if (isset($c['Username']) &&
+        strtolower($c['Username']) === strtolower($username)) {
         $ci = $i;
         break;
     }
 }
-if ($ci === null) {
-    fail("Coach not found");
-}
+if ($ci === null) fail('Coach not found');
 
-// ----------------------------------------------
-// Update fields
-// ----------------------------------------------
+// Update text fields
 $coaches[$ci]['CoachName'] = trim($_POST['coachName'] ?? '');
 $coaches[$ci]['Email']     = trim($_POST['email'] ?? '');
 $coaches[$ci]['Phone']     = trim($_POST['phone'] ?? '');
 $coaches[$ci]['Bio']       = trim($_POST['bio'] ?? '');
 
-if (!isset($coaches[$ci]['Files']) || !is_array($coaches[$ci]['Files'])) {
-    $coaches[$ci]['Files'] = [];
-}
+$specs = json_decode($_POST['specializations'] ?? '[]', true);
+$coaches[$ci]['Specializations'] = is_array($specs) ? $specs : [];
 
-if (isset($_POST['specializations'])) {
-    $specs = json_decode($_POST['specializations'], true);
-    $coaches[$ci]['Specializations'] = is_array($specs) ? $specs : [];
-}
+if (!is_array($coaches[$ci]['Files'])) $coaches[$ci]['Files'] = [];
 
-// ----------------------------------------------
-// Paths
-// ----------------------------------------------
-$diskUploadPath = '/data/uploads/';  // Render persistent disk
-$publicPrefix   = 'uploads/';       // Stored in JSON
+// Upload paths
+$disk = "/data/uploads/";
+$public = "uploads/";
+@mkdir($disk, 0775, true);
 
-// ----------------------------------------------
-// Handle deletion of existing images
-// ----------------------------------------------
+// Handle deletions
 if (!empty($_POST['delete'])) {
-    $deletes = is_array($_POST['delete']) ? $_POST['delete'] : [$_POST['delete']];
-    foreach ($deletes as $type) {
-        if (!empty($coaches[$ci]['Files'][$type])) {
-            $basename = basename($coaches[$ci]['Files'][$type]);
-            $filePath = $diskUploadPath . $basename;
-            if (is_file($filePath)) {
-                @unlink($filePath);
-            }
+    $dels = is_array($_POST['delete']) ? $_POST['delete'] : [$_POST['delete']];
+    foreach ($dels as $t) {
+        if (!empty($coaches[$ci]['Files'][$t])) {
+            @unlink($disk . basename($coaches[$ci]['Files'][$t]));
         }
-        unset($coaches[$ci]['Files'][$type]);
+        unset($coaches[$ci]['Files'][$t]);
     }
 }
 
-// ----------------------------------------------
-// Handle new uploads
-// from FormData: files[] + imageType[]
-// ----------------------------------------------
+// Handle upload replacements
 if (!empty($_FILES['files']) && !empty($_POST['imageType'])) {
+    for ($i=0; $i<count($_POST['imageType']); $i++) {
+        $type = $_POST['imageType'][$i];
+        if ($_FILES['files']['error'][$i] !== UPLOAD_ERR_OK) continue;
 
-    $fileData  = $_FILES['files'];
-    $typeArray = $_POST['imageType']; // parallel array
+        $tmp = $_FILES['files']['tmp_name'][$i];
+        $orig = $_FILES['files']['name'][$i];
+        if (!is_uploaded_file($tmp)) continue;
 
-    foreach ($typeArray as $index => $type) {
-
-        if (!isset($fileData['name'][$index])) continue;
-        if ($fileData['error'][$index] !== UPLOAD_ERR_OK) continue;
-
-        $origName = $fileData['name'][$index];
-        $tmpPath  = $fileData['tmp_name'][$index];
-
-        $ext = strtolower(pathinfo($origName, PATHINFO_EXTENSION));
+        $ext = strtolower(pathinfo($orig, PATHINFO_EXTENSION));
         if (!$ext) $ext = 'jpg';
 
-        $safeUser = preg_replace('/[^a-z0-9_\-]+/i', '_', $username);
-        $safeType = preg_replace('/[^a-z0-9_\-]+/i', '_', $type);
-        $fileName = "{$safeUser}_{$safeType}_" . time() . ".$ext";
+        $fname = strtolower(preg_replace('/[^a-z0-9]+/i', '_', $username . '_' . $type)) . "_" . time() . "." . $ext;
+        $dest = $disk . $fname;
 
-        $diskFile  = $diskUploadPath . $fileName;
-        $publicURL = $publicPrefix . $fileName;
-
-        if (move_uploaded_file($tmpPath, $diskFile)) {
-            $coaches[$ci]['Files'][$type] = $publicURL;
+        if (move_uploaded_file($tmp, $dest)) {
+            $coaches[$ci]['Files'][$type] = $public . $fname;
         }
     }
 }
 
-// ----------------------------------------------
-// Save updated coaches.json
-// ----------------------------------------------
-$jsonOut = json_encode($coaches, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
-if ($jsonOut === false) {
-    fail("JSON error: " . json_last_error_msg());
+// Save JSON back
+if (file_put_contents($coachesFile, json_encode($coaches, JSON_PRETTY_PRINT)) === false) {
+    fail('Write failed');
 }
 
-if (file_put_contents($coachesFile, $jsonOut) === false) {
-    fail("Failed writing coaches.json");
-}
-
-// ----------------------------------------------
-// Success
-// ----------------------------------------------
 ok($coaches[$ci]);

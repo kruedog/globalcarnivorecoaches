@@ -1,67 +1,54 @@
 <?php
-header("Access-Control-Allow-Origin: https://globalcarnivorecoaches.onrender.com");
-header("Access-Control-Allow-Credentials: true");
-header("Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With");
-header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
+// login.php — Stateless login with JSON body only
 
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    http_response_code(200);
-    exit();
-}
-
-session_set_cookie_params([
-    'path' => '/',
-    'domain' => 'globalcarnivorecoaches.onrender.com',
-    'secure' => true,
-    'httponly' => true,
-    'samesite' => 'None'
-]);
-
-session_start();
+ini_set('display_errors', 0);
+error_reporting(E_ALL);
 
 header('Content-Type: application/json');
-session_start();
 
-$username = trim($_POST['username'] ?? '');
-$password = trim($_POST['password'] ?? '');
+// Read JSON input
+$raw = file_get_contents("php://input");
+$data = json_decode($raw, true);
 
-if($username==='' || $password===''){
-    echo json_encode(['success'=>false,'message'=>'Username and password required']);
+if (!is_array($data)) {
+    echo json_encode(['success' => false, 'message' => 'Invalid JSON']);
     exit;
 }
 
-$file = '/data/uploads/coaches.json';
-if(!file_exists($file)){
-    echo json_encode(['success'=>false,'message'=>'No coach data']);
+$username = trim($data['username'] ?? '');
+$password = $data['password'] ?? '';
+
+if ($username === '' || $password === '') {
+    echo json_encode(['success' => false, 'message' => 'Username & password required']);
     exit;
 }
 
-$coaches = json_decode(file_get_contents($file), true);
-if(!is_array($coaches)) $coaches=[];
+$coachesFile = __DIR__ . '/coaches.json';
+if (!file_exists($coachesFile)) {
+    echo json_encode(['success' => false, 'message' => 'coaches.json missing']);
+    exit;
+}
 
-$found=null;
-foreach ($coaches as $c) {
-    if(isset($c['Username']) && strcasecmp($c['Username'], $username)==0) {
-        $found=$c;
+$coaches = json_decode(file_get_contents($coachesFile), true);
+if (!is_array($coaches)) {
+    echo json_encode(['success' => false, 'message' => 'Invalid coaches.json']);
+    exit;
+}
+
+$found = null;
+foreach ($coaches as $coach) {
+    if (isset($coach['Username']) &&
+        strtolower($coach['Username']) === strtolower($username)) {
+        $found = $coach;
         break;
     }
 }
-if(!$found){
-    echo json_encode(['success'=>false,'message'=>'Invalid username']);
+
+if (!$found || !password_verify($password, $found['Password'])) {
+    echo json_encode(['success' => false, 'message' => 'Invalid credentials']);
     exit;
 }
 
-if(!password_verify($password, $found['Password'])){
-    echo json_encode(['success'=>false,'message'=>'Incorrect password']);
-    exit;
-}
+unset($found['Password']); // never send hash back
 
-$_SESSION['username']=$found['Username'];
-
-echo json_encode([
-    'success'=>true,
-    'username'=>$found['Username'],
-    'coachName'=>$found['CoachName']??$found['Username'],
-    'requireAgreement'=>$found['requireAgreement']??true
-]);
-?>
+echo json_encode(['success' => true, 'coach' => $found]);

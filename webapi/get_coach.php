@@ -1,65 +1,35 @@
 <?php
-<?php
-header("Access-Control-Allow-Origin: https://globalcarnivorecoaches.onrender.com");
-header("Access-Control-Allow-Credentials: true");
-header("Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With");
-header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
+// Returns a coach by username (stateless)
 
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    http_response_code(200);
-    exit();
-}
-
-session_set_cookie_params([
-    'path' => '/',
-    'domain' => 'globalcarnivorecoaches.onrender.com',
-    'secure' => true,
-    'httponly' => true,
-    'samesite' => 'None'
-]);
-
-session_start();
+ini_set('display_errors', 0);
+error_reporting(E_ALL);
 
 header('Content-Type: application/json');
 
-// Require username only
-$username = trim($_GET['username'] ?? '');
+$username = isset($_GET['username']) ? trim($_GET['username']) : '';
 if ($username === '') {
-    echo json_encode(['success'=>false,'message'=>'Username required']);
+    echo json_encode(['success' => false, 'message' => 'Missing username']);
     exit;
 }
 
-$file = '/data/uploads/coaches.json';
-if (!file_exists($file)) {
-    echo json_encode(['success'=>false,'message'=>'No coach data']);
+$coachesFile = __DIR__ . '/coaches.json';
+if (!file_exists($coachesFile)) {
+    echo json_encode(['success' => false, 'message' => 'coaches.json missing']);
     exit;
 }
 
-$coaches = json_decode(file_get_contents($file), true);
+$coaches = json_decode(file_get_contents($coachesFile), true);
 if (!is_array($coaches)) {
-    echo json_encode(['success'=>false,'message'=>'Invalid coach data']);
+    echo json_encode(['success' => false, 'message' => 'Invalid coaches.json']);
     exit;
 }
 
-// Case-insensitive username lookup
-foreach ($coaches as $c) {
-    if (isset($c['Username']) && strcasecmp($c['Username'], $username) === 0) {
-
-        // ✔ normalize file paths (just filename → -> uploads/filename)
-        if (isset($c['Files']) && is_array($c['Files'])) {
-            foreach ($c['Files'] as $type => $path) {
-                if ($path) {
-                    $c['Files'][$type] = 'uploads/' . basename($path);
-                }
-            }
-        }
-
-        echo json_encode(['success'=>true,'coach'=>$c], JSON_UNESCAPED_SLASHES);
+foreach ($coaches as $coach) {
+    if (isset($coach['Username']) &&
+        strtolower($coach['Username']) === strtolower($username)) {
+        echo json_encode(['success' => true, 'coach' => $coach]);
         exit;
     }
 }
 
-// Not found
-echo json_encode(['success'=>false,'message'=>'Coach not found']);
-exit;
-?>
+echo json_encode(['success' => false, 'message' => 'Coach not found']);
