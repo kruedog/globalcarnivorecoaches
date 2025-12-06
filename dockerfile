@@ -44,4 +44,4 @@ RUN mkdir -p /data/uploads \
 EXPOSE 8080
 
 # Start both services
-CMD service php-fpm start && nginx -g 'daemon off;'
+CMD php-fpm -D && nginx -g 'daemon off;'
