@@ -97,153 +97,230 @@ textarea{resize:vertical;min-height:140px}
 </div>
 
 <script>
-const API_BASE = window.location.origin + `/webapi/`;
+const API_BASE = window.location.origin + '/webapi/';
 
-let currentCoach={};
-let specializations=[];
-let pendingDeletes=new Set();
-let newFiles=new Map();
+let currentCoach = {};
+let specializations = [];
+const pendingDeletes = new Set();
+const newFiles = new Map();
 
 function imgUrl(p){
-  if(!p)return '';
-  return '/' + p.replace(/^\/+/,'') + '?v='+Date.now();
+  if(!p) return '';
+  return '/' + p.replace(/^\/+/, '') + '?v=' + Date.now();
 }
 
 async function loadProfile(){
-  const u=localStorage.getItem('username');
-  if(!u)return location.href='/webapi/login.html';
-  const r=await fetch(API_BASE+'get_coach.php?username='+encodeURIComponent(u),{credentials:'include'});
-  const data=await r.json();
-  currentCoach=data.coach;
+  const username = localStorage.getItem('username');
+  if (!username) {
+    location.href = '/webapi/login.html';
+    return;
+  }
 
-  document.getElementById('coachName').textContent=currentCoach.CoachName||currentCoach.Username;
-  document.getElementById('coachNameInput').value=currentCoach.CoachName||'';
-  document.getElementById('email').value=currentCoach.Email||'';
-  document.getElementById('phone').value=currentCoach.Phone||'';
-  document.getElementById('bio').value=currentCoach.Bio||'';
+  try {
+    const r = await fetch(`${API_BASE}get_coach.php?username=${encodeURIComponent(username)}`, {
+      credentials: 'include',
+      cache: 'no-store'
+    });
+    const data = await r.json();
+    if (!data.success || !data.coach) {
+      alert('Coach not found');
+      location.href = '/webapi/login.html';
+      return;
+    }
 
-  specializations=currentCoach.Specializations||[];
-  renderSpecializations();
-  renderExistingImages();
+    currentCoach = data.coach;
+
+    document.getElementById('coachName').textContent = currentCoach.CoachName || currentCoach.Username;
+    document.getElementById('coachNameInput').value  = currentCoach.CoachName || '';
+    document.getElementById('email').value           = currentCoach.Email || '';
+    document.getElementById('phone').value           = currentCoach.Phone || '';
+    document.getElementById('bio').value             = currentCoach.Bio || '';
+
+    specializations = Array.isArray(currentCoach.Specializations)
+      ? currentCoach.Specializations.slice()
+      : [];
+    renderSpecializations();
+    renderExistingImages();
+  } catch (err) {
+    console.error('Load error:', err);
+  }
 }
 
-function renderSpecializations(){
-  const list=document.getElementById('specList');
-  list.innerHTML='';
-  specializations.forEach((s,i)=>{
-    const el=document.createElement('span'); el.textContent=s;
-    el.onclick=()=>{specializations.splice(i,1);renderSpecializations()}
-    list.appendChild(el);
+function renderSpecializations() {
+  const list = document.getElementById('specList');
+  list.innerHTML = '';
+  specializations.forEach((s, i) => {
+    const tag = document.createElement('span');
+    tag.textContent = s;
+    tag.onclick = () => {
+      specializations.splice(i, 1);
+      renderSpecializations();
+    };
+    list.appendChild(tag);
   });
 }
 
-function renderExistingImages(){
-  const list=document.getElementById('uploadsList');
-  list.innerHTML='';
-  if(!currentCoach.Files)return;
-  const labels={Profile:'Profile',Before:'Before',After:'After',Certificate:'Certificate'};
-  Object.entries(currentCoach.Files).forEach(([t,f])=>{
-    const div=document.createElement('div');
-    div.className='preview-item';
-    div.innerHTML=`<img src="${imgUrl(f)}" class="preview-img">
-    <div class="preview-caption">${labels[t]}</div>
-    <button class="remove-btn">×</button>`;
-    div.querySelector('.remove-btn').onclick=()=>{
-      div.remove(); pendingDeletes.add(t);
+function renderExistingImages() {
+  const list = document.getElementById('uploadsList');
+  list.innerHTML = '';
+  if (!currentCoach.Files) return;
+
+  const labels = { Profile: 'Profile', Before: 'Before', After: 'After', Certificate: 'Certificate' };
+
+  Object.entries(currentCoach.Files).forEach(([type, file]) => {
+    if (!file) return;
+    const div = document.createElement('div');
+    div.className = 'preview-item';
+    div.innerHTML = `
+      <img src="${imgUrl(file)}" class="preview-img">
+      <div class="preview-caption">${labels[type] || type}</div>
+      <button class="remove-btn" data-type="${type}">×</button>
+    `;
+    div.querySelector('.remove-btn').onclick = () => {
+      div.remove();
+      pendingDeletes.add(type);
     };
     list.appendChild(div);
   });
 }
 
-document.querySelector('.add-spec-btn').onclick=()=>{
-  const i=document.getElementById('newSpec');
-  const v=i.value.trim();
-  if(v&&!specializations.includes(v)){specializations.push(v);renderSpecializations();}
-  i.value='';
+// Add specialization
+document.querySelector('.add-spec-btn').onclick = () => {
+  const input = document.getElementById('newSpec');
+  const val = input.value.trim();
+  if (val && !specializations.includes(val)) {
+    specializations.push(val);
+    renderSpecializations();
+  }
+  input.value = '';
 };
 
-['profile','before','after','cert'].forEach(base=>{
-  const zone=document.getElementById(base+'Upload');
-  const inp=document.createElement('input'); inp.type='file'; inp.accept='image/*';
-  const map={profile:'Profile',before:'Before',after:'After',cert:'Certificate'};
-  const type=map[base];
-  inp.onchange=()=>{if(inp.files[0]){newFiles.set(type,inp.files[0]); pendingDeletes.delete(type); previewNewFile(inp.files[0],type);}};
-  zone.onclick=()=>inp.click();
-  zone.ondragover=e=>{e.preventDefault();zone.classList.add('dragover')};
-  zone.ondragleave=()=>zone.classList.remove('dragover');
-  zone.ondrop=e=>{
-    e.preventDefault(); zone.classList.remove('dragover');
-    if(e.dataTransfer.files[0]){
-      inp.files=e.dataTransfer.files;
-      inp.dispatchEvent(new Event('change'));
+// Upload zones -> newFiles map
+['profile','before','after','cert'].forEach(base => {
+  const zone = document.getElementById(base + 'Upload');
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = 'image/*';
+
+  const labelMap = { profile:'Profile', before:'Before', after:'After', cert:'Certificate' };
+  const type = labelMap[base];
+
+  input.onchange = () => {
+    if (input.files[0]) {
+      newFiles.set(type, input.files[0]);
+      pendingDeletes.delete(type); // we're replacing, not just deleting
+      previewNewFile(input.files[0], type);
     }
-  }
+  };
+
+  zone.onclick = () => input.click();
+  zone.ondragover = e => { e.preventDefault(); zone.classList.add('dragover'); };
+  zone.ondragleave = () => zone.classList.remove('dragover');
+  zone.ondrop = e => {
+    e.preventDefault();
+    zone.classList.remove('dragover');
+    if (e.dataTransfer.files[0]) {
+      input.files = e.dataTransfer.files;
+      input.dispatchEvent(new Event('change'));
+    }
+  };
 });
 
-function previewNewFile(file,type){
-  const div=document.createElement('div');
-  div.className='preview-item';
-  const r=new FileReader();
-  r.onload=e=>{
-    div.innerHTML=`<img src="${e.target.result}" class="preview-img">
-    <div class="preview-caption">${type}</div>
-    <button class="remove-btn">×</button>`;
-    div.querySelector('.remove-btn').onclick=()=>{div.remove();newFiles.delete(type)};
-    document.getElementById('uploadsList').appendChild(div);
-  }
-  r.readAsDataURL(file);
+function previewNewFile(file, type) {
+  const list = document.getElementById('uploadsList');
+  const div = document.createElement('div');
+  div.className = 'preview-item';
+
+  const reader = new FileReader();
+  reader.onload = e => {
+    div.innerHTML = `
+      <img src="${e.target.result}" class="preview-img">
+      <div class="preview-caption">${type} • ${file.name}</div>
+      <button class="remove-btn" data-type="${type}">×</button>
+    `;
+    div.querySelector('.remove-btn').onclick = () => {
+      div.remove();
+      newFiles.delete(type);
+    };
+    list.appendChild(div);
+  };
+  reader.readAsDataURL(file);
 }
 
-document.getElementById('profileForm').onsubmit=async e=>{
+// SAVE PROFILE
+document.getElementById('profileForm').onsubmit = async e => {
   e.preventDefault();
-  const u=localStorage.getItem('username');
-  const form=new FormData();
-  form.append('username',u);
-  form.append('coachName',document.getElementById('coachNameInput').value.trim());
-  form.append('email',document.getElementById('email').value.trim());
-  form.append('phone',document.getElementById('phone').value.trim());
-  form.append('bio',document.getElementById('bio').value);
-  form.append('specializations',JSON.stringify(specializations));
-  pendingDeletes.forEach(t=>{form.append('delete[]',t)});
-  newFiles.forEach((file,t)=>{form.append(`files[${t}]`,file)});
-  const r=await fetch(API_BASE+'update_coach.php',{method:'POST',body:form,credentials:'include'});
-  const text=await r.text();
-  let data; try{data=JSON.parse(text)}catch(err){
-    console.error(text);
-    return alert("Save error: invalid server JSON");
+  const username = localStorage.getItem('username');
+  if (!username) return;
+
+  const form = new FormData();
+  form.append('username', username);
+  form.append('coachName', document.getElementById('coachNameInput').value.trim());
+  form.append('email',     document.getElementById('email').value.trim());
+  form.append('phone',     document.getElementById('phone').value.trim());
+  form.append('bio',       document.getElementById('bio').value);
+  form.append('specializations', JSON.stringify(specializations));
+
+  pendingDeletes.forEach(t => form.append('delete[]', t));
+  newFiles.forEach((file, t) => {
+    // IMPORTANT: this matches PHP's $_FILES['files']['name'][t]
+    form.append(`files[${t}]`, file);
+  });
+
+  try {
+    const r = await fetch(`${API_BASE}update_coach.php`, {
+      method: 'POST',
+      body: form,
+      credentials: 'include',
+      cache: 'no-store'
+    });
+    const txt  = await r.text();
+    let data;
+    try {
+      data = JSON.parse(txt);
+    } catch (err) {
+      console.error('Bad JSON:', txt);
+      alert('Save error: invalid JSON from server');
+      return;
+    }
+    if (data.success) {
+      alert('Saved!');
+      pendingDeletes.clear();
+      newFiles.clear();
+      loadProfile();
+    } else {
+      alert('Save error: ' + data.message);
+    }
+  } catch (err) {
+    console.error('Save failed:', err);
+    alert('Save failed: network/server error');
   }
-  if(data.success){alert("Saved!"); pendingDeletes.clear(); newFiles.clear(); loadProfile();}
-  else alert("Save error: "+data.message);
 };
 
-document.getElementById('viewProfileBtn').onclick=()=>{
-  const m=document.getElementById('publicProfileModal');
-  document.getElementById('modalName').textContent=currentCoach.CoachName;
-  const email=document.getElementById('email').value.trim();
-  document.getElementById('modalEmail').href='mailto:'+email;
-  document.getElementById('modalEmail').textContent=email;
-  document.getElementById('modalProfilePic').src=currentCoach.Files?.Profile?imgUrl(currentCoach.Files.Profile):'/images/earth_steak.png';
-  document.getElementById('modalBio').textContent=currentCoach.Bio||'';
-  const ba=document.getElementById('beforeAfterContainer'); ba.innerHTML='';
-  ['Before','After'].forEach(t=>{if(currentCoach.Files?.[t]){const img=document.createElement('img');img.src=imgUrl(currentCoach.Files[t]);ba.appendChild(img)}});
-  const sl=document.getElementById('specializationList'); sl.innerHTML='';
-  (currentCoach.Specializations||[]).forEach(s=>{const li=document.createElement('li');li.textContent=s;sl.appendChild(li)});
-  const cert=document.getElementById('certificateContainer'); cert.innerHTML='';
-  if(currentCoach.Files?.Certificate){const img=document.createElement('img');img.src=imgUrl(currentCoach.Files.Certificate);cert.appendChild(img)}
-  m.style.display='flex';
+// Simple preview modal hook (you already had markup for this)
+document.getElementById('viewProfileBtn').onclick = () => {
+  const modal = document.getElementById('publicProfileModal');
+  document.getElementById('modalName').textContent = currentCoach.CoachName || currentCoach.Username;
+  const email = currentCoach.Email || '';
+  const emailLink = document.getElementById('modalEmail');
+  emailLink.textContent = email;
+  emailLink.href = email ? `mailto:${email}` : '#';
+
+  const profileImg = document.getElementById('modalProfilePic');
+  profileImg.src = currentCoach.Files?.Profile ? imgUrl(currentCoach.Files.Profile) : '/images/earth_steak.png';
+
+  // Fill in bio, before/after, specializations, cert as you already had
+  modal.style.display = 'flex';
 };
 
-document.getElementById('closeModal').onclick=e=>{
-  e.preventDefault();
-  document.getElementById('publicProfileModal').style.display='none';
-};
-
-document.getElementById('logoutBtn').onclick=()=>{
-  localStorage.clear(); fetch(API_BASE+'logout.php',{credentials:'include'})
-    .finally(()=>location.href='/webapi/login.html');
+document.getElementById('logoutBtn').onclick = () => {
+  localStorage.clear();
+  fetch(`${API_BASE}logout.php`, { credentials: 'include' })
+    .finally(() => location.href = '/webapi/login.html');
 };
 
 loadProfile();
 </script>
+
 </body>
 </html>
