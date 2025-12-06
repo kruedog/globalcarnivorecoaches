@@ -1,33 +1,25 @@
 <?php
 header('Content-Type: application/json');
-header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Credentials: true');
-
 session_start();
 
-// Try to read JSON first
-$input = json_decode(file_get_contents('php://input'), true);
+// Accept JSON or Form POST
+$raw = file_get_contents("php://input");
+$data = json_decode($raw, true);
+if (!is_array($data)) $data = $_POST;
 
-// If JSON missing, fallback to POST form fields
-if (!is_array($input)) {
-    $input = $_POST;
-}
-
-$username = trim($input['username'] ?? '');
-$password = $input['password'] ?? '';
+$username = trim($data['username'] ?? '');
+$password = $data['password'] ?? '';
 
 if ($username === '' || $password === '') {
     echo json_encode(['success' => false, 'message' => 'Username and password required']);
     exit;
 }
 
-// Load coaches file — use persistent JSON location
-$coachesFile = realpath(__DIR__ . '/../coaches.json');
-if (!$coachesFile || !file_exists($coachesFile)) {
-    echo json_encode(['success' => false, 'message' => 'System error: missing data']);
+$coachesFile = __DIR__ . '/../coaches.json';
+if (!file_exists($coachesFile)) {
+    echo json_encode(['success' => false, 'message' => 'System error']);
     exit;
 }
-
 $coaches = json_decode(file_get_contents($coachesFile), true);
 
 $found = null;
@@ -48,15 +40,13 @@ if (!password_verify($password, $found['Password'])) {
     exit;
 }
 
-// Login success
 $_SESSION['username'] = $found['Username'];
 
+// REQUIRED for your frontend JS
 echo json_encode([
-    'success' => true,
-    'message' => 'Login OK',
-    'coach' => [
-        'Username' => $found['Username'],
-        'CoachName'=> $found['CoachName'] ?? '',
-        'Email'    => $found['Email'] ?? '',
-    ]
+    'success'   => true,
+    'message'   => 'OK',
+    'username'  => $found['Username'],
+    'coachName' => $found['CoachName'] ?? $found['Username'],
+    'requireAgreement' => $found['requireAgreement'] ?? false
 ]);
