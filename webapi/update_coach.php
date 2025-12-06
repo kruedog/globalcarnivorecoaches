@@ -1,100 +1,143 @@
 <?php
-// update_coach.php — Render Persistent Disk Compatible
+// update_coach.php — Render + Persistent Disk + Email-safe JSON output
+
+// Force JSON output only
+ini_set('display_errors', '0');              // don't dump HTML errors into output
+error_reporting(E_ALL);
+
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Credentials: true');
 
-// SECURITY — required field
-if (!isset($_POST['username']) || empty(trim($_POST['username']))) {
-    echo json_encode(['success' => false, 'message' => 'Username required']);
+function respond($success, $message = '', $extra = []) {
+    $payload = array_merge(['success' => $success, 'message' => $message], $extra);
+    echo json_encode($payload);
     exit;
+}
+
+// --- BASIC VALIDATION ---
+if (empty($_POST['username'])) {
+    respond(false, 'Username required');
 }
 
 $username = trim($_POST['username']);
 $coachesFile = __DIR__ . '/coaches.json';
 
-// Load coaches data
+// --- LOAD COACHES ---
 if (!file_exists($coachesFile)) {
-    echo json_encode(['success' => false, 'message' => 'coaches.json not found']);
-    exit;
-}
-$coaches = json_decode(file_get_contents($coachesFile), true);
-if (!is_array($coaches)) {
-    echo json_encode(['success' => false, 'message' => 'Invalid coaches.json']);
-    exit;
+    respond(false, 'coaches.json not found');
 }
 
-// Find coach entry
-$coachIndex = null;
+$rawJson = file_get_contents($coachesFile);
+$coaches = json_decode($rawJson, true);
+
+if (!is_array($coaches)) {
+    respond(false, 'Invalid coaches.json');
+}
+
+// --- FIND COACH ---
+$index = null;
 foreach ($coaches as $i => $coach) {
-    if (isset($coach['Username']) && strtolower($coach['Username']) === strtolower($username)) {
-        $coachIndex = $i;
+    if (isset($coach['Username']) && strcasecmp($coach['Username'], $username) === 0) {
+        $index = $i;
         break;
     }
 }
-if ($coachIndex === null) {
-    echo json_encode(['success' => false, 'message' => 'Coach not found']);
-    exit;
+
+if ($index === null) {
+    respond(false, 'Coach not found');
 }
 
-// Update core fields
-$coaches[$coachIndex]['CoachName'] = trim($_POST['coachName'] ?? '');
-$coaches[$coachIndex]['Phone']     = trim($_POST['phone'] ?? '');
-$coaches[$coachIndex]['Bio']       = trim($_POST['bio'] ?? '');
+// --- UPDATE SIMPLE FIELDS ---
+$coaches[$index]['CoachName'] = trim($_POST['coachName'] ?? '');
+$coaches[$index]['Email']     = trim($_POST['email'] ?? '');
+$coaches[$index]['Phone']     = trim($_POST['phone'] ?? '');
+$coaches[$index]['Bio']       = trim($_POST['bio'] ?? '');
 
 if (isset($_POST['specializations'])) {
-    $decoded = json_decode($_POST['specializations'], true);
-    $coaches[$coachIndex]['Specializations'] = is_array($decoded) ? $decoded : [];
+    $spec = json_decode($_POST['specializations'], true);
+    $coaches[$index]['Specializations'] = is_array($spec) ? $spec : [];
+} else {
+    $coaches[$index]['Specializations'] = $coaches[$index]['Specializations'] ?? [];
 }
 
-// Prepare file paths
-$diskUploadPath = '/data/uploads/';   // persistent storage
-$publicPathBase = 'uploads/';         // served by browser
+// --- FILE PATH SETUP ---
+$diskUploadPath = '/data/uploads/';   // persistent disk mount
+$publicBase     = 'uploads/';         // what the browser will use: /uploads/filename.jpg
 
-// Ensure disk directory exists
 if (!is_dir($diskUploadPath)) {
-    mkdir($diskUploadPath, 0777, true);
+    @mkdir($diskUploadPath, 0777, true);
 }
 
-// Initialize Files object
-if (!isset($coaches[$coachIndex]['Files']) || !is_array($coaches[$coachIndex]['Files'])) {
-    $coaches[$coachIndex]['Files'] = [];
+// Ensure Files array exists
+if (!isset($coaches[$index]['Files']) || !is_array($coaches[$index]['Files'])) {
+    $coaches[$index]['Files'] = [];
 }
 
-// Handle file deletions
+// --- HANDLE DELETES ---
+$deleteTypes = [];
 if (!empty($_POST['delete'])) {
-    foreach ($_POST['delete'] as $type) {
-        if (!empty($coaches[$coachIndex]['Files'][$type])) {
-            $fileOnDisk = $diskUploadPath . basename($coaches[$coachIndex]['Files'][$type]);
-            if (file_exists($fileOnDisk)) unlink($fileOnDisk);
-            unset($coaches[$coachIndex]['Files'][$type]); // remove from JSON
-        }
+    if (is_array($_POST['delete'])) {
+        $deleteTypes = $_POST['delete'];
+    } else {
+        $deleteTypes = [$_POST['delete']];
     }
 }
 
-// Handle new uploads
-if (!empty($_FILES['files']['name'])) {
-    foreach ($_FILES['files']['name'] as $idx => $fileName) {
-        if ($_FILES['files']['error'][$idx] !== UPLOAD_ERR_OK) continue;
+foreach ($deleteTypes as $type) {
+    if (!isset($coaches[$index]['Files'][$type])) continue;
 
-        $type = $_POST['imageType'][$idx] ?? null;
+    $stored = $coaches[$index]['Files'][$type]; // e.g. "uploads/somefile.jpg"
+    $basename = basename($stored);
+    $diskPath = $diskUploadPath . $basename;
+
+    if (is_file($diskPath)) {
+        @unlink($diskPath);
+    }
+
+    unset($coaches[$index]['Files'][$type]);
+}
+
+// --- HANDLE NEW UPLOADS ---
+if (!empty($_FILES['files']) && !empty($_FILES['files']['name']) && is_array($_FILES['files']['name'])) {
+    $names  = $_FILES['files']['name'];
+    $errors = $_FILES['files']['error'];
+    $tmp    = $_FILES['files']['tmp_name'];
+
+    $imageTypes = $_POST['imageType'] ?? [];
+
+    foreach ($names as $idx => $originalName) {
+        if (!isset($errors[$idx]) || $errors[$idx] !== UPLOAD_ERR_OK) {
+            continue;
+        }
+
+        $type = $imageTypes[$idx] ?? null; // "Profile", "Before", etc.
         if (!$type) continue;
 
-        $ext = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
-        $safeName = strtolower($username) . '_' . $type . '_' . time() . '.' . $ext;
+        $ext = strtolower(pathinfo($originalName, PATHINFO_EXTENSION));
+        if (!$ext) $ext = 'jpg';
 
-        $targetDiskPath = $diskUploadPath . $safeName;
+        $safeUser = preg_replace('/[^a-z0-9_\-]+/i', '_', $username);
+        $safeType = preg_replace('/[^a-z0-9_\-]+/i', '_', $type);
+        $newFile  = $safeUser . '_' . $safeType . '_' . time() . '.' . $ext;
 
-        if (move_uploaded_file($_FILES['files']['tmp_name'][$idx], $targetDiskPath)) {
-            // Save the PUBLIC path to JSON
-            $coaches[$coachIndex]['Files'][$type] = $publicPathBase . $safeName;
+        $targetDiskPath = $diskUploadPath . $newFile;
+
+        if (move_uploaded_file($tmp[$idx], $targetDiskPath)) {
+            // Store PUBLIC path in JSON
+            $coaches[$index]['Files'][$type] = $publicBase . $newFile;
         }
     }
 }
 
-// Save updated JSON
-file_put_contents($coachesFile, json_encode($coaches, JSON_PRETTY_PRINT));
+// --- SAVE JSON ---
+$encoded = json_encode($coaches, JSON_PRETTY_PRINT);
+if ($encoded === false) {
+    respond(false, 'JSON encoding failed');
+}
 
-echo json_encode(['success' => true]);
-exit;
-?>
+if (file_put_contents($coachesFile, $encoded) === false) {
+    respond(false, 'Failed to write coaches.json');
+}
+
+respond(true, 'Profile updated');
