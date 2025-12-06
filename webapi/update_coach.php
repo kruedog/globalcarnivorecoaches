@@ -3,6 +3,7 @@
 // update_coach.php — FINAL, PRODUCTION VERSION
 // Global Carnivore Coaches
 // ----------------------------------------------
+file_put_contents('/tmp/debug_post.txt', print_r($_POST, true));
 
 ini_set('display_errors', 0);
 error_reporting(E_ALL);
