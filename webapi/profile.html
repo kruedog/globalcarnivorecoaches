@@ -106,7 +106,7 @@ textarea{resize:vertical;min-height:140px}
 </div>
 
 <script>
-// FIXED — always correct absolute API url on Render
+// Always use absolute base on Render
 const API_BASE = window.location.origin + `/webapi/`;
 
 let currentCoach = {};
@@ -116,159 +116,265 @@ let newFiles = new Map();
 
 function imgUrl(p){
   if(!p) return '';
-  return '/' + p.replace(/^\/+/,'') + '?v=' + Date.now();
+  return '/' + p.replace(/^\/+/, '') + '?v=' + Date.now();
 }
 
 async function loadProfile(){
   const username = localStorage.getItem('username');
-  if(!username) return location.href='/webapi/login.html';
+  if (!username) return location.href = '/webapi/login.html';
 
-  const r = await fetch(API_BASE + 'get_coach.php?username=' + encodeURIComponent(username), {credentials:'include'});
-  const data = await r.json();
-  currentCoach = data.coach;
+  try {
+    const res = await fetch(API_BASE + 'get_coach.php?username=' + encodeURIComponent(username), {
+      credentials: 'include',
+      cache: 'no-store'
+    });
+    const data = await res.json();
 
-  document.getElementById('coachName').textContent = currentCoach.CoachName||currentCoach.Username;
-  document.getElementById('coachNameInput').value = currentCoach.CoachName||'';
-  document.getElementById('email').value = currentCoach.Email||'';
-  document.getElementById('phone').value = currentCoach.Phone||'';
-  document.getElementById('bio').value = currentCoach.Bio||'';
-  specializations = currentCoach.Specializations||[];
-  renderSpecializations();
-  renderExistingImages();
+    if (!data.success || !data.coach) {
+      alert('Error loading coach: ' + (data.message || 'Unknown error'));
+      return;
+    }
+
+    currentCoach = data.coach;
+
+    document.getElementById('coachName').textContent = currentCoach.CoachName || currentCoach.Username;
+    document.getElementById('coachNameInput').value  = currentCoach.CoachName || '';
+    document.getElementById('email').value           = currentCoach.Email || '';
+    document.getElementById('phone').value           = currentCoach.Phone || '';
+    document.getElementById('bio').value             = currentCoach.Bio || '';
+
+    specializations = Array.isArray(currentCoach.Specializations) ? currentCoach.Specializations.slice() : [];
+    pendingDeletes.clear();
+    newFiles.clear();
+    renderSpecializations();
+    renderExistingImages();
+  } catch (err) {
+    console.error('Load error:', err);
+    alert('Failed to load profile — network/server error.');
+  }
 }
 
 function renderSpecializations(){
   const list = document.getElementById('specList');
-  list.innerHTML='';
-  specializations.forEach((s,i)=>{
-    const el=document.createElement('span');
-    el.textContent=s;
-    el.onclick=()=>{specializations.splice(i,1);renderSpecializations()};
-    list.appendChild(el);
+  list.innerHTML = '';
+  specializations.forEach((s, i) => {
+    const tag = document.createElement('span');
+    tag.textContent = s;
+    tag.onclick = () => {
+      specializations.splice(i, 1);
+      renderSpecializations();
+    };
+    list.appendChild(tag);
   });
 }
 
 function renderExistingImages(){
-  const list=document.getElementById('uploadsList');
-  list.innerHTML='';
-  if(!currentCoach.Files) return;
-  const labels={Profile:"Profile",Before:"Before",After:"After",Certificate:"Certificate"};
+  const list = document.getElementById('uploadsList');
+  list.innerHTML = '';
 
-  Object.entries(currentCoach.Files).forEach(([type,filename])=>{
-    if(!filename) return;
-    const div=document.createElement('div');
-    div.className='preview-item';
-    div.innerHTML=`<img src="${imgUrl(filename)}" class="preview-img">
-      <div class="preview-caption">${labels[type]}</div>
-      <button class="remove-btn" data-type="${type}">×</button>`;
-    div.querySelector('.remove-btn').onclick=()=>{div.remove();pendingDeletes.add(type);}
+  if (!currentCoach.Files) return;
+
+  const labels = { Profile: 'Profile', Before: 'Before', After: 'After', Certificate: 'Certificate' };
+
+  Object.entries(currentCoach.Files).forEach(([type, filename]) => {
+    if (!filename) return;
+    const div = document.createElement('div');
+    div.className = 'preview-item';
+    div.innerHTML = `
+      <img src="${imgUrl(filename)}" class="preview-img">
+      <div class="preview-caption">${labels[type] || type}</div>
+      <button class="remove-btn" data-type="${type}">×</button>
+    `;
+    div.querySelector('.remove-btn').onclick = () => {
+      div.remove();
+      pendingDeletes.add(type);
+    };
     list.appendChild(div);
   });
 }
 
-document.querySelector('.add-spec-btn').onclick=()=>{
-  const v=document.getElementById('newSpec').value.trim();
-  if(v&&!specializations.includes(v)){specializations.push(v);renderSpecializations();}
-  document.getElementById('newSpec').value='';
+document.querySelector('.add-spec-btn').onclick = () => {
+  const input = document.getElementById('newSpec');
+  const value = input.value.trim();
+  if (value && !specializations.includes(value)) {
+    specializations.push(value);
+    renderSpecializations();
+  }
+  input.value = '';
 };
 
-['profile','before','after','cert'].forEach(base=>{
-  const zone=document.getElementById(base+'Upload');
-  const input=document.createElement('input'); input.type='file'; input.accept='image/*';
-  const label={profile:'Profile',before:'Before',after:'After',cert:'Certificate'}[base];
+// Upload zones
+['profile','before','after','cert'].forEach(base => {
+  const zone  = document.getElementById(base + 'Upload');
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = 'image/*';
 
-  input.onchange=()=>{if(input.files[0]){newFiles.set(label,input.files[0]);pendingDeletes.delete(label);previewNew(input.files[0],label);}};
-  zone.onclick=()=>input.click();
-  zone.ondragover=e=>{e.preventDefault();zone.classList.add('dragover');};
-  zone.ondragleave=()=>zone.classList.remove('dragover');
-  zone.ondrop=e=>{
+  const map = { profile: 'Profile', before: 'Before', after: 'After', cert: 'Certificate' };
+  const type = map[base];
+
+  input.onchange = () => {
+    if (input.files && input.files[0]) {
+      newFiles.set(type, input.files[0]);
+      pendingDeletes.delete(type);
+      previewNewFile(input.files[0], type);
+    }
+  };
+
+  zone.onclick = () => input.click();
+  zone.ondragover = e => { e.preventDefault(); zone.classList.add('dragover'); };
+  zone.ondragleave = () => zone.classList.remove('dragover');
+  zone.ondrop = e => {
     e.preventDefault();
-    if(e.dataTransfer.files[0]){
-      input.files=e.dataTransfer.files;
+    zone.classList.remove('dragover');
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      input.files = e.dataTransfer.files;
       input.dispatchEvent(new Event('change'));
     }
   };
 });
 
-function previewNew(file,type){
-  const div=document.createElement('div');
-  div.className='preview-item';
-  const r=new FileReader();
-  r.onload=e=>{
-    div.innerHTML=`<img src="${e.target.result}" class="preview-img">
-      <div class="preview-caption">${type}</div>
-      <button class="remove-btn" data-type="${type}">×</button>`;
-    div.querySelector('.remove-btn').onclick=()=>{div.remove();newFiles.delete(type)};
-    document.getElementById('uploadsList').appendChild(div);
+function previewNewFile(file, type){
+  const list = document.getElementById('uploadsList');
+  const div = document.createElement('div');
+  div.className = 'preview-item';
+  const reader = new FileReader();
+  reader.onload = e => {
+    div.innerHTML = `
+      <img src="${e.target.result}" class="preview-img">
+      <div class="preview-caption">${type} • ${file.name}</div>
+      <button class="remove-btn" data-type="${type}">×</button>
+    `;
+    div.querySelector('.remove-btn').onclick = () => {
+      div.remove();
+      newFiles.delete(type);
+    };
+    list.appendChild(div);
   };
-  r.readAsDataURL(file);
+  reader.readAsDataURL(file);
 }
 
-document.getElementById('profileForm').onsubmit = async e=>{
+// SAVE PROFILE
+document.getElementById('profileForm').onsubmit = async e => {
   e.preventDefault();
   const username = localStorage.getItem('username');
-  if(!username) return;
+  if (!username) return;
 
   const form = new FormData();
-  form.append('username',username);
-  form.append('coachName',document.getElementById('coachNameInput').value.trim());
-  form.append('email',document.getElementById('email').value.trim());
-  form.append('phone',document.getElementById('phone').value.trim());
-  form.append('bio',document.getElementById('bio').value);
-  form.append('specializations',JSON.stringify(specializations));
+  form.append('username', username);
+  form.append('coachName', document.getElementById('coachNameInput').value.trim());
+  form.append('email',     document.getElementById('email').value.trim());
+  form.append('phone',     document.getElementById('phone').value.trim());
+  form.append('bio',       document.getElementById('bio').value);
+  form.append('specializations', JSON.stringify(specializations));
 
-  pendingDeletes.forEach(t=>form.append('delete[]',t));
-  newFiles.forEach((file,t)=>{form.append('files[]',file);form.append('imageType[]',t);});
+  pendingDeletes.forEach(t => form.append('delete[]', t));
+  newFiles.forEach((file, t) => {
+    form.append('files[]', file);
+    form.append('imageType[]', t);
+  });
 
-  const r = await fetch(API_BASE + 'update_coach.php', {method:'POST',body:form,credentials:'include'});
-  const data = await r.json();
-  if(data.success){alert("Saved!");pendingDeletes.clear();newFiles.clear();loadProfile();}
-  else alert("Error saving profile");
+  try {
+    const res  = await fetch(API_BASE + 'update_coach.php', {
+      method: 'POST',
+      body: form,
+      credentials: 'include',
+      cache: 'no-store'
+    });
+
+    const text = await res.text();
+    let data;
+    try {
+      data = JSON.parse(text);
+    } catch (err) {
+      console.error('Raw response from update_coach.php:', text);
+      alert('Save failed — server did not return valid JSON.\n\nRaw response:\n' + text.slice(0,400));
+      return;
+    }
+
+    if (data.success) {
+      alert('Saved!');
+      pendingDeletes.clear();
+      newFiles.clear();
+      loadProfile();
+    } else {
+      alert('Save error: ' + (data.message || 'Unknown error'));
+    }
+  } catch (err) {
+    console.error('Save failed:', err);
+    alert('Save failed — network/server error.');
+  }
 };
 
-document.getElementById('viewProfileBtn').onclick = ()=>{
-  document.getElementById('modalName').textContent=currentCoach.CoachName||currentCoach.Username;
-  document.getElementById('modalEmail').href='mailto:'+currentCoach.Email;
-  document.getElementById('modalEmail').textContent=currentCoach.Email||'';
+// PUBLIC PROFILE PREVIEW
+document.getElementById('viewProfileBtn').onclick = () => {
+  const m = document.getElementById('publicProfileModal');
+  document.getElementById('modalName').textContent  = currentCoach.CoachName || currentCoach.Username;
+  const email = currentCoach.Email || '';
+  const emailLink = document.getElementById('modalEmail');
+  if (email) {
+    emailLink.href = 'mailto:' + email;
+    emailLink.textContent = email;
+  } else {
+    emailLink.href = '#';
+    emailLink.textContent = '';
+  }
 
-  document.getElementById('modalProfilePic').src=currentCoach.Files?.Profile?imgUrl(currentCoach.Files.Profile):'/images/earth_steak.png';
-  document.getElementById('modalBio').textContent=currentCoach.Bio||'';
+  document.getElementById('modalProfilePic').src =
+    currentCoach.Files?.Profile ? imgUrl(currentCoach.Files.Profile) : '/images/earth_steak.png';
 
-  const ba=document.getElementById('beforeAfterContainer');ba.innerHTML='';
-  ['Before','After'].forEach(t=>{
-    if(currentCoach.Files?.[t]){
-      const img=document.createElement('img');
-      img.src=imgUrl(currentCoach.Files[t]);
+  const bioBox = document.getElementById('modalBio');
+  bioBox.innerHTML = '';
+  (currentCoach.Bio || '').split(/\r?\n\r?\n/).forEach(p => {
+    if (!p.trim()) return;
+    const para = document.createElement('p');
+    para.textContent = p.trim();
+    bioBox.appendChild(para);
+  });
+
+  const ba = document.getElementById('beforeAfterContainer');
+  ba.innerHTML = '';
+  ['Before', 'After'].forEach(t => {
+    if (currentCoach.Files?.[t]) {
+      const img = document.createElement('img');
+      img.src = imgUrl(currentCoach.Files[t]);
       ba.appendChild(img);
     }
   });
 
-  const sl=document.getElementById('specializationList');sl.innerHTML='';
-  (currentCoach.Specializations||[]).forEach(s=>{
-    const li=document.createElement('li');li.textContent=s;sl.appendChild(li);
+  const specList = document.getElementById('specializationList');
+  specList.innerHTML = '';
+  (currentCoach.Specializations || []).forEach(s => {
+    const li = document.createElement('li');
+    li.textContent = s;
+    specList.appendChild(li);
   });
 
-  if(currentCoach.Files?.Certificate){
-    const cert=document.getElementById('certificateContainer');cert.innerHTML='';
-    const img=document.createElement('img');
-    img.src=imgUrl(currentCoach.Files.Certificate);
-    cert.appendChild(img);
+  const certBox = document.getElementById('certificateContainer');
+  certBox.innerHTML = '';
+  if (currentCoach.Files?.Certificate) {
+    const img = document.createElement('img');
+    img.src = imgUrl(currentCoach.Files.Certificate);
+    certBox.appendChild(img);
   }
 
-  document.getElementById('publicProfileModal').classList.add('active');
+  m.classList.add('active');
 };
 
-document.getElementById('closeModal').onclick = ()=>{
+document.getElementById('closeModal').onclick = e => {
+  e.preventDefault();
   document.getElementById('publicProfileModal').classList.remove('active');
 };
 
-document.getElementById('logoutBtn').onclick = ()=>{
+document.getElementById('logoutBtn').onclick = () => {
   localStorage.clear();
-  fetch(API_BASE + 'logout.php',{credentials:'include'})
-    .finally(()=>location.href='/webapi/login.html');
+  fetch(API_BASE + 'logout.php', {credentials: 'include'}).finally(() => {
+    location.href = '/webapi/login.html';
+  });
 };
 
 loadProfile();
 </script>
+
 </body>
 </html>
