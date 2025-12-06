@@ -19,7 +19,7 @@ function ok($c) {
 $username = trim($_POST['username'] ?? '');
 if ($username === '') fail('Missing username');
 
-$coachesFile = __DIR__ . '/coaches.json';
+$coachesFile = __DIR__ . '/../uploads/coaches.json'; 
 if (!file_exists($coachesFile)) fail('coaches.json missing');
 $coaches = json_decode(file_get_contents($coachesFile), true);
 if (!is_array($coaches)) fail('Invalid coaches.json');
