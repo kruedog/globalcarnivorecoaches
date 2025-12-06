@@ -106,7 +106,13 @@ foreach ($slots as $slot) {
     if (!in_array($ext, ['jpg', 'jpeg', 'png', 'webp'])) continue;
 
     $newName = $username . "_" . $slot . "_" . time() . "." . $ext;
+	
     $dest = '/data/uploads/' . $newName;
+	file_put_contents(
+    '/data/uploads/upload_debug.log',
+    "$slot\n" . print_r($f, true) . "\n",
+    FILE_APPEND
+);
 
     if (move_uploaded_file($f['tmp'], $dest)) {
 
