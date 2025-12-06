@@ -3,7 +3,27 @@
 // update_coach.php — FINAL, PRODUCTION VERSION
 // Global Carnivore Coaches
 // ----------------------------------------------
-file_put_contents('/tmp/debug_post.txt', print_r($_POST, true));
+<?php
+header("Access-Control-Allow-Origin: https://globalcarnivorecoaches.onrender.com");
+header("Access-Control-Allow-Credentials: true");
+header("Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With");
+header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
+
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
+    exit();
+}
+
+session_set_cookie_params([
+    'path' => '/',
+    'domain' => 'globalcarnivorecoaches.onrender.com',
+    'secure' => true,
+    'httponly' => true,
+    'samesite' => 'None'
+]);
+
+session_start();
+
 
 ini_set('display_errors', 0);
 error_reporting(E_ALL);
