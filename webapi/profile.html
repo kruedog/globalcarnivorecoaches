@@ -504,11 +504,30 @@ async function loadProfile() {
       credentials: 'include',
       cache: 'no-store'
     });
-    const data = await res.json();
-    if (!data.success) {
-      alert('Failed to load profile: ' + (data.message || ''));
+
+    const text = await res.text();
+    let data;
+    try {
+      data = JSON.parse(text);
+    } catch (e) {
+      console.error('Non-JSON from get_coach.php:', text.slice(0, 200));
+      alert('Server error: invalid coach data.');
       return;
     }
+
+    if (!data.success) {
+      alert('Failed to load profile: ' + (data.message || 'Unknown error'));
+      return;
+    }
+
+    const coach = data.coach || {};
+    // ... rest of your assignment into currentCoach, inputs, etc.
+  } catch (err) {
+    console.error('Network error while loading profile', err);
+    alert('Network error while loading profile.');
+  }
+}
+
 
     currentCoach = data.coach || {};
 
