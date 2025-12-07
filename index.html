@@ -5,18 +5,16 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Global Carnivore Coaches | Durability. Focus. Freedom.</title>
   <link rel="icon" type="image/png" href="images/earth_steak.png">
+
   <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
-  
+
+  <!-- Global Styles -->
   <link rel="stylesheet" href="css/global.css">
 </head>
 
 <script>
-  // Track visit — works on BOTH ports
-  const protocol = window.location.protocol;
-  const hostname = window.location.hostname;
-  const port = protocol === 'https:' ? ':477' : ':8080';
-
+  // Track visit
   fetch('/webapi/track_visit.php', {
     credentials: 'include',
     cache: 'no-store'
@@ -445,10 +443,26 @@
     </div>
   </main>
 
+  <footer>
+    <p>&copy; 2025 Global Carnivore Coaches. All rights reserved.</p>
+  </footer>
+
   <script>
     const API_BASE_URL = window.location.protocol === 'https:'
       ? `https://${window.location.hostname}:477/webapi`
       : `http://${window.location.hostname}:8080/webapi`;
+
+    // Normalize any upload path to a single leading / and no double /uploads/uploads
+    function cleanUploadPath(path) {
+      if (!path) return '';
+      // Remove leading slashes
+      let p = path.replace(/^\/+/, '');
+      // Ensure it starts with "uploads/"
+      if (!p.startsWith('uploads/')) {
+        p = 'uploads/' + p.replace(/^uploads\//, '');
+      }
+      return '/' + p;
+    }
 
     // Open public profile modal with coach details
     function openCoachModal(coach) {
@@ -465,7 +479,10 @@
       emailEl.href = email ? `mailto:${email}` : '#';
 
       const files = coach.Files || {};
-      const profilePic = files.Profile ? `/uploads/${files.Profile}?v=${Date.now()}` : 'images/WolfCoach_Profile.png';
+      const profilePic = files.Profile
+        ? cleanUploadPath(files.Profile) + `?v=${Date.now()}`
+        : 'images/WolfCoach_Profile.png';
+
       const imgEl = document.getElementById('coachProfilePic');
       imgEl.src = profilePic;
 
@@ -474,10 +491,10 @@
 
       const baEl = document.getElementById('beforeAfter');
       baEl.innerHTML = '';
-      ['Before','After'].forEach(key => {
+      ['Before', 'After'].forEach(key => {
         if (files[key]) {
           const img = document.createElement('img');
-          img.src = `/uploads/${files[key]}?v=${Date.now()}`;
+          img.src = cleanUploadPath(files[key]) + `?v=${Date.now()}`;
           img.alt = key + ' photo';
           baEl.appendChild(img);
         }
@@ -485,7 +502,17 @@
 
       const specEl = document.getElementById('coachSpecs');
       specEl.innerHTML = '';
-      (coach.Specializations || []).forEach(s => {
+      let specs = coach.Specializations;
+
+      if (!Array.isArray(specs)) {
+        if (typeof specs === 'string' && specs.trim() !== '') {
+          specs = specs.split(',').map(s => s.trim());
+        } else {
+          specs = [];
+        }
+      }
+
+      specs.forEach(s => {
         const li = document.createElement('li');
         li.textContent = s;
         specEl.appendChild(li);
@@ -495,7 +522,7 @@
       certWrap.innerHTML = '';
       if (files.Certificate) {
         const certImg = document.createElement('img');
-        certImg.src = `/uploads/${files.Certificate}?v=${Date.now()}`;
+        certImg.src = cleanUploadPath(files.Certificate) + `?v=${Date.now()}`;
         certImg.alt = 'Certificate';
         certWrap.appendChild(certImg);
       }
@@ -521,19 +548,24 @@
       modal.setAttribute('aria-hidden', 'true');
     }
 
-    document.addEventListener('click', (e) => {
-      const modal = document.getElementById('publicProfileModal');
-      if (!modal) return;
-      if (e.target.id === 'publicProfileModal') {
-        closeCoachModal();
+    function initCoachModal() {
+      const closeBtn = document.getElementById('closeCoachModal');
+      if (closeBtn) {
+        closeBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          closeCoachModal();
+        });
       }
-    });
 
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') {
-        closeCoachModal();
+      const overlay = document.getElementById('publicProfileModal');
+      if (overlay) {
+        overlay.addEventListener('click', (e) => {
+          if (e.target === overlay) {
+            closeCoachModal();
+          }
+        });
       }
-    });
+    }
 
     async function loadCoaches() {
       try {
@@ -555,15 +587,8 @@
                 : 'Coach');
 
             const files = coach.Files || {};
-
-            function fixMediaPath(p) {
-              return p
-                ? '/' + p.replace(/^public\//, '').replace(/^\/+/, '')
-                : '';
-            }
-
             const profileSrc = files.Profile
-              ? fixMediaPath(files.Profile)
+              ? cleanUploadPath(files.Profile)
               : '/images/WolfCoach_Profile.png';
 
             const card = document.createElement('div');
@@ -609,19 +634,9 @@
       }
     }
 
-    function initCoachModal() {
-      const closeBtn = document.getElementById('closeCoachModal');
-      if (closeBtn) {
-        closeBtn.addEventListener('click', (e) => {
-          e.preventDefault();
-          closeCoachModal();
-        });
-      }
-    }
-
     function initPage() {
-      loadCoaches();
       initCoachModal();
+      loadCoaches();
     }
 
     if (document.readyState === 'loading') {
@@ -630,21 +645,18 @@
       initPage();
     }
 
-    // Keep Escape key behavior for image hash-modals as well
+    // ESC closes coach modal and image hash-modals
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
-        const modals = document.querySelectorAll('.modal-target:target');
-        modals.forEach(modal => {
+        closeCoachModal();
+
+        if (window.location.hash) {
           const url = new URL(window.location);
           url.hash = '';
-          window.location = url.toString();
-        });
+          history.pushState('', document.title, url.pathname + url.search);
+        }
       }
     });
   </script>
-
-  <footer>
-    <p>&copy; 2025 Global Carnivore Coaches. All rights reserved.</p>
-  </footer>
 </body>
 </html>
