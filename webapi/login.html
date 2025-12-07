@@ -129,50 +129,47 @@
     </div>
   </div>
 
-  <script>
-    const API_BASE = window.location.origin + '/webapi/';
+<script>
+const API_URL = location.origin + "/webapi/login.php";
 
-    const form   = document.getElementById('loginForm');
-    const status = document.getElementById('status');
+document.getElementById("loginForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
 
-    function setStatus(msg, ok) {
-      status.textContent = msg || '';
-      status.className = 'status ' + (msg ? (ok ? 'ok' : 'err') : '');
+  const username = document.getElementById("username").value.trim();
+  const password = document.getElementById("password").value;
+
+  if (!username || !password) {
+    alert("Please enter username and password.");
+    return;
+  }
+
+  try {
+    const res = await fetch(API_URL, {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({ username, password })
+    });
+
+    const data = await res.json();
+    console.log("LOGIN RESPONSE:", data);
+
+    if (!data.success) {
+      alert(data.message || "Login failed");
+      return;
     }
 
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      setStatus('Logging in…', true);
+    // Save login state
+    localStorage.setItem("username", data.username);
+    localStorage.setItem("role", data.role);
 
-      const username = document.getElementById('username').value.trim();
-      const password = document.getElementById('password').value;
-
-      try {
-        const res = await fetch(API_BASE + 'login.php', {
-          method: 'POST',
-          headers: {'Content-Type':'application/json'},
-          credentials: 'include',
-          cache: 'no-store',
-          body: JSON.stringify({ username, password })
-        });
-
-        const data = await res.json();
-        if (!data.success) {
-          setStatus(data.message || 'Login failed', false);
-          return;
-        }
-
-        // Save for convenience (not for security)
-        localStorage.setItem('username', data.username || username);
-        localStorage.setItem('role', (data.role || 'coach').toLowerCase());
-
-        setStatus('Success. Redirecting…', true);
-        window.location.href = '/profile.html';
-      } catch (err) {
-        console.error(err);
-        setStatus('Network error while logging in.', false);
-      }
-    });
-  </script>
+    // SUCCESS → go to profile
+    location.href = "/webapi/profile.html";
+  }
+  catch (err) {
+    console.error("Login error", err);
+    alert("Network error");
+  }
+});
+</script>
 </body>
 </html>
