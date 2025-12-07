@@ -7,179 +7,214 @@
 <link rel="stylesheet" href="css/global.css">
 
 <style>
-  body { margin:0; padding:0; overflow-x:hidden; }
+  body {
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+    background: transparent; /* prevent dark strip at bottom */
+  }
 
-  /* Lightbox Overlay */
+  /* ===== LIGHTBOX OVERLAY ===== */
   #lightboxOverlay {
-    position:fixed; inset:0;
-    background:rgba(0,0,0,0.88); /* slightly darker */
-    display:none;
-    align-items:center;
-    justify-content:center;
-    z-index:2000;
-    animation:fadeIn .25s ease forwards;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.88);
+    display: none; /* hidden until opened */
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    animation: fadeIn .25s ease forwards;
   }
-  @keyframes fadeIn { from{opacity:0} to{opacity:1} }
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
 
-  /* Larger fullscreen photo */
+  /* ===== IMAGE WITH ZOOM EFFECT ===== */
   #lightboxImage {
-    max-width:95vw;
-    max-height:92vh;
-    border-radius:12px;
-    box-shadow:0 0 50px rgba(0,0,0,0.7);
-    transition:transform .25s ease;
+    max-width: 95vw;
+    max-height: 92vh;
+    border-radius: 14px;
+    box-shadow: 0 0 55px rgba(0,0,0,0.75);
+
+    transform: scale(.92); opacity: 0;
+    animation: zoomUp .35s ease forwards;
+  }
+  @keyframes zoomUp {
+    from { transform: scale(.85); opacity: 0; }
+    to   { transform: scale(1); opacity: 1; }
   }
 
-  /* Nav Arrows */
+  /* ===== ARROWS ===== */
   .lightbox-arrow {
-    position:absolute;
-    top:50%;
-    transform:translateY(-50%);
-    color:#fff;
-    font-size:3.8rem;  /* larger arrows */
-    cursor:pointer;
-    user-select:none;
-    padding:12px;
-    background:rgba(0,0,0,0.45);
-    border-radius:12px;
-    transition:background .2s ease;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #fff;
+    font-size: 3.8rem;
+    cursor: pointer;
+    user-select: none;
+    padding: 12px;
+    background: rgba(0,0,0,0.45);
+    border-radius: 14px;
+    line-height: 1;
+    transition: background .22s ease;
   }
-  .lightbox-arrow:hover { background:rgba(255,255,255,0.22); }
-  #prevArrow { left:24px; }
-  #nextArrow { right:24px; }
+  .lightbox-arrow:hover {
+    background: rgba(255,255,255,0.22);
+  }
+  #prevArrow { left: 24px; }
+  #nextArrow { right: 24px; }
 
-  /* Close button */
+  /* ===== CLOSE BUTTON ===== */
   #lightboxClose {
-    position:absolute;
-    top:20px;
-    right:32px;
-    font-size:3.8rem;  /* larger close button */
-    color:#fff;
-    cursor:pointer;
-    text-shadow:0 0 14px #000;
+    position: absolute;
+    top: 18px;
+    right: 28px;
+    font-size: 3.8rem;
+    color: #fff;
+    cursor: pointer;
+    text-shadow: 0 0 14px #000;
+    user-select: none;
+  }
+  #lightboxClose:hover {
+    transform: scale(1.08);
   }
 </style>
-
 </head>
 
 <body>
 
-  <!-- Thumbnail Grid -->
+  <!-- ===== THUMBNAIL GALLERY ===== -->
   <div class="gallery" id="mealGallery">
 
-    <!-- data-full stores FULL image path -->
+    <!-- Each tile stores the FULL image path in data-full -->
     <div class="tile" data-full="images/meatzza.jpg">
-      <img src="images/meatzza.jpg" alt="Meatzza Bomb" loading="lazy"><div class="caption">Meatzza Bomb</div>
+      <img src="images/meatzza.jpg" alt="Meatzza Bomb" loading="lazy">
+      <div class="caption">Meatzza Bomb</div>
     </div>
 
     <div class="tile" data-full="images/image004.jpg">
-      <img src="images/image004.jpg" alt="Beef Haunches" loading="lazy"><div class="caption">Beef Haunches</div>
+      <img src="images/image004.jpg" alt="Beef Haunches" loading="lazy">
+      <div class="caption">Beef Haunches</div>
     </div>
 
     <div class="tile" data-full="images/image005.jpg">
-      <img src="images/image005.jpg" alt="Beef Haunches 2" loading="lazy"><div class="caption">Beef Haunches 2</div>
+      <img src="images/image005.jpg" alt="Beef Haunches Plate" loading="lazy">
+      <div class="caption">Beef Haunches 2</div>
     </div>
 
     <div class="tile" data-full="images/image008.jpg">
-      <img src="images/image008.jpg" alt="Smoked Trout" loading="lazy"><div class="caption">Smoked Trout</div>
+      <img src="images/image008.jpg" alt="Smoked Trout" loading="lazy">
+      <div class="caption">Smoked Trout</div>
     </div>
 
     <div class="tile" data-full="images/image011.jpg">
-      <img src="images/image011.jpg" alt="Simple Plate" loading="lazy"><div class="caption">Simple Plate</div>
+      <img src="images/image011.jpg" alt="Simple Plate" loading="lazy">
+      <div class="caption">Simple Plate</div>
     </div>
 
     <div class="tile" data-full="images/image001.jpg">
-      <img src="images/image001.jpg" alt="Brisket 1" loading="lazy"><div class="caption">Field Brisket 1</div>
+      <img src="images/image001.jpg" alt="Brisket Slices 1" loading="lazy">
+      <div class="caption">Field Brisket 1</div>
     </div>
 
     <div class="tile" data-full="images/image002.jpg">
-      <img src="images/image002.jpg" alt="Brisket 2" loading="lazy"><div class="caption">Field Brisket 2</div>
+      <img src="images/image002.jpg" alt="Brisket Slices 2" loading="lazy">
+      <div class="caption">Field Brisket 2</div>
     </div>
 
     <div class="tile" data-full="images/image003.jpg">
-      <img src="images/image003.jpg" alt="Brisket 3" loading="lazy"><div class="caption">Field Brisket 3</div>
+      <img src="images/image003.jpg" alt="Brisket Platter" loading="lazy">
+      <div class="caption">Field Brisket 3</div>
     </div>
 
     <div class="tile" data-full="images/image006.jpg">
-      <img src="images/image006.jpg" alt="Brisket Bark" loading="lazy"><div class="caption">Brisket Slices</div>
+      <img src="images/image006.jpg" alt="Brisket Bark" loading="lazy">
+      <div class="caption">Brisket Slices</div>
     </div>
 
     <div class="tile" data-full="images/image007.jpg">
-      <img src="images/image007.jpg" alt="Brisket Point" loading="lazy"><div class="caption">Brisket Point</div>
+      <img src="images/image007.jpg" alt="Brisket Point" loading="lazy">
+      <div class="caption">Brisket Point</div>
     </div>
 
     <div class="tile" data-full="images/image009.jpg">
-      <img src="images/image009.jpg" alt="Slicing Brisket" loading="lazy"><div class="caption">Slicing Brisket</div>
+      <img src="images/image009.jpg" alt="Cutting Brisket" loading="lazy">
+      <div class="caption">Slicing Brisket</div>
     </div>
 
     <div class="tile" data-full="images/image010.jpg">
-      <img src="images/image010.jpg" alt="Brisket Plate" loading="lazy"><div class="caption">Brisket Plate</div>
+      <img src="images/image010.jpg" alt="Brisket Plate" loading="lazy">
+      <div class="caption">Brisket Plate</div>
     </div>
 
   </div>
 
-
-  <!-- Lightbox Modal -->
+  <!-- ===== LIGHTBOX MODAL ===== -->
   <div id="lightboxOverlay">
     <span id="lightboxClose">&times;</span>
     <span class="lightbox-arrow" id="prevArrow">&#10094;</span>
-    <img id="lightboxImage" src="" alt="Meal">
+    <img id="lightboxImage" src="" alt="Meal Preview">
     <span class="lightbox-arrow" id="nextArrow">&#10095;</span>
   </div>
-
 
 <script>
 let currentIndex = 0;
 const tiles = Array.from(document.querySelectorAll("#mealGallery .tile"));
 const overlay = document.getElementById("lightboxOverlay");
 const lightImg = document.getElementById("lightboxImage");
-const prev = document.getElementById("prevArrow");
-const next = document.getElementById("nextArrow");
-const closeBtn = document.getElementById("lightboxClose");
 
-// Open lightbox
-tiles.forEach((tile, i) => {
+/* ===== OPEN LIGHTBOX ===== */
+tiles.forEach((tile, index) => {
   tile.addEventListener("click", () => {
-    currentIndex = i;
-    openLightbox();
+    currentIndex = index;
+    showImage();
   });
 });
 
-function openLightbox() {
+function showImage() {
   const full = tiles[currentIndex].dataset.full;
   lightImg.src = full;
+
   overlay.style.display = "flex";
   document.body.style.overflow = "hidden";
+
+  /* restart zoom animation */
+  lightImg.style.animation = "none";
+  setTimeout(() => {
+    lightImg.style.animation = "";
+  }, 10);
 }
 
+/* ===== CLOSED ===== */
 function closeLightbox() {
   overlay.style.display = "none";
   document.body.style.overflow = "auto";
   lightImg.src = "";
 }
+document.getElementById("lightboxClose").onclick = closeLightbox;
 
-function showNext() {
+/* ===== NAVIGATION ===== */
+document.getElementById("nextArrow").onclick = () => {
   currentIndex = (currentIndex + 1) % tiles.length;
-  openLightbox();
-}
-
-function showPrev() {
+  showImage();
+};
+document.getElementById("prevArrow").onclick = () => {
   currentIndex = (currentIndex - 1 + tiles.length) % tiles.length;
-  openLightbox();
-}
+  showImage();
+};
 
-next.addEventListener("click", showNext);
-prev.addEventListener("click", showPrev);
-closeBtn.addEventListener("click", closeLightbox);
-
+/* Close on click outside */
 overlay.addEventListener("click", (e) => {
-  if (e.target === overlay) closeLightbox(); // click outside image closes
+  if (e.target === overlay) closeLightbox();
 });
 
+/* ESC & Arrow keys */
 document.addEventListener("keydown", (e) => {
   if (e.key === "Escape") closeLightbox();
-  if (e.key === "ArrowRight") showNext();
-  if (e.key === "ArrowLeft") showPrev();
+  if (e.key === "ArrowRight") document.getElementById("nextArrow").click();
+  if (e.key === "ArrowLeft") document.getElementById("prevArrow").click();
 });
 </script>
 
