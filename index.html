@@ -1091,6 +1091,17 @@
 
   <!-- Shared modal logic (same as profile.html) -->
   <script src="js/modals.js"></script>
+  <!-- 🔥 Inject the shared Coach Modal HTML -->
+ <div id="coachModalRoot"></div>
+  <script>
+fetch('components/modal-coach.html')
+  .then(r => r.text())
+  .then(html => {
+    document.getElementById('coachModalRoot').innerHTML = html;
+    console.log('Coach modal loaded');
+  })
+  .catch(err => console.error('Error loading modal-coach.html:', err));
+  </script>
 
   <script>
     const API_BASE_URL = window.location.protocol === 'https:'
