@@ -5,39 +5,30 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Global Carnivore Coaches | Durability. Focus. Freedom.</title>
 
-  <!-- Favicon -->
   <link rel="icon" type="image/png" href="images/earth_steak.png">
 
   <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
 
-  <!-- 🔹 Global Site Styles -->
+  <!-- 🔹 Global Styles -->
   <link rel="stylesheet" href="css/global.css">
 </head>
 
 <script>
-  // Track visit — works on BOTH ports
-  const protocol = window.location.protocol;
-  const hostname = window.location.hostname;
-  const port = protocol === 'https:' ? ':477' : ':8080';
-
-  fetch('/webapi/track_visit.php', {
-    credentials: 'include',
-    cache: 'no-store'
-  }).catch(() => {});
+  fetch('/webapi/track_visit.php',{credentials:'include',cache:'no-store'}).catch(()=>{});
 </script>
 
 <body>
   <!-- NAV Section -->
-  <nav class="top-nav" aria-label="Main Navigation">
+  <nav class="top-nav">
     <div class="wrap nav-inner" style="padding:0;">
       <div class="nav-left">
-        <a class="brand-mini" href="#about" aria-label="Global Carnivore Coaches home">
-          <img src="images/earth_steak.png" alt="Global Carnivore Coaches logo" onerror="this.style.display='none'">
+        <a class="brand-mini" href="#hero-title">
+          <img src="images/earth_ste.png" alt="">
           <span>Global Carnivore Coaches</span>
         </a>
       </div>
-      <div class="nav-right" role="navigation" aria-label="Site links">
+      <div class="nav-right">
         <a href="#services" class="nav-link">Programs</a>
         <a href="#about" class="nav-link">About</a>
         <a href="science.html" class="nav-link">Science</a>
@@ -49,48 +40,49 @@
   </nav>
 
   <main class="wrap" id="maincontent">
-
-    <!-- HERO Section -->
+    <!-- HERO -->
     <header class="hero" role="banner" aria-labelledby="hero-title">
       <div class="logo">
-        <img src="images/earth_steak.png" alt="Planet Earth and Ribeye Steak">
+        <img src="images/earth_steak.png" alt="">
       </div>
       <div>
         <h1 id="hero-title">Global Carnivore Coaches</h1>
         <p class="tag">Eat a primal Diet. Feel like a primal Human.</p>
         <p class="lead-hero">
-          Active enrollment — evidence-minded carnivore coaching for durability, focus, and long-range endurance.
+          Active enrollment — straightforward, evidence-minded carnivore coaching for durability, focus, and long-range endurance.
+          Includes guidance on fasting, rucking, and recovery.
         </p>
       </div>
     </header>
 
-    <!-- SERVICES Section -->
-    <section class="card" id="services" aria-labelledby="services-title">
+    <!-- SERVICES -->
+    <section class="card" id="services">
       <div class="cols">
         <div>
-          <h2 id="services-title">
-            Core Programs: Transformation Blueprint
+          <h2>Core Programs: Transformation Blueprint
             <span class="subline">Unleash • Optimize • Thrive</span>
           </h2>
           <p class="lead">
-            Reclaim your vitality with 30, 60, or 90-day coaching programs tailored for keto → Lion Diet.
+            Reclaim your vitality with 30, 60, or 90-day coaching programs tailored to guide you from keto to the Lion Diet.
+            Crush inflammation, sharpen focus, and build resilience with personalized nutrition, bi-weekly video calls, daily email or chat support,
+            and curated recipes like ribeyes and meatzzas.
           </p>
           <div class="benefits">
-            <div class="benefit"><strong>Tailored Journey</strong><div>Personalized plans.</div></div>
-            <div class="benefit"><strong>Resilient Body</strong><div>Reduce inflammation.</div></div>
-            <div class="benefit"><strong>Steady Energy</strong><div>Brain and stamina focus.</div></div>
-            <div class="benefit"><strong>Constant Support</strong><div>Check-ins + guidance.</div></div>
-            <div class="benefit"><strong>Simple Fuel</strong><div>Recipes & knowledge.</div></div>
+            <div class="benefit"><strong>Tailored Journey</strong><div>Personalized plans evolve with you</div></div>
+            <div class="benefit"><strong>Resilient Body</strong><div>Combat inflammation with nutrient-rich animal supply</div></div>
+            <div class="benefit"><strong>Steady Energy</strong><div>Deep ketosis fuels focus and stamina</div></div>
+            <div class="benefit"><strong>Constant Support</strong><div>Bi-weekly calls + daily chat/email</div></div>
+            <div class="benefit"><strong>Simple Fuel</strong><div>Real food: brisket, eggs, meatzza etc.</div></div>
           </div>
         </div>
         <aside class="card-aside">
           <h3>Mission Focus</h3>
           <ul>
-            <li>gut reset</li>
-            <li>inflammation control</li>
-            <li>body composition</li>
-            <li>performance & focus</li>
-            <li>accountability & support</li>
+            <li>System Reset — gut & digestion</li>
+            <li>Inflammation & chronic pain mitigation</li>
+            <li>Metabolic optimization & body composition</li>
+            <li>Energy, focus & performance restoration</li>
+            <li>Personalized 1:1 accountability</li>
           </ul>
         </aside>
       </div>
@@ -98,70 +90,143 @@
 
     <div class="divider"></div>
 
-    <!-- ABOUT / COACHES Section -->
+    <!-- ABOUT / COACHES -->
     <section class="card" id="about">
-      <h2>
-        Meet the Coaches
-        <span class="subline">Certified • Battle-Tested • Yours</span>
+      <h2>Meet the Coaches
+        <span class="subline">Certified. Battle-Tested. Yours.</span>
       </h2>
-      <p class="lead">Carnivore coaches who have walked the path.</p>
+      <p class="lead">
+        These coaches have walked the carnivore path — through adaptation, plateaus, and triumphs.
+        Each brings unique expertise to build your durable health.
+      </p>
 
       <div class="cols">
         <div class="gallery" id="coachGallery"></div>
+
         <aside class="card-aside">
           <h3>How It Works</h3>
           <ol>
             <li>Book a discovery call</li>
-            <li>Get your Blueprint</li>
-            <li>Gain momentum</li>
+            <li>Get your custom blueprint</li>
+            <li>Track wins weekly</li>
             <li>Thrive for life</li>
           </ol>
+          <p><a href="contact.html" style="color:var(--accent-red);">Start Today →</a></p>
         </aside>
       </div>
     </section>
 
     <div class="divider"></div>
 
-    <!-- MEAL IDEAS Section (unchanged gallery) -->
+    <!-- MEAL IDEAS -->
     <section class="card" id="mealideas">
-      <h2>Shared Meal Ideas<span class="subline">Inspiration for sustained performance</span></h2>
+      <h2>Shared Meal Ideas <span class="subline">Inspiration for sustained performance</span></h2>
+      <p class="lead">Simple, calorie-dense rations that fuel focus and recovery.</p>
+
       <div class="gallery">
-        <a class="tile" href="#img-1"><img src="images/meatzza.jpg"></a>
-        <a class="tile" href="#img-2"><img src="images/image004.jpg"></a>
-        <a class="tile" href="#img-3"><img src="images/image005.jpg"></a>
-        <a class="tile" href="#img-4"><img src="images/image008.jpg"></a>
-        <a class="tile" href="#img-5"><img src="images/image011.jpg"></a>
-        <a class="tile" href="#img-new1"><img src="images/image001.jpg"></a>
-        <a class="tile" href="#img-new2"><img src="images/image002.jpg"></a>
-        <a class="tile" href="#img-new3"><img src="images/image003.jpg"></a>
-        <a class="tile" href="#img-new4"><img src="images/image006.jpg"></a>
-        <a class="tile" href="#img-new5"><img src="images/image007.jpg"></a>
-        <a class="tile" href="#img-new6"><img src="images/image009.jpg"></a>
-        <a class="tile" href="#img-new7"><img src="images/image010.jpg"></a>
+        <a class="tile" href="#img-1"><img src="images/meatzza.jpg" alt=""></a>
+        <a class="tile" href="#img-2"><img src="images/image004.jpg" alt=""></a>
+        <a class="tile" href="#img-3"><img src="images/image005.jpg" alt=""></a>
+        <a class="tile" href="#img-4"><img src="images/image008.jpg" alt=""></a>
+        <a class="tile" href="#img-5"><img src="images/image011.jpg" alt=""></a>
+        <a class="tile" href="#img-new1"><img src="images/image001.jpg" alt=""></a>
+        <a class="tile" href="#img-new2"><img src="images/image002.jpg" alt=""></a>
+        <a class="tile" href="#img-new3"><img src="images/image003.jpg" alt=""></a>
+        <a class="tile" href="#img-new4"><img src="images/image006.jpg" alt=""></a>
+        <a class="tile" href="#img-new5"><img src="images/image007.jpg" alt=""></a>
+        <a class="tile" href="#img-new6"><img src="images/image009.jpg" alt=""></a>
+        <a class="tile" href="#img-new7"><img src="images/image010.jpg" alt=""></a>
       </div>
     </section>
 
     <div class="divider"></div>
 
-    <!-- CONTACT Section -->
+    <!-- FOOD GROUPS -->
+    <section class="card" id="foodgroups">
+      <h2>Core Food Groups
+        <span class="subline">Fuel Your Inner Beast</span>
+      </h2>
+      <p class="lead">
+        Unleash your primal power with the carnivore diet’s four savage food groups — ruminant, non-ruminant, dairy, and fish.
+      </p>
+      <div class="benefits">
+        <div class="benefit"><strong>Ruminant</strong><div>Beef, lamb, bison — dense power</div></div>
+        <div class="benefit"><strong>Non-Ruminant</strong><div>Pork, poultry — adaptable allies</div></div>
+        <div class="benefit"><strong>Dairy</strong><div>Butter & cheese — primal fuel</div></div>
+        <div class="benefit"><strong>Fish & Seafood</strong><div>Omega-rich ocean strength</div></div>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- SCIENCE -->
+    <section class="card" id="mechanisms">
+      <h2>The Science of Transformation
+        <span class="subline">Biology-informed, field-tested</span>
+      </h2>
+      <p class="lead">
+        The carnivore diet optimizes metabolism and reduces inflammation by removing plant toxins and focusing on high-bioavailability nutrients.
+      </p>
+      <div class="cta">
+        <a class="btn" href="science.html">Explore the Science →</a>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- FASTING & MOVEMENT -->
+    <section class="card" id="fasting-movement">
+      <h2>Fasting & Movement Strategy
+        <span class="subline">Autophagy • Ruck • Recover • Resilience</span>
+      </h2>
+      <p class="lead">
+        Use fasting strategically to accelerate repair and metabolic flexibility. Combine with rucking and mobility for resilience.
+      </p>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- COMMUNITY -->
+    <section class="card" id="community">
+      <h2>Community & Resources
+        <span class="subline">Trusted Voices & Learning</span>
+      </h2>
+      <p class="lead">
+        Join a tribe of people getting stronger, sharper, and healthier through a meat-based lifestyle.
+      </p>
+      <div class="cta">
+        <a class="btn" href="community.html">Explore Community →</a>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- CONTACT -->
     <section class="card" id="contact">
-      <h2>Mobilize Your Transformation<span class="subline">Deploy your plan</span></h2>
+      <h2>Mobilize Your Transformation
+        <span class="subline">Deploy your plan</span>
+      </h2>
+      <p class="lead">
+        Ready to reclaim consistent energy, reduce symptoms, and build sustainable performance?
+      </p>
       <div class="cta">
         <a class="btn" href="mailto:your@email.com">Book Discovery Call</a>
         <a class="btn ghost" href="tiers.html">View Program Tiers</a>
       </div>
+      <p style="text-align:center;color:var(--muted);margin-top:12px;font-weight:700;">
+        Limited 1:1 coaching slots available — start today.
+      </p>
     </section>
-
   </main>
 
-  <!-- FOOTER -->
   <footer>
     <p>&copy; 2025 Global Carnivore Coaches. All rights reserved.</p>
   </footer>
 
-  <!-- Load Modal Logic (script stays for now) -->
+  <!-- Modal Script Placeholder -->
   <script src="js/modals.js"></script>
 
+  <!-- Load Coaches AFTER DOM is ready -->
   <script>
     async function loadCoaches() {
       try {
@@ -175,11 +240,12 @@
         data.coaches.forEach(coach => {
           const card = document.createElement('div');
           card.className = 'coach-card';
+
           card.innerHTML = `
             <a href="#" class="tile coach-tile">
-              <img src="${coach.Files?.Profile ? '/uploads/' + coach.Files.Profile : 'images/WolfCoach_Profile.png'}">
+              <img src="${coach.Files?.Profile ? '/uploads/' + coach.Files.Profile : 'images/WolfCoach_Profile.png'}" alt="">
             </a>
-            <button type="button" class="view-btn">View Profile</button>
+            <button class="view-btn">View Profile</button>
           `;
 
           const openProfile = () => {
@@ -187,13 +253,14 @@
               window.GCCModals.openCoachModal(coach);
             }
           };
-          card.querySelector('.tile').addEventListener('click', openProfile);
+
+          card.querySelector('.coach-tile').addEventListener('click', openProfile);
           card.querySelector('.view-btn').addEventListener('click', openProfile);
 
           gallery.appendChild(card);
         });
       } catch (err) {
-        console.error('Error loading coaches:', err);
+        console.error(err);
       }
     }
 
