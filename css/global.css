@@ -173,6 +173,50 @@ h2 {
   padding:8px 14px;
   cursor:pointer;
 }
+/* ===== Coach Gallery Tile Sizing ===== */
+.gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 14px;
+  margin-top: 16px;
+}
+
+.gallery .tile {
+  display: block;
+  overflow: hidden;
+  border-radius: 8px;
+  min-height: 180px;
+  max-height: 240px;
+  background: linear-gradient(180deg, #2d2d2d, #232323);
+  border: 4px solid var(--primary-blue);
+  box-shadow: 0 12px 30px rgba(0,0,0,0.18);
+}
+
+.gallery .tile img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 320ms ease, opacity 300ms ease;
+}
+.gallery .tile:hover {
+  transform: translateY(-4px) scale(1.03);
+  box-shadow: 0 18px 50px rgba(0,0,0,0.28);
+}
+.gallery .tile:hover img {
+  transform: scale(1.08);
+}
+
+/* ===== Coach Name Under Tile ===== */
+.coach-card {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
+}
+
+.coach-card .view-btn {
+  width: 100%;
+}
 
 /* ===================== PUBLIC PROFILE MODAL ===================== */
 #publicProfileModal {
