@@ -1,186 +1,1198 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Global Carnivore Coaches | Durability. Focus. Freedom.</title>
-<link rel="icon" type="image/png" href="images/earth_steak.png">
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
-<style>
-/* ---------- GLOBAL COLOR VARS ---------- */
-:root{
-  --white:#fff; --off-white:#E6E6E6; --parchment:#D0D2D5;
-  --text-color:#192168; --primary-blue:#192168; --accent-red:#AF1E2D;
-  --secondary-iron:#1A1A1A; --muted:#3A3A3A;
-  --radius:8px; --shadow:0 10px 30px rgba(0,0,0,0.28);
-  --max-width:1100px;
-}
-/* ---------- BASE PAGE ---------- */
-*{box-sizing:border-box}
-body{
-  margin:0; font-family:Inter,sans-serif;
-  background:radial-gradient(circle at 10% 10%,#F5F6F8 0%,var(--parchment)40%,#B8BBC2 100%);
-  color:var(--text-color); line-height:1.6;
-}
-body.modal-open{overflow:hidden}
-.wrap{max-width:var(--max-width);margin:0 auto;padding:24px}
-a{color:var(--accent-red);text-decoration:underline dotted}
-a:hover{color:var(--primary-blue)}
-h2{
-  font-family:Cinzel,serif; font-size:1.5rem; color:var(--primary-blue);
-  text-transform:uppercase; letter-spacing:0.6px; margin-bottom:12px;
-}
-p.lead{font-size:1.05rem;margin-top:4px}
-/* ---------- NAV ---------- */
-nav.top-nav{
-  background:linear-gradient(90deg,var(--primary-blue),#2A315A);
-  color:var(--white); padding:12px 20px;
-  border-radius:999px; margin:18px auto;
-  box-shadow:0 4px 18px rgba(0,0,0,0.45);
-  max-width:calc(var(--max-width) - 48px)
-}
-.nav-inner{display:flex;justify-content:space-between;align-items:center}
-.brand-mini{display:flex;gap:10px;align-items:center;color:#fff;font-family:Cinzel;font-weight:700;text-decoration:none}
-.brand-mini img{width:40px;height:40px;border-radius:6px;border:2px solid var(--accent-red)}
-.nav-right{display:flex;gap:8px}
-.nav-link{color:#fff;font-weight:600;text-decoration:none;padding:6px 12px}
-.nav-link:hover{color:var(--accent-red)}
-/* ---------- HERO ---------- */
-header.hero{
-  display:flex; gap:22px; align-items:center;
-  background:linear-gradient(180deg,var(--secondary-iron),#212121);
-  border-left:12px solid var(--primary-blue);
-  color:#fff; padding:36px; border-radius:var(--radius);
-  box-shadow:var(--shadow); margin:24px 0;
-}
-.logo{width:110px;height:110px;border:4px solid var(--accent-red);border-radius:14px;overflow:hidden}
-/* ---------- CARD BLOCKS ---------- */
-section.card{
-  margin-top:28px; padding:26px; border-radius:var(--radius);
-  background:linear-gradient(180deg,var(--off-white),#C8C8C8);
-  box-shadow:0 12px 40px rgba(0,0,0,0.12);
-}
-/* ---------- COACH GALLERY ---------- */
-#coachGallery{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
-  gap:16px; margin-top:18px;
-}
-.coach-card{
-  background:#fff; border:2px solid var(--primary-blue);
-  border-radius:10px; padding:14px; text-align:center;
-  box-shadow:0 8px 18px rgba(0,0,0,0.15);
-  cursor:pointer; transition:.3s;
-}
-.coach-card:hover{
-  transform:translateY(-4px);
-  border-color:var(--accent-red);
-  box-shadow:0 18px 35px rgba(175,30,45,0.25);
-}
-.coach-card img{
-  width:100%; height:230px; object-fit:cover; border-radius:8px;
-  border:3px solid var(--accent-red)
-}
-.coach-name{
-  margin-top:10px; font-weight:700; font-family:Cinzel,serif;
-  color:var(--primary-blue)
-}
-.view-btn{
-  margin-top:10px; padding:8px 12px;
-  background:var(--accent-red); color:#fff;
-  font-weight:700; border-radius:6px; border:none;
-  cursor:pointer; width:100%;
-}
-/* FOOTER */
-footer{text-align:center;color:var(--primary-blue);padding:20px 0;margin-top:45px}
-</style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Global Carnivore Coaches | Durability. Focus. Freedom.</title>
+  <link rel="icon" type="image/png" href="images/earth_steak.png">
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* ===============================
+       COMBINED CSS — Global Carnivore Coaches
+       Montreal Canadiens Color Theme with Enhanced Contrast
+       =============================== */
+    :root {
+      --white: #FFFFFF;
+      --off-white: #E6E6E6;
+      --parchment: #D0D2D5;
+      --text-color: #192168;
+      --primary-blue: #192168;
+      --accent-red: #AF1E2D;
+      --secondary-iron: #1A1A1A;
+      --muted: #3A3A3A;
+      --shadow: 0 10px 30px rgba(0,0,0,0.28);
+      --max-width: 1100px;
+      --radius: 8px;
+      --glass: rgba(255,255,255,0.6);
+      --accent-glow: 0 8px 30px rgba(175,30,45,0.18);
+    }
+
+    /* ---------- global ---------- */
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background: radial-gradient(circle at 10% 10%, #F5F6F8 0%, var(--parchment) 40%, #B8BBC2 100%);
+      color: var(--text-color);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      line-height: 1.6;
+      -webkit-tap-highlight-color: transparent;
+    }
+    body.modal-open { overflow: hidden; }
+    .wrap { max-width: var(--max-width); margin: 0 auto; padding: 24px; }
+    a { color: var(--accent-red); text-decoration: underline dotted; }
+    a:hover { color: var(--primary-blue); }
+
+    /* heading utility */
+    h2 {
+      font-family: "Cinzel", serif;
+      font-size: 1.5rem;
+      color: var(--primary-blue);
+      margin: 0 0 12px 0;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      display: inline-block;
+    }
+    h2 .subline {
+      display: block;
+      font-family: Inter, sans-serif;
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-top: 6px;
+      text-transform: none;
+    }
+    p.lead { font-size: 1.02rem; color: var(--text-color); margin-top: 6px; }
+
+    @media (prefers-reduced-motion: reduce) {
+      * { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+    }
+
+    /* ---------- nav ---------- */
+    nav.top-nav {
+      background: linear-gradient(90deg, var(--primary-blue) 0%, #2A315A 100%);
+      color: var(--white);
+      padding: 12px 20px;
+      box-shadow: 0 4px 18px rgba(0,0,0,0.45);
+      border-radius: 999px;
+      margin: 18px auto;
+      max-width: calc(var(--max-width) - 48px);
+    }
+    .nav-inner { display: flex; gap: 12px; align-items: center; justify-content: space-between; }
+    .nav-left { display: flex; gap: 12px; align-items: center; }
+    .brand-mini {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      color: var(--white);
+      text-decoration: none;
+      font-weight: 700;
+      font-family: "Cinzel", serif;
+      font-size: 0.95rem;
+    }
+    .brand-mini img {
+      width: 40px;
+      height: 40px;
+      object-fit: contain;
+      border-radius: 6px;
+      border: 2px solid var(--accent-red);
+      box-shadow: 0 6px 18px rgba(0,0,0,0.4);
+      background: linear-gradient(180deg, #3a3a3a, #2e2e2e);
+      padding: 4px;
+    }
+    .nav-right { display: flex; gap: 8px; align-items: center; }
+    .nav-link {
+      color: var(--white);
+      text-decoration: none;
+      padding: 8px 12px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      border-radius: 6px;
+      transition: all 180ms ease;
+      opacity: 0.95;
+    }
+    .nav-link:hover {
+      color: var(--accent-red);
+      transform: translateY(-2px);
+      text-shadow: 0 6px 18px rgba(175,30,45,0.12);
+    }
+    @media (max-width: 560px) {
+      .nav-inner { flex-direction: column; gap: 8px; }
+      .nav-right { flex-wrap: wrap; justify-content: center; }
+      .nav-link { font-size: 0.9rem; padding: 6px 10px; }
+    }
+
+    /* ---------- hero ---------- */
+    header.hero {
+      display: flex;
+      gap: 22px;
+      align-items: center;
+      padding: 36px;
+      border-radius: var(--radius);
+      background: linear-gradient(180deg, var(--secondary-iron) 0%, #212121 100%);
+      color: var(--white);
+      box-shadow: var(--shadow);
+      border-left: 12px solid var(--primary-blue);
+      margin: 24px 0;
+    }
+    .hero-left { display: flex; align-items: center; gap: 18px; min-width: 110px; }
+    .logo {
+      width: 110px;
+      height: 110px;
+      border-radius: 14px;
+      overflow: hidden;
+      border: 4px solid var(--accent-red);
+      box-shadow: 0 18px 40px rgba(0,0,0,0.45);
+      background: linear-gradient(180deg, #2a2a2a, #181818);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .logo img {
+      width: 78px;
+      height: 78px;
+      transform: rotate(-6deg);
+      filter: drop-shadow(0 6px 18px rgba(0,0,0,0.6));
+    }
+    header h1 {
+      margin: 0 0 4px 0;
+      font-family: "Cinzel", serif;
+      font-size: 2rem;
+      color: var(--accent-red);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      text-shadow: 0 6px 18px rgba(0,0,0,0.45);
+    }
+    header p.tag {
+      margin: 0;
+      color: var(--white);
+      font-weight: 700;
+      font-size: 1rem;
+      letter-spacing: 0.6px;
+      text-transform: uppercase;
+    }
+    header p.lead-hero {
+      margin-top: 10px;
+      color: var(--white);
+      opacity: 0.95;
+      font-size: 1rem;
+    }
+    @media (max-width: 560px) {
+      header.hero { padding: 16px; gap: 12px; flex-direction: column; align-items: flex-start; }
+      .logo { width: 86px; height: 86px; }
+      header h1 { font-size: 1.6rem; }
+      header p.tag { font-size: 0.9rem; }
+      header p.lead-hero { font-size: 0.95rem; }
+    }
+
+    /* ---------- cards / layout ---------- */
+    section.card {
+      margin-top: 28px;
+      background: linear-gradient(180deg, var(--off-white) 0%, #C8C8C8 100%);
+      padding: 26px;
+      border-radius: var(--radius);
+      box-shadow: 0 12px 40px rgba(0,0,0,0.12);
+      border: 1px solid rgba(25,33,104,0.06);
+      transform: translateY(6px);
+    }
+    .cols {
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      gap: 28px;
+      align-items: start;
+    }
+    @media (max-width: 920px) {
+      .cols { grid-template-columns: 1fr; }
+    }
+    aside.card-aside {
+      background: var(--white);
+      border: 2px solid var(--primary-blue);
+      border-left: 4px solid var(--primary-blue);
+      padding: 20px;
+      border-radius: 6px;
+      color: var(--text-color);
+      font-weight: 600;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    @media (max-width: 560px) {
+      aside.card-aside { padding: 16px; }
+      section.card { padding: 16px; }
+      .cols { gap: 16px; }
+    }
+
+    /* ---------- coach photos in modal (shared style) ---------- */
+    .photo-container {
+      display: flex;
+      margin-top: 16px;
+      max-width: 300px;
+      overflow: hidden;
+    }
+    .photo-old, .photo-new {
+      width: 140px;
+      height: 186px;
+      border-radius: 8px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.2);
+      border: 2px solid var(--secondary-iron);
+      object-fit: cover;
+      z-index: 1;
+    }
+    .photo-new {
+      border: 3px solid var(--primary-blue);
+      margin-left: -40px;
+      z-index: 2;
+      transform: translateY(-10px);
+    }
+    @media (max-width: 560px) {
+      .photo-container {
+        flex-direction: column;
+        align-items: center;
+        gap: 12px;
+        max-width: 160px;
+        margin: 12px auto;
+      }
+      .photo-old, .photo-new {
+        margin-left: 0;
+        transform: none;
+        width: 120px;
+        height: 160px;
+      }
+    }
+
+    /* ---------- certificate style (shared) ---------- */
+    .cert-container {
+      margin-top: 16px;
+      text-align: center;
+      max-width: 280px;
+    }
+    .cert-tile {
+      display: block;
+      overflow: hidden;
+      border-radius: 8px;
+      min-height: 120px;
+      position: relative;
+      background: linear-gradient(180deg, #2d2d2d, #232323);
+      box-shadow: 0 12px 30px rgba(0,0,0,0.18);
+      text-decoration: none;
+      border: 4px solid var(--accent-red);
+      transition: box-shadow 260ms, border-color 260ms;
+    }
+    .cert-tile img {
+      display: block;
+      width: 100%;
+      height: 160px;
+      object-fit: cover;
+      filter: saturate(1.05) contrast(1.02);
+      transform-origin: center;
+      transition: transform 320ms ease, opacity 300ms ease;
+    }
+    .cert-tile:not(.loaded)::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: linear-gradient(45deg, var(--accent-red), var(--primary-blue));
+      opacity: 0.3;
+      animation: pulse 1.5s ease-in-out infinite;
+      z-index: 1;
+    }
+    .cert-tile.loaded img { opacity: 1; }
+    .cert-tile:hover {
+      box-shadow: 0 20px 50px rgba(0,0,0,0.3), 0 0 15px rgba(175,30,45,0.3);
+      border-color: var(--primary-blue);
+    }
+    .cert-tile:hover img { transform: scale(1.1); }
+    .cert-caption {
+      font-size: 0.9rem;
+      color: var(--text-color);
+      font-weight: 600;
+      margin-top: 8px;
+      text-align: center;
+    }
+    @media (max-width: 920px) {
+      .cert-container { margin: 12px auto 0; max-width: 260px; }
+    }
+    @media (max-width: 560px) {
+      .cert-container { max-width: 100%; padding: 0 12px; }
+      .cert-tile img { height: 140px; }
+      .cert-caption { font-size: 0.85rem; }
+    }
+
+    /* ---------- gallery ---------- */
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 14px;
+      margin-top: 16px;
+    }
+    .gallery .tile {
+      display: block;
+      overflow: hidden;
+      border-radius: 8px;
+      min-height: 140px;
+      position: relative;
+      background: linear-gradient(180deg, #2d2d2d, #232323);
+      box-shadow: 0 12px 30px rgba(0,0,0,0.18);
+      text-decoration: none;
+      border: 4px solid var(--primary-blue);
+      transition: transform 260ms cubic-bezier(.2,.9,.2,1), box-shadow 260ms;
+    }
+    .gallery .tile img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: saturate(1.05) contrast(1.02);
+      transform-origin: center;
+      transition: transform 320ms ease, opacity 300ms ease;
+    }
+    .gallery .tile:not(.loaded)::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: linear-gradient(45deg, var(--accent-red), var(--primary-blue));
+      opacity: 0.3;
+      animation: pulse 1.5s ease-in-out infinite;
+      z-index: 1;
+    }
+    .gallery .tile.loaded img { opacity: 1; }
+    .gallery .tile:hover {
+      transform: translateY(-6px) scale(1.02);
+      box-shadow: 0 30px 80px rgba(0,0,0,0.35);
+    }
+    .gallery .tile:hover img { transform: scale(1.08); }
+
+    .caption {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      padding: 10px;
+      background: linear-gradient(180deg, rgba(0,0,0,0.0) 0%, rgba(0,0,0,0.7) 100%);
+      color: var(--accent-red);
+      font-weight: 800;
+      text-transform: uppercase;
+      font-size: 0.85rem;
+      text-align: center;
+      letter-spacing: 0.8px;
+      z-index: 2;
+    }
+
+    @media (max-width: 560px) {
+      .gallery {
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        gap: 10px;
+      }
+      .gallery .tile { min-height: 120px; }
+      .caption { font-size: 0.8rem; }
+    }
+
+    /* ---------- coach cards (Card A + Button V1) ---------- */
+    .coach-card {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 8px;
+    }
+    .coach-card .tile {
+      cursor: pointer;
+    }
+    .coach-card .view-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      padding: 8px 14px;
+      border-radius: 999px;
+      border: 2px solid var(--primary-blue);
+      background: linear-gradient(180deg, var(--accent-red), #8C1925);
+      color: var(--white);
+      font-weight: 700;
+      font-size: 0.9rem;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      text-decoration: none;
+      cursor: pointer;
+      box-shadow: 0 8px 22px rgba(0,0,0,0.25);
+      transition: transform 150ms ease, box-shadow 150ms ease, background 150ms ease;
+    }
+    .coach-card .view-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 16px 40px rgba(0,0,0,0.3);
+    }
+    .coach-card .view-btn:active {
+      transform: translateY(0);
+      box-shadow: 0 6px 16px rgba(0,0,0,0.25);
+    }
+
+    /* ---------- loading animation ---------- */
+    @keyframes pulse {
+      0% { opacity: 0.3; }
+      50% { opacity: 0.6; }
+      100% { opacity: 0.3; }
+    }
+
+    /* ---------- modal / lightbox for static gallery images ---------- */
+    .modal-target {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: rgba(0,0,0,0.55);
+      padding: 28px;
+      z-index: 1200;
+      visibility: hidden;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 260ms ease, visibility 260ms;
+    }
+    .modal-target:target,
+    .modal-target.show {
+      visibility: visible;
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .modal-content {
+      max-width: min(80vw, 600px);
+      max-height: min(80vh, 600px);
+      aspect-ratio: 1 / 1;
+      border-radius: 10px;
+      overflow: auto;
+      background: var(--white);
+      border: 3px solid var(--accent-red);
+      box-shadow: 0 30px 80px rgba(0,0,0,0.6);
+      position: relative;
+      padding: 20px;
+    }
+    .modal-content img {
+      display: block;
+      max-width: 100%;
+      max-height: 60vh;
+      object-fit: contain;
+    }
+    .modal-content h3 {
+      font-family: "Cinzel", serif;
+      font-size: 1.3rem;
+      color: var(--primary-blue);
+      margin: 0 0 10px 0;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+    }
+    .modal-content p {
+      font-size: 0.9rem;
+      color: var(--text-color);
+      margin: 6px 0;
+    }
+    .modal-close {
+      position: absolute;
+      top: 12px; right: 12px;
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      background: var(--white);
+      color: var(--accent-red);
+      border: 2px solid var(--primary-blue);
+      text-decoration: none;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.35);
+    }
+    .modal-close:hover { transform: rotate(10deg) scale(1.06); }
+
+    @media (max-width: 560px) {
+      .modal-target { padding: 16px; }
+      .modal-content {
+        max-width: 95vw;
+        max-height: 85vh;
+        aspect-ratio: auto;
+        padding: 16px;
+      }
+      .modal-close {
+        width: 32px;
+        height: 32px;
+        font-size: 18px;
+      }
+      .modal-content h3 { font-size: 1.2rem; }
+      .modal-content p { font-size: 0.85rem; }
+      .modal-content img { max-height: 50vh; }
+    }
+
+    /* ---------- buttons ---------- */
+    .cta {
+      display: flex;
+      gap: 18px;
+      align-items: center;
+      justify-content: center;
+      margin-top: 12px;
+    }
+    .btn {
+      background: linear-gradient(180deg, var(--accent-red), #8C1925);
+      color: var(--white);
+      border: 2px solid var(--primary-blue);
+      padding: 12px 20px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      border-radius: 8px;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      box-shadow: var(--accent-glow), 0 8px 30px rgba(0,0,0,0.28);
+      transition: transform 180ms ease, box-shadow 180ms ease;
+    }
+    .btn:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 18px 60px rgba(175,30,45,0.18);
+    }
+    .btn.ghost {
+      background: transparent;
+      color: var(--primary-blue);
+      border: 2px dashed rgba(25,33,104,0.14);
+    }
+    .btn.ghost:hover {
+      background: rgba(25,33,104,0.04);
+      color: var(--primary-blue);
+      border-style: solid;
+    }
+    @media (max-width: 560px) {
+      .cta { flex-direction: column; gap: 12px; }
+      .btn { padding: 10px 16px; font-size: 0.9rem; }
+    }
+
+    /* ---------- community cards ---------- */
+    .community-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 12px;
+      margin-top: 14px;
+    }
+    .community-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: var(--white);
+      border: 2px solid var(--primary-blue);
+      border-radius: 8px;
+      padding: 12px;
+      text-decoration: none;
+      color: var(--text-color);
+      transition: box-shadow 260ms, border-color 260ms;
+      max-width: 220px;
+    }
+    .community-card:hover {
+      box-shadow: 0 20px 50px rgba(0,0,0,0.3), 0 0 15px rgba(175,30,45,0.3);
+      border-color: var(--accent-red);
+    }
+    .community-card .image-wrapper {
+      position: relative;
+      width: 180px;
+      height: 180px;
+      overflow: hidden;
+      border-radius: 6px;
+    }
+    .community-card img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      aspect-ratio: 3/4;
+      border: 2px solid var(--accent-red);
+      transition: transform 320ms ease, opacity 300ms ease;
+    }
+    .community-card:not(.loaded) .image-wrapper::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: linear-gradient(45deg, var(--accent-red), var(--primary-blue));
+      opacity: 0.3;
+      animation: pulse 1.5s ease-in-out infinite;
+      z-index: 1;
+    }
+    .community-card.loaded img { opacity: 1; }
+    .community-card:hover img { transform: scale(1.1); }
+    .community-card .title {
+      font-size: 1rem;
+      font-weight: 700;
+      margin: 8px 0 4px;
+      text-align: center;
+      color: var(--primary-blue);
+      z-index: 2;
+      position: relative;
+    }
+    .community-card .desc {
+      font-size: 0.85rem;
+      color: var(--muted);
+      text-align: center;
+      line-height: 1.4;
+      z-index: 2;
+      position: relative;
+    }
+    .learn-more {
+      margin-top: 8px;
+      padding: 6px 12px;
+      background: var(--primary-blue);
+      color: var(--white);
+      border-radius: 4px;
+      text-decoration: none;
+      font-weight: 600;
+      transition: background 200ms ease;
+    }
+    .learn-more:hover { background: var(--accent-red); }
+    @media (max-width: 560px) {
+      .community-grid { grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px; }
+      .community-card { max-width: 180px; }
+      .community-card .image-wrapper { width: 140px; height: 140px; }
+      .community-card .title { font-size: 0.9rem; }
+      .community-card .desc { font-size: 0.8rem; }
+    }
+
+    /* ---------- footer ---------- */
+    footer {
+      text-align: center;
+      color: var(--primary-blue);
+      margin: 34px 0 10px 0;
+      padding: 20px 0;
+      border-top: 1px solid rgba(25,33,104,0.04);
+      font-size: 0.92rem;
+    }
+    @media (max-width: 560px) {
+      footer { font-size: 0.85rem; padding: 16px 0; }
+    }
+  </style>
 </head>
 
+<script>
+  // Track visit — works on BOTH ports
+  const protocol = window.location.protocol;
+  const hostname = window.location.hostname;
+  const port = protocol === 'https:' ? ':477' : ':8080';
+
+  fetch('/webapi/track_visit.php', {
+    credentials: 'include',
+    cache: 'no-store'
+  }).catch(() => {});
+</script>
+
 <body>
-
-<!-- NAV -->
-<nav class="top-nav">
-  <div class="wrap nav-inner">
-    <a class="brand-mini" href="#about">
-      <img src="images/earth_steak.png"><span>Global Carnivore Coaches</span>
-    </a>
-    <div class="nav-right">
-      <a class="nav-link" href="#services">Programs</a>
-      <a class="nav-link" href="#about">About</a>
-      <a class="nav-link" href="science.html">Science</a>
-      <a class="nav-link" href="#mealideas">Gallery</a>
-      <a class="nav-link" href="#contact">Contact</a>
-      <a class="nav-link" href="webapi/login.html">Coach Login</a>
+  <!-- NAV Section -->
+  <nav class="top-nav" aria-label="Main Navigation">
+    <div class="wrap nav-inner" style="padding:0;">
+      <div class="nav-left">
+        <a class="brand-mini" href="#about" aria-label="Global Carnivore Coaches home">
+          <img src="images/earth_steak.png" alt="Global Carnivore Coaches logo" onerror="this.style.display='none'">
+          <span>Global Carnivore Coaches</span>
+        </a>
+      </div>
+      <div class="nav-right" role="navigation" aria-label="Site links">
+        <a href="#services" class="nav-link">Programs</a>
+        <a href="#about" class="nav-link">About</a>
+        <a href="science.html" class="nav-link">Science</a>
+        <a href="#mealideas" class="nav-link">Gallery</a>
+        <a href="#contact" class="nav-link">Contact</a>
+        <a href="webapi/login.html" class="nav-link">Coach Login</a>
+      </div>
     </div>
-  </div>
-</nav>
+  </nav>
 
-<main class="wrap">
+  <main class="wrap" id="maincontent">
+    <!-- HERO Section -->
+    <header class="hero" role="banner" aria-labelledby="hero-title">
+      <div class="hero-left" aria-hidden="true">
+        <div class="logo" title="Global Carnivore Coaches">
+          <img src="images/earth_steak.png" alt="Planet Earth and Ribeye Steak">
+        </div>
+      </div>
+      <div>
+        <h1 id="hero-title">Global Carnivore Coaches</h1>
+        <p class="tag">Eat a primal Diet. Feel like a primal Human.</p>
+        <p class="lead-hero">
+          Active enrollment — straightforward, evidence-minded carnivore coaching for durability, focus, and long-range endurance.
+          Includes guidance on fasting, rucking, and recovery.
+        </p>
+      </div>
+    </header>
 
-<!-- HERO -->
-<header class="hero">
-  <div class="logo"><img src="images/earth_steak.png" alt=""></div>
-  <div>
-    <h1>Global Carnivore Coaches</h1>
-    <p class="tag">Eat a primal Diet. Feel like a primal Human.</p>
-    <p class="lead-hero">Professional carnivore coaching for durability, focus, and metabolic resilience.</p>
-  </div>
-</header>
+    <!-- SERVICES Section -->
+    <section class="card" id="services" aria-labelledby="services-title">
+      <div class="cols">
+        <div>
+          <h2 id="services-title">
+            Core Programs: Transformation Blueprint
+            <span class="subline">Unleash • Optimize • Thrive</span>
+          </h2>
+          <p class="lead">
+            Reclaim your vitality with 30, 60, or 90-day coaching programs tailored to guide you from keto to the Lion Diet.
+            Crush inflammation, sharpen focus, and build resilience with personalized nutrition, bi-weekly video calls, daily email or chat support,
+            and curated recipes like ribeyes and meatzzas.
+            <a href="science.html#diet-comparison-title">Explore keto variations and more on our Science page</a>.
+          </p>
+          <div class="bbbe-block" style="margin-top:14px;">
+            <h3>Launch Your Reset: Beef • Butter • Bacon • Eggs</h3>
+            <p>
+              A potent elimination protocol to ignite your transformation, slashing bloating and boosting energy.
+              Customized for your journey—keto, ketovore, carnivore, or Lion—this plan delivers clear steps to master your health.
+            </p>
+          </div>
+          <div class="benefits" style="margin-top:8px;">
+            <div class="benefit">
+              <strong>Tailored Journey</strong>
+              <div style="font-size:.95rem; margin-top:6px; color:var(--muted);">
+                Personalized plans evolve from keto to Lion Diet, matching your goals.
+              </div>
+            </div>
+            <div class="benefit">
+              <strong>Resilient Body</strong>
+              <div style="font-size:.95rem; margin-top:6px; color:var(--muted);">
+                Eliminate pain and bloating with nutrient-dense animal foods.
+              </div>
+            </div>
+            <div class="benefit">
+              <strong>Steady Energy</strong>
+              <div style="font-size:.95rem; margin-top:6px; color:var(--muted);">
+                Deep ketosis fuels focus and stamina, banishing brain fog.
+              </div>
+            </div>
+            <div class="benefit">
+              <strong>Constant Support</strong>
+              <div style="font-size:.95rem; margin-top:6px; color:var(--muted);">
+                Bi-weekly calls and daily email or chat keep you on track.
+              </div>
+            </div>
+            <div class="benefit">
+              <strong>Simple Fuel</strong>
+              <div style="font-size:.95rem; margin-top:6px; color:var(--muted);">
+                Shared recipes, meal ideas, unique cooking methods—brisket, meatzza—make eating effortless, including curing and smoking meat.
+              </div>
+            </div>
+          </div>
+        </div>
+        <aside class="card-aside" aria-labelledby="mission-title">
+          <div id="mission-title" style="font-weight:800; margin-bottom:10px; color:var(--text-color);">Mission Focus</div>
+          <ul style="padding-left:18px; margin:0; color:var(--muted); font-weight:600;">
+            <li>System Reset — gut &amp; digestion</li>
+            <li>Inflammation &amp; chronic pain mitigation</li>
+            <li>Metabolic optimization &amp; body composition</li>
+            <li>Energy, focus &amp; performance restoration</li>
+            <li>Personalized 1:1 accountability</li>
+          </ul>
+        </aside>
+      </div>
+    </section>
 
-<!-- COACH SECTION -->
-<section class="card" id="about">
-  <h2>Meet The Coaches <span class="subline">Certified • Battle-Tested</span></h2>
-  <p class="lead">Tap a coach to view their full transformation story and credentials.</p>
-  <div id="coachGallery"></div>
-</section>
+    <div class="divider" role="separator" aria-hidden="true"></div>
 
-</main>
+    <!-- ABOUT / COACHES Section -->
+    <section class="card" id="about">
+      <h2>
+        Meet the Coaches
+        <span class="subline">Certified. Battle-Tested. Yours.</span>
+      </h2>
+      <p class="lead">
+        These coaches have walked the carnivore path — through adaptation, plateaus, and triumphs.
+        Each brings unique expertise to build your durable health.
+      </p>
+      <div class="cols">
+        <div class="gallery" id="coachGallery">
+          <!-- Dynamic coach cards will be inserted here -->
+        </div>
+        <aside class="card-aside">
+          <h3>How It Works</h3>
+          <ol>
+            <li>Book a discovery call</li>
+            <li>Get your custom blueprint</li>
+            <li>Track wins weekly</li>
+            <li>Thrive for life</li>
+          </ol>
+          <p><a href="contact.html" style="color: var(--accent-red);">Start Today →</a></p>
+        </aside>
+      </div>
+    </section>
 
-<!-- 🔥 Inject Shared Modal Template Here -->
-<div id="gcc-modal-container"></div>
+    <div class="divider" role="separator" aria-hidden="true"></div>
 
-<!-- Shared Modal Loader -->
-<script>
-fetch('components/modal-coach.html')
-  .then(r=>r.text())
-  .then(html=>{ document.getElementById('gcc-modal-container').innerHTML = html; })
-  .catch(e=>console.error('Modal load failed',e));
-</script>
+    <!-- SHARED MEAL IDEAS Section -->
+    <section class="card" id="mealideas" aria-labelledby="cache-title">
+      <h2 id="cache-title">
+        Shared Meal Ideas
+        <span class="subline">Inspiration for sustained performance</span>
+      </h2>
+      <p class="lead" style="margin-top:8px;">
+        Simple, calorie-dense rations that fuel focus and recovery, including brisket and other slow-cooked fatty cuts
+        for sustained energy and satiety. Click any image to open a larger view.
+      </p>
+      <div class="gallery" aria-live="polite" aria-label="Ration images">
+        <a class="tile" href="#img-1" id="tile-1">
+          <img src="images/meatzza.jpg" alt="Meatzza Bomb - carnivore pizza">
+          <div class="caption">Meatzza Bomb</div>
+        </a>
+        <a class="tile" href="#img-2" id="tile-2">
+          <img src="images/image004.jpg" alt="Slow-forged beef haunches">
+          <div class="caption">Beef Haunches</div>
+        </a>
+        <a class="tile" href="#img-3" id="tile-3">
+          <img src="images/image005.jpg" alt="Plated slow-forged beef haunches">
+          <div class="caption">Beef Haunches 2</div>
+        </a>
+        <a class="tile" href="#img-4" id="tile-4">
+          <img src="images/image008.jpg" alt="Smoked trout fillet">
+          <div class="caption">Smoked Trout</div>
+        </a>
+        <a class="tile" href="#img-5" id="tile-5">
+          <img src="images/image011.jpg" alt="Simple carnivore plate: steak, fat, eggs">
+          <div class="caption">Simple Plate</div>
+        </a>
+        <a class="tile" href="#img-new1" id="tile-new1" aria-label="Open Brisket Image 1">
+          <img src="images/image001.jpg" alt="Close-up view of perfectly smoked brisket slices.">
+          <div class="caption">Field Brisket 1</div>
+        </a>
+        <a class="tile" href="#img-new2" id="tile-new2" aria-label="Open Brisket Image 2">
+          <img src="images/image002.jpg" alt="Pile of brisket slices and smoked short ribs.">
+          <div class="caption">Field Brisket 2</div>
+        </a>
+        <a class="tile" href="#img-new3" id="tile-new3" aria-label="Open Brisket Image 3">
+          <img src="images/image003.jpg" alt="Whole smoked meat platter, including brisket and ribs.">
+          <div class="caption">Field Brisket 3</div>
+        </a>
+        <a class="tile" href="#img-new4" id="tile-new4" aria-label="Open Brisket Image 4">
+          <img src="images/image006.jpg" alt="Brisket slices with a dark pepper bark.">
+          <div class="caption">Brisket Slices</div>
+        </a>
+        <a class="tile" href="#img-new5" id="tile-new5" aria-label="Open Brisket Image 5">
+          <img src="images/image007.jpg" alt="Full view of the smoked brisket point.">
+          <div class="caption">Brisket Point</div>
+        </a>
+        <a class="tile" href="#img-new6" id="tile-new6" aria-label="Open Brisket Image 6">
+          <img src="images/image009.jpg" alt="Brisket being sliced to show the smoke ring.">
+          <div class="caption">Slicing Brisket</div>
+        </a>
+        <a class="tile" href="#img-new7" id="tile-new7" aria-label="Open Brisket Image 7">
+          <img src="images/image010.jpg" alt="A simple plate with a generous serving of brisket.">
+          <div class="caption">Brisket Plate</div>
+        </a>
+      </div>
+    </section>
 
-<!-- Shared Modal Engine -->
-<script src="js/modals.js"></script>
+    <div class="divider" role="separator" aria-hidden="true"></div>
 
-<script>
-// Load dynamic coach cards
-async function loadCoaches(){
-  try{
-    const r = await fetch('/webapi/get_coaches.php',{cache:'no-store'});
-    const data = await r.json();
-    if(!data.success) return;
+    <!-- FOOD GROUPS Section -->
+    <section class="card" id="foodgroups" aria-labelledby="foodgroups-title">
+      <h2 id="foodgroups-title">
+        Core Food Groups
+        <span class="subline">Fuel Your Inner Beast</span>
+      </h2>
+      <p class="lead">
+        Unleash your primal power with the carnivore diet’s four savage food groups—ruminant, non-ruminant, dairy, and fish and seafood.
+        These are your weapons: pure, nutrient-dense fuel to crush weakness, sharpen focus, and forge an unbreakable body, free from plant-based baggage.
+      </p>
+      <div class="benefits" style="margin-top:8px;">
+        <div class="benefit">
+          <strong>Ruminant</strong>
+          <div style="font-size:.95rem; margin-top:6px; color:var(--muted);">
+            Beef, lamb, bison—raw, untamed strength. Loaded with heme iron, B12, and CLA, they sculpt muscle and spark ketosis.
+            Devour dripping ribeye or smoky brisket to fuel your conquests.
+          </div>
+        </div>
+        <div class="benefit">
+          <strong>Non-Ruminant</strong>
+          <div style="font-size:.95rem; margin-top:6px; color:var(--muted);">
+            Pork, chicken, turkey—fierce, adaptable allies. Brimming with protein and B vitamins, they rebuild tissue and sustain your hunt.
+            Seize fatty bacon to keep the ketogenic flames roaring.
+          </div>
+        </div>
+        <div class="benefit">
+          <strong>Dairy</strong>
+          <div style="font-size:.95rem; margin-top:6px; color:var(--muted);">
+            Butter, cream, hard cheeses—rich, primal elixirs. Packed with calcium and K2, they harden bones and power ketosis.
+            Choose low-lactose warriors for a gut that fights back.
+          </div>
+        </div>
+        <div class="benefit">
+          <strong>Fish &amp; Seafood</strong>
+          <div style="font-size:.95rem; margin-top:6px; color:var(--muted);">
+            Salmon, shrimp, crab—ocean’s ruthless bounty. Surging with omega-3s and selenium, they hone your mind and guard your heart.
+            Hunt wild-caught to dominate with peak vitality.
+          </div>
+        </div>
+      </div>
+      <p style="font-size:.95rem; color:var(--muted); margin-top:12px;">
+        Track down the finest—grass-fed, wild-caught—for unstoppable power. Enlist a coach to hone your rations and slay your goals.
+      </p>
+    </section>
 
-    const wrap = document.getElementById('coachGallery');
-    wrap.innerHTML = '';
+    <div class="divider" role="separator" aria-hidden="true"></div>
 
-    data.coaches.forEach(c=>{
-      const img = c.Files?.Profile ? '/' + c.Files.Profile.replace(/^\/+/,'') : 'images/WolfCoach_Profile.png';
-      const card = document.createElement('div');
-      card.className='coach-card';
-      card.innerHTML=`
-        <img src="${img}" alt="${c.CoachName}">
-        <div class="coach-name">${c.CoachName||c.Username}</div>
-        <button class="view-btn">View Profile</button>
-      `;
-      card.onclick = ()=> GCCModals.openCoachModal(c.Username);
-      wrap.appendChild(card);
-    });
-  }catch(e){console.error(e);}
-}
-document.addEventListener('DOMContentLoaded', loadCoaches);
-</script>
+    <!-- SCIENCE Section (Teaser Version) -->
+    <section class="card" id="mechanisms">
+      <h2>
+        The Science of Transformation
+        <span class="subline">Biology-informed, field-tested</span>
+      </h2>
+      <p class="lead">
+        The carnivore diet optimizes metabolism and reduces inflammation by removing plant toxins and focusing on high-bioavailability nutrients —
+        backed by growing case studies and clinical observations.
+      </p>
 
-<footer>
-  <p>© 2025 Global Carnivore Coaches. All rights reserved.</p>
-</footer>
+      <div class="cta" style="margin-top:12px;">
+        <a class="btn" href="science.html">Explore the Science →</a>
+      </div>
+    </section>
 
+    <div class="divider" role="separator" aria-hidden="true"></div>
+
+    <!-- FASTING & MOVEMENT Section -->
+    <section class="card" id="fasting-movement" aria-labelledby="fasting-movement-title">
+      <h2 id="fasting-movement-title">
+        Fasting &amp; Movement Strategy
+        <span class="subline">Autophagy • Ruck • Recover • Resilience</span>
+      </h2>
+      <p class="lead">
+        Use fasting strategically to accelerate repair and metabolic flexibility. Combine with low-impact load carriage (rucking)
+        and targeted mobility to improve resilience and function. Programs emphasize consistent, sustainable movement patterns, joint-first strength,
+        and mobility drills that keep you active and pain-managed over the long term.
+      </p>
+    </section>
+
+    <div class="divider" role="separator" aria-hidden="true"></div>
+
+    <!-- COMMUNITY Section (Teaser Version) -->
+    <section class="card" id="community">
+      <h2>
+        Community &amp; Resources
+        <span class="subline">Trusted Voices &amp; Learning</span>
+      </h2>
+      <p class="lead">
+        Join a tribe of people getting stronger, sharper, and healthier through a meat-based lifestyle.
+        Learn from trusted leaders, coaches, and real success stories.
+      </p>
+
+      <div class="cta" style="margin-top:12px;">
+        <a class="btn" href="community.html">Explore Community →</a>
+      </div>
+    </section>
+
+    <div class="divider" role="separator" aria-hidden="true"></div>
+
+    <!-- CONTACT Section -->
+    <section class="card" id="contact" aria-labelledby="contact-title">
+      <h2 id="contact-title">
+        Mobilize Your Transformation
+        <span class="subline">Deploy your plan</span>
+      </h2>
+      <p class="lead">
+        If you're ready to reclaim consistent energy, reduce chronic symptoms, and build sustainable performance,
+        schedule a discovery call. We'll assess your current state, set clear goals, and craft a stepwise plan that fits your life.
+      </p>
+      <div class="cta" role="region" aria-label="Call to action">
+        <a class="btn" href="mailto:your@email.com" role="button">Book Discovery Call</a>
+        <a class="btn ghost" href="tiers.html" role="button">View Program Tiers</a>
+      </div>
+      <p style="text-align:center; color:var(--muted); margin-top:12px; font-weight:700;">
+        Limited 1:1 coaching slots available — start today.
+      </p>
+    </section>
+
+    <!-- Image Modals for meal gallery -->
+    <div id="img-1" class="modal-target" aria-modal="true" role="dialog">
+      <div class="modal-content" role="document" aria-labelledby="modal-1-title">
+        <a href="#tile-1" class="modal-close" aria-label="Close image view">&times;</a>
+        <img src="images/meatzza.jpg" alt="Large view of Meatzza Bomb">
+      </div>
+    </div>
+    <div id="img-2" class="modal-target" aria-modal="true" role="dialog">
+      <div class="modal-content">
+        <a href="#tile-2" class="modal-close" aria-label="Close image view">&times;</a>
+        <img src="images/image004.jpg" alt="Large view of slow-cooked beef haunches">
+      </div>
+    </div>
+    <div id="img-3" class="modal-target" aria-modal="true" role="dialog">
+      <div class="modal-content">
+        <a href="#tile-3" class="modal-close" aria-label="Close image view">&times;</a>
+        <img src="images/image005.jpg" alt="Large view of plated slow-forged beef haunches">
+      </div>
+    </div>
+    <div id="img-4" class="modal-target" aria-modal="true" role="dialog">
+      <div class="modal-content">
+        <a href="#tile-4" class="modal-close" aria-label="Close image view">&times;</a>
+        <img src="images/image008.jpg" alt="Large view of smoked trout fillet">
+      </div>
+    </div>
+    <div id="img-5" class="modal-target" aria-modal="true" role="dialog">
+      <div class="modal-content">
+        <a href="#tile-5" class="modal-close" aria-label="Close image view">&times;</a>
+        <img src="images/image011.jpg" alt="Large view of simple carnivore plate">
+      </div>
+    </div>
+    <div id="img-new1" class="modal-target" aria-modal="true" role="dialog">
+      <div class="modal-content">
+        <a href="#tile-new1" class="modal-close" aria-label="Close image view">&times;</a>
+        <img src="images/image001.jpg" alt="Large view of smoked brisket slices">
+      </div>
+    </div>
+    <div id="img-new2" class="modal-target" aria-modal="true" role="dialog">
+      <div class="modal-content">
+        <a href="#tile-new2" class="modal-close" aria-label="Close image view">&times;</a>
+        <img src="images/image002.jpg" alt="Large view of brisket pile">
+      </div>
+    </div>
+    <div id="img-new3" class="modal-target" aria-modal="true" role="dialog">
+      <div class="modal-content">
+        <a href="#tile-new3" class="modal-close" aria-label="Close image view">&times;</a>
+        <img src="images/image003.jpg" alt="Large view of meat platter">
+      </div>
+    </div>
+    <div id="img-new4" class="modal-target" aria-modal="true" role="dialog">
+      <div class="modal-content">
+        <a href="#tile-new4" class="modal-close" aria-label="Close image view">&times;</a>
+        <img src="images/image006.jpg" alt="Large view of brisket with pepper bark">
+      </div>
+    </div>
+    <div id="img-new5" class="modal-target" aria-modal="true" role="dialog">
+      <div class="modal-content">
+        <a href="#tile-new5" class="modal-close" aria-label="Close image view">&times;</a>
+        <img src="images/image007.jpg" alt="Large view of brisket point">
+      </div>
+    </div>
+    <div id="img-new6" class="modal-target" aria-modal="true" role="dialog">
+      <div class="modal-content">
+        <a href="#tile-new6" class="modal-close" aria-label="Close image view">&times;</a>
+        <img src="images/image009.jpg" alt="Large view of brisket being sliced">
+      </div>
+    </div>
+    <div id="img-new7" class="modal-target" aria-modal="true" role="dialog">
+      <div class="modal-content">
+        <a href="#tile-new7" class="modal-close" aria-label="Close image view">&times;</a>
+        <img src="images/image010.jpg" alt="Large view of brisket plate">
+      </div>
+    </div>
+
+    <!-- Certificate modal (static example) -->
+    <div id="img-cert" class="modal-target" aria-modal="true" role="dialog">
+      <div class="modal-content">
+        <a href="#tile-cert" class="modal-close" aria-label="Close certificate view">&times;</a>
+        <img src="images/toon_cert.jpg" alt="Large view of Kiltz Health Coaching Certificate">
+      </div>
+    </div>
+
+    <div id="modalsContainer">
+      <!-- (Legacy placeholder – coach modals now use js/modals.js & modal-coach.html) -->
+    </div>
+  </main>
+
+  <!-- Shared modal logic (same as profile.html) -->
+  <script src="js/modals.js"></script>
+
+  <script>
+  const API_BASE_URL = window.location.protocol === 'https:'
+    ? `https://${window.location.hostname}:477/webapi`
+    : `http://${window.location.hostname}:8080/webapi`;
+
+  async function loadCoaches() {
+    try {
+      const response = await fetch('/webapi/get_coaches.php');
+      const data = await response.json();
+
+      if (data.success) {
+        const gallery = document.getElementById('coachGallery');
+        gallery.innerHTML = '';
+
+        data.coaches.forEach(coach => {
+          const username = (coach.Username || '').toLowerCase();
+          const fullName = coach.CoachName || coach.Username || username || 'Coach';
+          const displayName = coach.CoachName
+            ? coach.CoachName
+            : (coach.Username
+              ? coach.Username.charAt(0).toUpperCase() + coach.Username.slice(1)
+              : 'Coach');
+
+          const files = coach.Files || {};
+
+          // Normalize media path (uploads live at /uploads/...)
+          function fixMediaPath(p) {
+            return p
+              ? '/' + p.replace(/^public\//, '').replace(/^\/+/, '')
+              : '';
+          }
+
+          const profileSrc = files.Profile
+            ? fixMediaPath(files.Profile)
+            : '/images/WolfCoach_Profile.png';
+
+          // Build Card A (tile + button V1)
+          const card = document.createElement('div');
+          card.className = 'coach-card';
+
+          card.innerHTML = `
+            <a href="#" class="tile coach-tile">
+              <img src="${profileSrc}" alt="${fullName}" loading="lazy">
+              <span class="caption">${displayName}</span>
+            </a>
+            <button type="button"
+                    class="view-btn"
+                    aria-label="View ${displayName}'s profile">
+              View Profile
+            </button>
+          `;
+
+          const tile = card.querySelector('.coach-tile');
+          const img = tile.querySelector('img');
+          const btn = card.querySelector('.view-btn');
+
+          // Hover/loading animation class
+          img.addEventListener('load', () => tile.classList.add('loaded'), { once: true });
+          img.addEventListener('error', () => {
+            img.src = '/images/WolfCoach_Profile.jpg';
+            tile.classList.add('loaded');
+          });
+
+          // Shared handler to open the full public profile modal
+          const openProfile = (evt) => {
+            evt.preventDefault();
+            if (window.GCCModals && typeof window.GCCModals.openCoachModal === 'function') {
+              window.GCCModals.openCoachModal(coach);
+            } else {
+              console.warn('GCCModals.openCoachModal not available');
+            }
+          };
+
+          tile.addEventListener('click', openProfile);
+          btn.addEventListener('click', openProfile);
+
+          gallery.appendChild(card);
+        });
+      } else {
+        console.error('Error loading coaches:', data.message);
+      }
+    } catch (err) {
+      console.error('Network error loading coaches:', err);
+    }
+  }
+
+  // Load on page ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', loadCoaches);
+  } else {
+    loadCoaches();
+  }
+
+  // Modal close on escape key for hash-based image modals
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      const modals = document.querySelectorAll('.modal-target:target');
+      modals.forEach(modal => {
+        const url = new URL(window.location);
+        url.hash = '';
+        window.location = url.toString();
+      });
+    }
+  });
+  </script>
+
+  <footer>
+    <p>&copy; 2025 Global Carnivore Coaches. All rights reserved.</p>
+  </footer>
 </body>
 </html>
