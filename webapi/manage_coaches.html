@@ -1,0 +1,469 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>Manage Coaches • Global Carnivore Coaches</title>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Cinzel:wght@700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --red:#C51230;
+    --dark:#121212;
+    --light:#f8f9fa;
+    --card:#ffffff;
+    --border:#e0e0e0;
+  }
+  body {
+    margin:0;
+    font-family:'Inter',sans-serif;
+    background:var(--light);
+    color:#111;
+  }
+  header {
+    background:var(--red);
+    color:#fff;
+    padding:1.5rem 1rem;
+    box-shadow:0 6px 24px rgba(0,0,0,.35);
+  }
+  header h1 {
+    margin:0;
+    font-family:'Cinzel',serif;
+    font-size:2rem;
+  }
+  header .sub {
+    margin-top:.4rem;
+    font-size:.9rem;
+    opacity:.9;
+  }
+  main {
+    max-width:1200px;
+    margin:1.5rem auto;
+    padding:0 1rem 2rem;
+    display:grid;
+    grid-template-columns: minmax(260px, 1.4fr) minmax(320px, 1.8fr);
+    gap:1.5rem;
+  }
+  @media (max-width:900px) {
+    main {
+      grid-template-columns:1fr;
+    }
+  }
+  .card {
+    background:var(--card);
+    border-radius:16px;
+    padding:1.5rem;
+    box-shadow:0 8px 28px rgba(0,0,0,.08);
+    border:1px solid var(--border);
+  }
+  h2 {
+    margin-top:0;
+    font-family:'Cinzel',serif;
+    font-size:1.3rem;
+  }
+  .coach-list {
+    max-height:480px;
+    overflow-y:auto;
+    border-top:1px solid var(--border);
+    margin-top:.75rem;
+  }
+  .coach-row {
+    padding:.7rem .2rem;
+    border-bottom:1px solid var(--border);
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:.5rem;
+    cursor:pointer;
+  }
+  .coach-row:hover {
+    background:#f3f3f3;
+  }
+  .coach-row.active {
+    background:#ffecee;
+  }
+  .coach-name {
+    font-weight:600;
+  }
+  .coach-user {
+    font-size:.8rem;
+    opacity:.7;
+  }
+  .badge {
+    display:inline-block;
+    background:#222;
+    color:#fff;
+    padding:.1rem .4rem;
+    border-radius:999px;
+    font-size:.7rem;
+    margin-left:.4rem;
+  }
+  .toolbar {
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:.5rem;
+    margin-top:.5rem;
+    flex-wrap:wrap;
+  }
+  .btn {
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    padding:.45rem .9rem;
+    border-radius:999px;
+    border:1px solid var(--border);
+    background:#fff;
+    font-size:.85rem;
+    font-weight:600;
+    cursor:pointer;
+    gap:.35rem;
+  }
+  .btn-primary {
+    background:var(--red);
+    color:#fff;
+    border-color:#8e0d23;
+  }
+  .btn-danger {
+    background:#111;
+    color:#fff;
+    border-color:#000;
+  }
+  .btn:disabled {
+    opacity:.4;
+    cursor:default;
+  }
+  form label {
+    display:block;
+    font-size:.85rem;
+    font-weight:600;
+    margin-top:.6rem;
+  }
+  form input, form textarea {
+    width:100%;
+    padding:.45rem .55rem;
+    border-radius:8px;
+    border:1px solid var(--border);
+    font-family:inherit;
+    font-size:.9rem;
+    margin-top:.15rem;
+    box-sizing:border-box;
+  }
+  form textarea {
+    min-height:90px;
+    resize:vertical;
+  }
+  small.helper {
+    display:block;
+    font-size:.75rem;
+    opacity:.7;
+    margin-top:.2rem;
+  }
+  .two-cols {
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:.75rem;
+  }
+  @media (max-width:600px) {
+    .two-cols {
+      grid-template-columns:1fr;
+    }
+  }
+  .status {
+    margin-top:.7rem;
+    font-size:.85rem;
+    min-height:1rem;
+  }
+  .status.ok {
+    color:green;
+  }
+  .status.err {
+    color:var(--red);
+  }
+  .top-links {
+    display:flex;
+    gap:.6rem;
+    font-size:.85rem;
+    margin-top:.25rem;
+  }
+  .top-links a {
+    color:#ffe;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Manage Coaches</h1>
+  <div class="sub">Add, edit, or remove coaches (writes to <code>uploads/coaches.json</code>).</div>
+  <div class="top-links">
+    <a href="/webapi/dashboard.html">← Back to Dashboard</a>
+    <a href="/">View Site</a>
+  </div>
+</header>
+
+<main>
+  <!-- LEFT: COACH LIST -->
+  <section class="card">
+    <div class="toolbar">
+      <h2 style="margin:0;">Coaches</h2>
+      <button type="button" class="btn btn-primary" id="btnNew">＋ New Coach</button>
+    </div>
+    <div id="coachList" class="coach-list">
+      Loading coaches…
+    </div>
+  </section>
+
+  <!-- RIGHT: EDITOR FORM -->
+  <section class="card">
+    <h2 id="formTitle">Coach Details</h2>
+    <form id="coachForm" autocomplete="off">
+      <label for="username">Username (unique, login key)</label>
+      <input id="username" name="username" required>
+      <small class="helper">Used as unique ID. For existing coaches this is locked.</small>
+
+      <label for="coachName">Coach Name (display)</label>
+      <input id="coachName" name="coachName">
+
+      <label for="email">Email</label>
+      <input id="email" name="email" type="email">
+
+      <label for="bio">Bio</label>
+      <textarea id="bio" name="bio"></textarea>
+
+      <label for="specializations">Specializations</label>
+      <textarea id="specializations" name="specializations" placeholder="e.g. Carnivore, Ketovore, Fasting"></textarea>
+      <small class="helper">Comma, semicolon, or pipe-separated. Stored as an array in <code>coaches.json</code>.</small>
+
+      <div class="two-cols">
+        <div>
+          <label for="profile">Profile Image</label>
+          <input id="profile" name="profile" placeholder="e.g. uploads/coach1.jpg">
+          <small class="helper">Relative path from site root (e.g. <code>uploads/filename.jpg</code>).</small>
+        </div>
+        <div>
+          <label for="certificate">Certificate Image</label>
+          <input id="certificate" name="certificate" placeholder="uploads/cert1.jpg">
+        </div>
+      </div>
+
+      <div class="two-cols">
+        <div>
+          <label for="before">Before Photo</label>
+          <input id="before" name="before" placeholder="uploads/before1.jpg">
+        </div>
+        <div>
+          <label for="after">After Photo</label>
+          <input id="after" name="after" placeholder="uploads/after1.jpg">
+        </div>
+      </div>
+
+      <div class="toolbar" style="margin-top:1rem;">
+        <div>
+          <button type="submit" class="btn btn-primary" id="btnSave">💾 Save Coach</button>
+          <button type="button" class="btn btn-danger" id="btnDelete" disabled>🗑 Delete</button>
+        </div>
+        <div class="status" id="status"></div>
+      </div>
+    </form>
+  </section>
+</main>
+
+<script>
+const COACHES_URL = '/uploads/coaches.json';
+const SAVE_URL    = 'save_coach.php';
+
+let coaches = [];
+let currentUsername = null;
+
+// Elements
+const coachListEl = document.getElementById('coachList');
+const form        = document.getElementById('coachForm');
+const statusEl    = document.getElementById('status');
+const formTitle   = document.getElementById('formTitle');
+const btnNew      = document.getElementById('btnNew');
+const btnDelete   = document.getElementById('btnDelete');
+const usernameEl  = document.getElementById('username');
+
+function setStatus(msg, ok = true) {
+  statusEl.textContent = msg || '';
+  statusEl.className = 'status ' + (msg ? (ok ? 'ok' : 'err') : '');
+}
+
+function renderList() {
+  if (!coaches.length) {
+    coachListEl.innerHTML = '<em>No coaches found.</em>';
+    return;
+  }
+
+  coachListEl.innerHTML = coaches.map(c => {
+    const name = c.CoachName || c.Username || 'Coach';
+    const user = c.Username || '';
+    const last = c.last_login ? new Date(c.last_login).toLocaleString() : '';
+    return `
+      <div class="coach-row" data-username="${user}">
+        <div>
+          <div class="coach-name">${name}</div>
+          <div class="coach-user">@${user}</div>
+        </div>
+        <div>
+          ${last ? `<span class="badge">Last: ${last}</span>` : ''}
+        </div>
+      </div>`;
+  }).join('');
+
+  coachListEl.querySelectorAll('.coach-row').forEach(row => {
+    row.addEventListener('click', () => {
+      const u = row.getAttribute('data-username');
+      selectCoach(u);
+    });
+  });
+
+  // highlight if current selected
+  if (currentUsername) {
+    const row = coachListEl.querySelector(`[data-username="${currentUsername}"]`);
+    if (row) row.classList.add('active');
+  }
+}
+
+function fillForm(coach) {
+  formTitle.textContent = coach ? `Editing: ${coach.CoachName || coach.Username}` : 'New Coach';
+
+  usernameEl.value       = coach?.Username || '';
+  usernameEl.readOnly    = !!coach?.Username; // lock username when editing existing
+  document.getElementById('coachName').value    = coach?.CoachName || '';
+  document.getElementById('email').value        = coach?.Email || '';
+  document.getElementById('bio').value          = coach?.Bio || '';
+
+  let specs = '';
+  if (Array.isArray(coach?.Specializations)) {
+    specs = coach.Specializations.join(', ');
+  } else if (typeof coach?.Specializations === 'string') {
+    specs = coach.Specializations;
+  }
+  document.getElementById('specializations').value = specs;
+
+  const files = coach?.Files || {};
+  document.getElementById('profile').value     = files.Profile     || '';
+  document.getElementById('certificate').value = files.Certificate || '';
+  document.getElementById('before').value      = files.Before      || '';
+  document.getElementById('after').value       = files.After       || '';
+
+  btnDelete.disabled = !coach;
+}
+
+function selectCoach(username) {
+  currentUsername = username;
+  const coach = coaches.find(c => (c.Username || '').toLowerCase() === String(username).toLowerCase());
+  coachListEl.querySelectorAll('.coach-row').forEach(r => r.classList.remove('active'));
+  const activeRow = coachListEl.querySelector(`[data-username="${username}"]`);
+  if (activeRow) activeRow.classList.add('active');
+  fillForm(coach || null);
+  setStatus('');
+}
+
+async function loadCoaches() {
+  setStatus('Loading coaches…', true);
+  try {
+    const res = await fetch(COACHES_URL + '?t=' + Date.now());
+    const data = await res.json();
+    coaches = Array.isArray(data) ? data : [];
+    renderList();
+    setStatus('');
+  } catch (err) {
+    console.error(err);
+    setStatus('Failed to load coaches.json', false);
+  }
+}
+
+// New coach
+btnNew.addEventListener('click', () => {
+  currentUsername = null;
+  coachListEl.querySelectorAll('.coach-row').forEach(r => r.classList.remove('active'));
+  fillForm(null);
+  setStatus('');
+});
+
+// Save handler
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  setStatus('Saving coach…', true);
+
+  const payload = {
+    action: currentUsername ? 'update' : 'create',
+    Username:      usernameEl.value.trim(),
+    CoachName:     document.getElementById('coachName').value.trim(),
+    Email:         document.getElementById('email').value.trim(),
+    Bio:           document.getElementById('bio').value,
+    Specializations: document.getElementById('specializations').value,
+    Profile:       document.getElementById('profile').value.trim(),
+    Certificate:   document.getElementById('certificate').value.trim(),
+    Before:        document.getElementById('before').value.trim(),
+    After:         document.getElementById('after').value.trim()
+  };
+
+  if (!payload.Username) {
+    setStatus('Username is required.', false);
+    return;
+  }
+
+  try {
+    const res = await fetch(SAVE_URL, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(payload)
+    });
+    const out = await res.json();
+    if (!out.success) {
+      setStatus(out.message || 'Save failed.', false);
+      return;
+    }
+
+    setStatus(out.message || 'Saved.', true);
+    // Reload list from file so everything stays in sync
+    await loadCoaches();
+    currentUsername = payload.Username;
+    selectCoach(currentUsername);
+  } catch (err) {
+    console.error(err);
+    setStatus('Network or server error while saving.', false);
+  }
+});
+
+// Delete handler
+btnDelete.addEventListener('click', async () => {
+  const username = usernameEl.value.trim();
+  if (!username) return;
+
+  if (!confirm(`Delete coach "${username}"? This cannot be undone.`)) {
+    return;
+  }
+
+  setStatus('Deleting coach…', true);
+
+  try {
+    const res = await fetch(SAVE_URL, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ action: 'delete', Username: username })
+    });
+    const out = await res.json();
+    if (!out.success) {
+      setStatus(out.message || 'Delete failed.', false);
+      return;
+    }
+
+    setStatus('Coach deleted.', true);
+    currentUsername = null;
+    await loadCoaches();
+    fillForm(null);
+  } catch (err) {
+    console.error(err);
+    setStatus('Network or server error while deleting.', false);
+  }
+});
+
+// Initial load
+loadCoaches();
+</script>
+</body>
+</html>
