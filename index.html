@@ -222,6 +222,30 @@
       .cols { gap: 16px; }
     }
 
+    /* ---------- benefits ---------- */
+    .benefits {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-top: 16px;
+    }
+    .benefit {
+      background: rgba(255,255,255,0.5);
+      padding: 12px;
+      border-radius: 6px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
+    .benefit strong {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--primary-blue);
+    }
+    .benefit div {
+      font-size: 0.95rem;
+      margin-top: 6px;
+      color: var(--muted);
+    }
+
     /* ---------- divider ---------- */
     .divider {
       height: 1px;
@@ -394,7 +418,7 @@
       .caption { font-size: 0.8rem; }
     }
 
-    /* ---------- coach cards (Card A + Button V1) ---------- */
+    /* ---------- coach cards (Card B + Button V1) ---------- */
     .coach-card {
       display: flex;
       flex-direction: column;
@@ -747,33 +771,23 @@
           <div class="benefits" style="margin-top:8px;">
             <div class="benefit">
               <strong>Tailored Journey</strong>
-              <div style="font-size:.95rem; margin-top:6px; color:var(--muted);">
-                Personalized plans evolve from keto to Lion Diet, matching your goals.
-              </div>
+              <div>Personalized plans evolve from keto to Lion Diet, matching your goals.</div>
             </div>
             <div class="benefit">
               <strong>Resilient Body</strong>
-              <div style="font-size:.95rem; margin-top:6px; color:var(--muted);">
-                Eliminate pain and bloating with nutrient-dense animal foods.
-              </div>
+              <div>Eliminate pain and bloating with nutrient-dense animal foods.</div>
             </div>
             <div class="benefit">
               <strong>Steady Energy</strong>
-              <div style="font-size:.95rem; margin-top:6px; color:var(--muted);">
-                Deep ketosis fuels focus and stamina, banishing brain fog.
-              </div>
+              <div>Deep ketosis fuels focus and stamina, banishing brain fog.</div>
             </div>
             <div class="benefit">
               <strong>Constant Support</strong>
-              <div style="font-size:.95rem; margin-top:6px; color:var(--muted);">
-                Bi-weekly calls and daily email or chat keep you on track.
-              </div>
+              <div>Bi-weekly calls and daily email or chat keep you on track.</div>
             </div>
             <div class="benefit">
               <strong>Simple Fuel</strong>
-              <div style="font-size:.95rem; margin-top:6px; color:var(--muted);">
-                Shared recipes, meal ideas, unique cooking methods—brisket, meatzza—make eating effortless, including curing and smoking meat.
-              </div>
+              <div>Shared recipes, meal ideas, unique cooking methods—brisket, meatzza—make eating effortless, including curing and smoking meat.</div>
             </div>
           </div>
         </div>
@@ -898,28 +912,28 @@
       <div class="benefits" style="margin-top:8px;">
         <div class="benefit">
           <strong>Ruminant</strong>
-          <div style="font-size:.95rem; margin-top:6px; color:var(--muted);">
+          <div>
             Beef, lamb, bison—raw, untamed strength. Loaded with heme iron, B12, and CLA, they sculpt muscle and spark ketosis.
             Devour dripping ribeye or smoky brisket to fuel your conquests.
           </div>
         </div>
         <div class="benefit">
           <strong>Non-Ruminant</strong>
-          <div style="font-size:.95rem; margin-top:6px; color:var(--muted);">
+          <div>
             Pork, chicken, turkey—fierce, adaptable allies. Brimming with protein and B vitamins, they rebuild tissue and sustain your hunt.
             Seize fatty bacon to keep the ketogenic flames roaring.
           </div>
         </div>
         <div class="benefit">
           <strong>Dairy</strong>
-          <div style="font-size:.95rem; margin-top:6px; color:var(--muted);">
+          <div>
             Butter, cream, hard cheeses—rich, primal elixirs. Packed with calcium and K2, they harden bones and power ketosis.
             Choose low-lactose warriors for a gut that fights back.
           </div>
         </div>
         <div class="benefit">
           <strong>Fish &amp; Seafood</strong>
-          <div style="font-size:.95rem; margin-top:6px; color:var(--muted);">
+          <div>
             Salmon, shrimp, crab—ocean’s ruthless bounty. Surging with omega-3s and selenium, they hone your mind and guard your heart.
             Hunt wild-caught to dominate with peak vitality.
           </div>
@@ -1091,17 +1105,6 @@
 
   <!-- Shared modal logic (same as profile.html) -->
   <script src="js/modals.js"></script>
-  <!-- 🔥 Inject the shared Coach Modal HTML -->
- <div id="coachModalRoot"></div>
-  <script>
-fetch('components/modal-coach.html')
-  .then(r => r.text())
-  .then(html => {
-    document.getElementById('coachModalRoot').innerHTML = html;
-    console.log('Coach modal loaded');
-  })
-  .catch(err => console.error('Error loading modal-coach.html:', err));
-  </script>
 
   <script>
     const API_BASE_URL = window.location.protocol === 'https:'
@@ -1139,7 +1142,7 @@ fetch('components/modal-coach.html')
               ? fixMediaPath(files.Profile)
               : '/images/WolfCoach_Profile.png';
 
-            // Build Card A (tile + button V1)
+            // Build Card B (image tile) + Button V1
             const card = document.createElement('div');
             card.className = 'coach-card';
 
@@ -1172,7 +1175,7 @@ fetch('components/modal-coach.html')
               if (window.GCCModals && typeof window.GCCModals.openCoachModal === 'function') {
                 window.GCCModals.openCoachModal(coach);
               } else {
-                console.warn('GCCModals.openCoachModal not available');
+                console.warn('GCCModals.openCoachModal not available — check js/modals.js is loaded.');
               }
             };
 
