@@ -1,56 +1,71 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Coach Login • Global Carnivore Coaches</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Coach Login • Global Carnivore Coaches</title>
 
-  <link rel="icon" type="image/png" href="../images/earth_steak.png">
-  <link rel="stylesheet" href="../css/global.css">
+<link rel="icon" type="image/png" href="/images/earth_steak.png">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Inter:wght@300;500;700&display=swap" rel="stylesheet">
 
-  <style>
-    body {
+<style>
 :root {
-  --white:#fff;
-  --text:#192168;
+  --white:#FFFFFF;
+  --parch:#D0D2D5;
   --blue:#192168;
   --red:#AF1E2D;
-  --muted:#555;
-  --radius:14px;
-  --shadow:0 12px 40px rgba(0,0,0,.18);
+  --muted:#585858;
+  --radius:16px;
+  --shadow:0 16px 40px rgba(0,0,0,.22);
 }
 
+* { box-sizing:border-box; margin:0; padding:0; }
+
 body {
-  min-height:100vh;
   font-family:'Inter',sans-serif;
-  background:radial-gradient(circle at 10% 10%,#F8F9FA 0%,#D0D2D5 40%,#B0B3BA 100%);
-  color:var(--text);
+  background:radial-gradient(circle at 10% 10%,#F8F9FA 0%,var(--parch) 40%,#B0B3BA 100%);
+  min-height:100vh;
   display:flex;
   align-items:center;
   justify-content:center;
   padding:2rem 1rem;
+  color:var(--blue);
 }
 
 .login-card {
+  background:var(--white);
+  padding:2.5rem 2rem;
   width:100%;
   max-width:420px;
-  background:var(--white);
   border-radius:var(--radius);
-  padding:2.4rem 2rem;
   box-shadow:var(--shadow);
   border:1px solid rgba(0,0,0,0.06);
+  animation:fadeIn .4s ease;
+}
+
+@keyframes fadeIn {
+  from {opacity:0; transform:translateY(10px);}
+  to {opacity:1; transform:translateY(0);}
+}
+
+.logo-wrap {
+  text-align:center;
+  margin-bottom:1rem;
+}
+.logo-wrap img {
+  width:90px; height:90px;
 }
 
 h1 {
-  font-family:'Cinzel',serif;
-  color:var(--blue);
-  font-size:2rem;
-  margin-bottom:.6rem;
   text-align:center;
+  font-family:'Cinzel',serif;
+  margin-bottom:.4rem;
+  font-size:2.1rem;
+  color:var(--blue);
 }
-
 p.sub {
   text-align:center;
+  font-size:.95rem;
   color:var(--muted);
   margin-bottom:2rem;
 }
@@ -59,138 +74,158 @@ label {
   display:block;
   font-size:.9rem;
   font-weight:600;
-  margin-bottom:.3rem;
+  margin-bottom:.35rem;
+  color:var(--blue);
 }
 
 input {
   width:100%;
   padding:.9rem 1rem;
-  border:2px solid #ccd;
+  border:2px solid #c7cbe0;
   border-radius:var(--radius);
+  transition:border .18s, box-shadow .18s;
   font-size:1rem;
-  margin-bottom:1.2rem;
   background:#fff;
   color:var(--blue);
-  transition:all .18s ease-in-out;
+  margin-bottom:1.3rem;
 }
-
 input:focus {
   border-color:var(--red);
-  box-shadow:0 0 0 3px rgba(175,30,45,0.25);
   outline:none;
+  box-shadow:0 0 0 3px rgba(175,30,45,0.22);
 }
 
 .btn {
+  display:inline-block;
   width:100%;
+  margin-top:.3rem;
   padding:1rem;
-  border-radius:999px;
   font-weight:700;
   border:none;
+  border-radius:999px;
   cursor:pointer;
   font-size:1rem;
-  transition:all .2s;
-  margin-top:.25rem;
+  transition:all .22s;
 }
 
 .btn-primary {
   background:var(--red);
   color:#fff;
-  box-shadow:0 6px 22px rgba(175,30,45,.35);
+  box-shadow:0 8px 26px rgba(175,30,45,.35);
 }
-
 .btn-primary:hover {
   background:#8b1624;
-  transform:translateY(-1px);
+  transform:translateY(-2px);
 }
 
 .status-line {
   text-align:center;
-  margin-top:1rem;
-  min-height:18px;
+  min-height:22px;
   font-size:.9rem;
+  margin-top:1rem;
 }
-
+.status-line.ok { color:green; }
 .status-line.err { color:var(--red); }
-.status-line.ok  { color:green; }
 
-    }
-  </style>
+footer {
+  text-align:center;
+  margin-top:1.5rem;
+}
+footer a {
+  color:var(--blue);
+  font-size:.85rem;
+  text-decoration:none;
+}
+footer a:hover {
+  text-decoration:underline;
+}
+</style>
 </head>
 
 <body>
-
-  <div class="login-box">
-    <h2>Coach Login</h2>
-
-    <label for="username">Username</label>
-    <input id="username" name="username" autocomplete="username" required />
-
-    <label for="password">Password</label>
-    <input id="password" name="password"
-           type="password" autocomplete="current-password" required />
-
-    <button class="btn" id="loginBtn">Login</button>
-
-    <div id="error-msg"></div>
+<div class="login-card">
+  <div class="logo-wrap">
+    <img src="/images/earth_steak.png" alt="Global Carnivore Coaches Logo">
   </div>
 
-  <script>
-    const API_BASE = window.location.origin + "/webapi/";
+  <h1>Coach Login</h1>
+  <p class="sub">Enter your credentials to access your profile</p>
 
-    async function checkSession() {
-      try {
-        const res = await fetch(API_BASE + "login.php", {
-          method: "GET",
-          credentials: "include",
-          cache: "no-store"
-        });
-        const data = await res.json();
-        if (data && data.success) {
-          setTimeout(() => window.location.href = "/webapi/profile.html", 150);
-        }
-      } catch (_) {}
+  <form id="loginForm" autocomplete="on">
+    <label for="username">Username</label>
+    <input id="username" name="username" required autocomplete="username">
+
+    <label for="password">Password</label>
+    <input id="password" name="password" type="password" required autocomplete="current-password">
+
+    <button type="submit" class="btn btn-primary">Sign In</button>
+
+    <div id="loginStatus" class="status-line"></div>
+  </form>
+
+  <footer>
+    <a href="/">← Return to Homepage</a>
+  </footer>
+</div>
+
+<script>
+const API_BASE = window.location.origin + '/webapi/';
+
+function setStatus(msg, ok=true){
+  const el = document.getElementById('loginStatus');
+  el.textContent = msg || '';
+  el.className = 'status-line ' + (msg ? (ok ? 'ok' : 'err') : '');
+}
+
+// Auto-redirect if already logged in
+(async()=>{
+  try{
+    const r = await fetch(API_BASE+'login.php',{
+      method:'GET',
+      credentials:'include',
+      cache:'no-store'
+    });
+    const j = await r.json();
+    if(j.success){
+      window.location.href='/profile.html';
     }
-    checkSession();
+  }catch{}
+})();
 
-    document.getElementById("loginBtn").onclick = async () => {
-      const username = document.getElementById("username").value.trim();
-      const password = document.getElementById("password").value.trim();
-      const err = document.getElementById("error-msg");
-      err.textContent = "";
+// Main login submission
+document.getElementById('loginForm').addEventListener('submit',async(e)=>{
+  e.preventDefault();
+  setStatus('Signing in…', true);
 
-      if (!username || !password) {
-        err.textContent = "Enter username and password.";
-        return;
-      }
+  const username = document.getElementById('username').value.trim();
+  const password = document.getElementById('password').value;
 
-      try {
-        const res = await fetch(API_BASE + "login.php", {
-          method: "POST",
-          headers: {"Content-Type": "application/json"},
-          credentials: "include",
-          body: JSON.stringify({username, password})
-        });
+  try{
+    const r = await fetch(API_BASE+'login.php',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      credentials:'include',
+      body:JSON.stringify({ username, password })
+    });
+    const j = await r.json();
 
-        const data = await res.json();
+    if(!j.success){
+      setStatus(j.message || 'Login failed', false);
+      return;
+    }
 
-        if (!data.success) {
-          err.textContent = data.message || "Login failed";
-          return;
-        }
+    localStorage.setItem('username', username);
+    if(j.role) localStorage.setItem('role', j.role.toLowerCase());
 
-        localStorage.setItem("username", data.username);
-        localStorage.setItem("role", (data.role || "coach").toLowerCase());
-
-        setTimeout(() => {
-          window.location.href = "/webapi/profile.html";
-        }, 150);
-
-      } catch (error) {
-        console.error(error);
-        err.textContent = "Server error — try again";
-      }
-    };
-  </script>
+    setStatus('Login successful!', true);
+    setTimeout(()=>window.location.href='/profile.html', 350);
+  }
+  catch(err){
+    console.error(err);
+    setStatus('Network error — try again.', false);
+  }
+});
+</script>
 
 </body>
 </html>
