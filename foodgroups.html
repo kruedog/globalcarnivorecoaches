@@ -1,30 +1,86 @@
-    <!-- FOOD GROUPS Section -->
-    <section class="card" id="foodgroups" aria-labelledby="foodgroups-title">
-      <h2 id="foodgroups-title">Core Food Groups <span class="subline">Fuel Your Inner Beast</span></h2>
-      <p class="lead">Unleash your primal power with the carnivore diet’s four savage food groups—ruminant, non-ruminant, dairy, and fish and seafood. These are your weapons: pure, nutrient-dense fuel to crush weakness,
-sharpen focus, and forge an unbreakable body, free from plant-based baggage.</p>
-      <div class="benefits" style="margin-top:8px;">
-        <div class="benefit">
-          <strong>Ruminant</strong>
-          <div style="font-size:.95rem; margin-top:6px; color:var(--muted);">Beef, lamb, bison—raw, untamed strength. Loaded with heme iron, B12, and CLA, they sculpt muscle and spark ketosis. Devour dripping ribeye or smoky
-brisket to fuel your conquests.</div>
-        </div>
-        <div class="benefit">
-          <strong>Non-Ruminant</strong>
-          <div style="font-size:.95rem; margin-top:6px; color:var(--muted);">Pork, chicken, turkey—fierce, adaptable allies. Brimming with protein and B vitamins, they rebuild tissue and sustain your hunt. Seize fatty bacon
-to keep the ketogenic flames roaring.</div>
-        </div>
-        <div class="benefit">
-          <strong>Dairy</strong>
-          <div style="font-size:.95rem; margin-top:6px; color:var(--muted);">Butter, cream, hard cheeses—rich, primal elixirs. Packed with calcium and K2, they harden bones and power ketosis. Choose low-lactose warriors for a
-gut that fights back.</div>
-        </div>
-        <div class="benefit">
-          <strong>Fish & Seafood</strong>
-          <div style="font-size:.95rem; margin-top:6px; color:var(--muted);">Salmon, shrimp, crab—ocean’s ruthless bounty. Surging with omega-3s and selenium, they hone your mind and guard your heart. Hunt wild-caught to
-dominate with peak vitality.</div>
-        </div>
-      </div>
-      <p style="font-size:.95rem; color:var(--muted); margin-top:12px;">Track down the finest—grass-fed, wild-caught—for unstoppable power. Enlist a coach to hone your rations and slay your goals.</p>
-    </section>
-    <div class="divider" role="separator" aria-hidden="true"></div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+
+<style>
+:root {
+  --white:#fff;
+  --text:#192168;
+  --blue:#192168;
+  --red:#AF1E2D;
+  --muted:#555;
+  --radius:14px;
+  --shadow:0 10px 30px rgba(0,0,0,0.18);
+}
+
+/* Layout */
+.foodgroup-grid {
+  display:grid;
+  grid-template-columns:repeat(auto-fit, minmax(220px,1fr));
+  gap:22px;
+  margin-top:20px;
+}
+
+/* Card Style — matching Blueprint section */
+.foodgroup-card {
+  background:var(--white);
+  border:2px solid var(--red);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+  padding:22px;
+  text-align:center;
+  cursor:pointer;
+  transition:transform .25s, box-shadow .25s;
+}
+.foodgroup-card:hover {
+  transform:translateY(-4px);
+  box-shadow:0 18px 40px rgba(0,0,0,0.28);
+}
+
+/* Titles */
+.foodgroup-card strong {
+  font-size:1.3rem;
+  color:var(--text);
+  font-weight:800;
+}
+
+/* Desc text */
+.foodgroup-card p {
+  margin-top:10px;
+  font-size:.95rem;
+  color:var(--muted);
+  line-height:1.35;
+}
+</style>
+</head>
+
+<body>
+
+<div class="foodgroup-grid">
+
+  <div class="foodgroup-card">
+    <strong>Ruminant Animals</strong>
+    <p>Beef, lamb, bison — rich heme iron + CLA to sculpt muscle and fuel deep ketosis.</p>
+  </div>
+
+  <div class="foodgroup-card">
+    <strong>Non-Ruminant</strong>
+    <p>Pork, chicken — versatile protein allies to rebuild tissue and sustain your hunt.</p>
+  </div>
+
+  <div class="foodgroup-card">
+    <strong>Fish & Seafood</strong>
+    <p>Omega-3 packed ocean power — protect the heart, sharpen the mind, dominate recovery.</p>
+  </div>
+
+  <div class="foodgroup-card">
+    <strong>Dairy</strong>
+    <p>Butter, cream, cheese — calcium + K2 to harden bones while powering ketosis.</p>
+  </div>
+
+</div>
+
+</body>
+</html>

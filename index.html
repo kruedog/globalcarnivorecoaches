@@ -138,22 +138,33 @@
 
     <div class="divider"></div>
 
-    <!-- FOOD GROUPS Section -->
-    <section class="card" id="foodgroups" aria-labelledby="cache-title">
-      <h2 id="cache-title">
-        Core Food Groups
-        <span class="subline">Fuel Your Inner Beast</span>
-      </h2>
-      <p class="lead" style="margin-top:8px;">>
-        Unleash your primal power with the carnivore diet’s four savage food groups...
-      </p>
-      <!-- Fixed scroll height embed -->
-      <div style="width:100%;height:520px;overflow:hidden;border-radius:8px;">
-        <iframe src="foodgroups.html"
-                title="Core Food Groups"
-                loading="lazy"
-                style="width:100%;height:100%;border:none;overflow-y:auto;"></iframe>
-      </div>
+	<!-- FOOD GROUPS Section -->
+	<section class="card" id="foodgroups" aria-labelledby="foodgroups-title">
+	  <h2 id="foodgroups-title">
+		Core Food Groups
+		<span class="subline">Fuel Your Inner Beast</span>
+	  </h2>
+
+	  <p class="lead" style="margin-top:8px;">
+		Unleash your primal power with the carnivore diet’s four essential food groups — each one forged in nature to fuel resilience, sharp thinking, and warrior-level strength.
+	  </p>
+
+	  <!-- Inline embed of new Food Groups grid -->
+	  <div style="width:100%;margin-top:20px;">
+		<iframe src="foodgroups.html"
+				title="Core Food Groups"
+				loading="lazy"
+				style="width:100%;min-height:360px;border:none;"></iframe>
+	  </div>
+	</section>
+
+	<style>
+	/* Ensure no internal scroll bars & dynamic height */
+	#foodgroups iframe {
+	  overflow: hidden;
+	}
+	</style>
+
     </section>
 
     <div class="divider"></div>
