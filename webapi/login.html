@@ -1,180 +1,207 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Coach Login | Global Carnivore Coaches</title>
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Lora&display=swap" rel="stylesheet">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Global Carnivore Coaches | Durability. Focus. Freedom.</title>
 
-<style>
-:root { --primary:#C51230; --accent:#192168; }
-body {
-    font-family:'Lora',serif;
-    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-    color:var(--accent); margin:0; min-height:100vh;
-    display:flex; align-items:center; justify-content:center; padding:2rem;
-}
-.container {
-    max-width:420px; width:100%; background:#fff; padding:2rem;
-    border-radius:12px; box-shadow:0 10px 30px rgba(0,0,0,0.15);
-    border:2px solid var(--accent);
-}
-h2 {
-    font-family:'Cinzel',serif; color:var(--primary);
-    text-align:center; margin:0 0 1.5rem; font-size:1.8rem;
-}
-input {
-    width:100%; padding:.9rem; margin:0.6rem 0;
-    border:1px solid var(--accent); border-radius:6px; font-size:1rem;
-}
-button {
-    width:100%; padding:.9rem; font-size:1.1rem;
-    background:var(--primary); color:#fff; border:none; border-radius:6px;
-    cursor:pointer; font-family:'Cinzel',serif;
-}
-button:hover { background:#a10e28; }
-#homeBtn { background:var(--accent); margin-top:.4rem; }
-#homeBtn:hover { background:#0d123b; }
-#loginMsg { margin-top:1rem; text-align:center; min-height:1.4em; font-weight:bold; }
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="images/earth_steak.png">
 
-/* Modal */
-#agreementModal {
-    position:fixed; inset:0; background:rgba(0,0,0,.7);
-    display:none; align-items:center; justify-content:center;
-    z-index:9999; backdrop-filter:blur(4px);
-}
-.modal-box {
-    background:#fff; width:95%; max-width:620px; max-height:85vh;
-    overflow-y:auto; padding:2rem; border-radius:12px; border:3px solid var(--primary);
-    box-shadow:0 15px 40px rgba(0,0,0,.3);
-}
-.modal-box h3 {
-    font-family:'Cinzel',serif; color:var(--primary);
-    text-align:center; font-size:1.7rem; margin-top:0;
-}
-.modal-box label { display:block; margin:1.2rem 0; font-size:1.05rem; }
-.modal-box a { color:var(--primary); text-decoration:underline; }
-.modal-actions { margin-top:2rem; text-align:right; }
-.modal-actions button { width:auto; padding:.7rem 1.5rem; margin-left:.8rem; }
-#cancelAgree { background:#666; }
-</style>
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+  <!-- 🔹 Global Site Styles -->
+  <link rel="stylesheet" href="css/global.css">
 </head>
-<body>
-
-<div class="container">
-  <h2>Coach Login</h2>
-  <form id="loginForm" autocomplete="off">
-    <input type="text" id="username" placeholder="Username" required autocomplete="username">
-    <input type="password" id="password" placeholder="Password" required autocomplete="current-password">
-    <button type="submit" id="loginBtn">Login</button>
-    <button type="button" id="homeBtn">Home</button>
-  </form>
-  <div id="loginMsg"></div>
-</div>
-
-<!-- AGREEMENT MODAL -->
-<div id="agreementModal">
-  <div class="modal-box">
-    <h3>Important – Please Read & Accept</h3>
-    <p>Before accessing your coach dashboard for the first time, you must accept:</p>
-
-    <label><input type="checkbox" id="agreeTOS"> I agree to Terms of Service</label>
-    <label><input type="checkbox" id="agreePrivacy"> I agree to Privacy Policy</label>
-    <label><input type="checkbox" id="agreePhotos"> I agree to Photo Upload & Media Policy</label>
-
-    <div class="modal-actions">
-      <button id="cancelAgree">Cancel</button>
-      <button id="confirmAgree">Accept & Continue</button>
-    </div>
-  </div>
-</div>
 
 <script>
-const API = '/webapi/';
-const loginMsg = document.getElementById('loginMsg');
-let pendingUsername = null, pendingPassword = null;
+  // Track visit — works on BOTH ports
+  const protocol = window.location.protocol;
+  const hostname = window.location.hostname;
+  const port = protocol === 'https:' ? ':477' : ':8080';
 
-document.getElementById('loginForm').addEventListener('submit', async e => {
-  e.preventDefault();
-  loginMsg.textContent = '';
-
-  const username = document.getElementById('username').value.trim();
-  const password = document.getElementById('password').value;
-
-  if(!username || !password){
-    loginMsg.textContent='Enter username & password';
-    return;
-  }
-
-  pendingUsername = username;
-  pendingPassword = password;
-
-  const btn = document.getElementById('loginBtn');
-  btn.disabled = true; btn.textContent = 'Logging in…';
-
-  try {
-    const body = new URLSearchParams({ username, password });
-
-    const res = await fetch(API+'login.php',{
-      method:'POST',
-      headers:{'Content-Type':'application/x-www-form-urlencoded'},
-      body
-    });
-    const json = await res.json();
-
-    if(json.requireAgreement === true){
-      document.getElementById('agreementModal').style.display='flex';
-      btn.disabled=false; btn.textContent='Login';
-      return;
-    }
-
-    if(json.success){
-      localStorage.setItem('username', json.username);
-      localStorage.setItem('coachName', json.coachName||json.username);
-      window.location.href='profile.html';
-      return;
-    }
-    loginMsg.textContent=json.message||'Login failed';
-
-  } catch(err){
-    loginMsg.textContent='Server error';
-  } finally {
-    btn.disabled=false; btn.textContent='Login';
-  }
-});
-
-document.getElementById('homeBtn').onclick=()=>location.href='/index.html';
-document.getElementById('cancelAgree').onclick=()=>document.getElementById('agreementModal').style.display='none';
-document.getElementById('confirmAgree').onclick=saveAgreement;
-
-async function saveAgreement(){
-  if(!document.getElementById('agreeTOS').checked ||
-     !document.getElementById('agreePrivacy').checked ||
-     !document.getElementById('agreePhotos').checked){
-    alert('You must agree to all policies.'); return;
-  }
-
-  try {
-    await fetch(API+'accept_terms.php',{
-      method:'POST',
-      headers:{'Content-Type':'application/x-www-form-urlencoded'},
-      body:new URLSearchParams({username:pendingUsername})
-    });
-
-    const res2 = await fetch(API+'login.php',{
-      method:'POST',
-      headers:{'Content-Type':'application/x-www-form-urlencoded'},
-      body:new URLSearchParams({username:pendingUsername,password:pendingPassword})
-    });
-    const r2 = await res2.json();
-    if(r2.success){
-      localStorage.setItem('username', r2.username);
-      localStorage.setItem('coachName', r2.coachName||r2.username);
-      location.href='profile.html';
-    }
-
-  }catch(err){ alert('Error: please login again'); location.href='login.html'; }
-}
+  fetch('/webapi/track_visit.php', {
+    credentials: 'include',
+    cache: 'no-store'
+  }).catch(() => {});
 </script>
+
+<body>
+  <!-- NAV Section -->
+  <nav class="top-nav" aria-label="Main Navigation">
+    <div class="wrap nav-inner" style="padding:0;">
+      <div class="nav-left">
+        <a class="brand-mini" href="#about" aria-label="Global Carnivore Coaches home">
+          <img src="images/earth_steak.png" alt="Global Carnivore Coaches logo" onerror="this.style.display='none'">
+          <span>Global Carnivore Coaches</span>
+        </a>
+      </div>
+      <div class="nav-right" role="navigation" aria-label="Site links">
+        <a href="#services" class="nav-link">Programs</a>
+        <a href="#about" class="nav-link">About</a>
+        <a href="science.html" class="nav-link">Science</a>
+        <a href="#mealideas" class="nav-link">Gallery</a>
+        <a href="#contact" class="nav-link">Contact</a>
+        <a href="webapi/login.html" class="nav-link">Coach Login</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="wrap" id="maincontent">
+
+    <!-- HERO Section -->
+    <header class="hero" role="banner" aria-labelledby="hero-title">
+      <div class="logo">
+        <img src="images/earth_steak.png" alt="Planet Earth and Ribeye Steak">
+      </div>
+      <div>
+        <h1 id="hero-title">Global Carnivore Coaches</h1>
+        <p class="tag">Eat a primal Diet. Feel like a primal Human.</p>
+        <p class="lead-hero">
+          Active enrollment — evidence-minded carnivore coaching for durability, focus, and long-range endurance.
+        </p>
+      </div>
+    </header>
+
+    <!-- SERVICES Section -->
+    <section class="card" id="services" aria-labelledby="services-title">
+      <div class="cols">
+        <div>
+          <h2 id="services-title">
+            Core Programs: Transformation Blueprint
+            <span class="subline">Unleash • Optimize • Thrive</span>
+          </h2>
+          <p class="lead">
+            Reclaim your vitality with 30, 60, or 90-day coaching programs tailored for keto → Lion Diet.
+          </p>
+          <div class="benefits">
+            <div class="benefit"><strong>Tailored Journey</strong><div>Personalized plans.</div></div>
+            <div class="benefit"><strong>Resilient Body</strong><div>Reduce inflammation.</div></div>
+            <div class="benefit"><strong>Steady Energy</strong><div>Brain and stamina focus.</div></div>
+            <div class="benefit"><strong>Constant Support</strong><div>Check-ins + guidance.</div></div>
+            <div class="benefit"><strong>Simple Fuel</strong><div>Recipes & knowledge.</div></div>
+          </div>
+        </div>
+        <aside class="card-aside">
+          <h3>Mission Focus</h3>
+          <ul>
+            <li>gut reset</li>
+            <li>inflammation control</li>
+            <li>body composition</li>
+            <li>performance & focus</li>
+            <li>accountability & support</li>
+          </ul>
+        </aside>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- ABOUT / COACHES Section -->
+    <section class="card" id="about">
+      <h2>
+        Meet the Coaches
+        <span class="subline">Certified • Battle-Tested • Yours</span>
+      </h2>
+      <p class="lead">Carnivore coaches who have walked the path.</p>
+
+      <div class="cols">
+        <div class="gallery" id="coachGallery"></div>
+        <aside class="card-aside">
+          <h3>How It Works</h3>
+          <ol>
+            <li>Book a discovery call</li>
+            <li>Get your Blueprint</li>
+            <li>Gain momentum</li>
+            <li>Thrive for life</li>
+          </ol>
+        </aside>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- MEAL IDEAS Section (unchanged gallery) -->
+    <section class="card" id="mealideas">
+      <h2>Shared Meal Ideas<span class="subline">Inspiration for sustained performance</span></h2>
+      <div class="gallery">
+        <a class="tile" href="#img-1"><img src="images/meatzza.jpg"></a>
+        <a class="tile" href="#img-2"><img src="images/image004.jpg"></a>
+        <a class="tile" href="#img-3"><img src="images/image005.jpg"></a>
+        <a class="tile" href="#img-4"><img src="images/image008.jpg"></a>
+        <a class="tile" href="#img-5"><img src="images/image011.jpg"></a>
+        <a class="tile" href="#img-new1"><img src="images/image001.jpg"></a>
+        <a class="tile" href="#img-new2"><img src="images/image002.jpg"></a>
+        <a class="tile" href="#img-new3"><img src="images/image003.jpg"></a>
+        <a class="tile" href="#img-new4"><img src="images/image006.jpg"></a>
+        <a class="tile" href="#img-new5"><img src="images/image007.jpg"></a>
+        <a class="tile" href="#img-new6"><img src="images/image009.jpg"></a>
+        <a class="tile" href="#img-new7"><img src="images/image010.jpg"></a>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- CONTACT Section -->
+    <section class="card" id="contact">
+      <h2>Mobilize Your Transformation<span class="subline">Deploy your plan</span></h2>
+      <div class="cta">
+        <a class="btn" href="mailto:your@email.com">Book Discovery Call</a>
+        <a class="btn ghost" href="tiers.html">View Program Tiers</a>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer>
+    <p>&copy; 2025 Global Carnivore Coaches. All rights reserved.</p>
+  </footer>
+
+  <!-- Load Modal Logic (script stays for now) -->
+  <script src="js/modals.js"></script>
+
+  <script>
+    async function loadCoaches() {
+      try {
+        const res = await fetch('/webapi/get_coaches.php');
+        const data = await res.json();
+        if (!data.success) return;
+
+        const gallery = document.getElementById('coachGallery');
+        gallery.innerHTML = '';
+
+        data.coaches.forEach(coach => {
+          const card = document.createElement('div');
+          card.className = 'coach-card';
+          card.innerHTML = `
+            <a href="#" class="tile coach-tile">
+              <img src="${coach.Files?.Profile ? '/uploads/' + coach.Files.Profile : 'images/WolfCoach_Profile.png'}">
+            </a>
+            <button type="button" class="view-btn">View Profile</button>
+          `;
+
+          const openProfile = () => {
+            if (window.GCCModals && typeof window.GCCModals.openCoachModal === 'function') {
+              window.GCCModals.openCoachModal(coach);
+            }
+          };
+          card.querySelector('.tile').addEventListener('click', openProfile);
+          card.querySelector('.view-btn').addEventListener('click', openProfile);
+
+          gallery.appendChild(card);
+        });
+      } catch (err) {
+        console.error('Error loading coaches:', err);
+      }
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', loadCoaches);
+    } else {
+      loadCoaches();
+    }
+  </script>
 </body>
 </html>
