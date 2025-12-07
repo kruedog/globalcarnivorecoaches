@@ -1,58 +1,137 @@
 <?php
-header('Content-Type: application/json');
-session_start();
+/**
+ * login.php — with role support + session status
+ * Used by:
+ *  - Coach login form (POST)
+ *  - Visitor dashboard / manage_coaches auth check (GET)
+ */
 
-// Accept JSON or Form POST
-$raw = file_get_contents("php://input");
-$data = json_decode($raw, true);
-if (!is_array($data)) $data = $_POST;
+header('Content-Type: application/json; charset=utf-8');
+header('Cache-Control: no-cache');
 
-$username = trim($data['username'] ?? '');
-$password = $data['password'] ?? '';
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+$COACHES_FILE = dirname(__DIR__) . '/uploads/coaches.json';
+
+/**
+ * Load coaches array from JSON
+ */
+function load_coaches($path) {
+    if (!file_exists($path)) return [];
+    $data = json_decode(file_get_contents($path), true);
+    return is_array($data) ? $data : [];
+}
+
+/**
+ * Find coach by username (case-insensitive)
+ */
+function find_coach_by_username($coaches, $username) {
+    $username = strtolower(trim($username));
+    foreach ($coaches as $coach) {
+        if (isset($coach['Username']) && strtolower($coach['Username']) === $username) {
+            return $coach;
+        }
+    }
+    return null;
+}
+
+/**
+ * Normalize role with default
+ */
+function normalize_role($coach) {
+    $role = $coach['Role'] ?? 'Coach';
+    $role = $role ?: 'Coach';
+
+    // Ensure special usernames always count as admin
+    $u = strtolower($coach['Username'] ?? '');
+    if (in_array($u, ['thor', 'admin'], true)) {
+        $role = 'Admin';
+    }
+    return $role;
+}
+
+// =========================
+// GET: Session status
+// =========================
+if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+    if (empty($_SESSION['username'])) {
+        http_response_code(401);
+        echo json_encode([
+            'success' => false,
+            'message' => 'Not logged in'
+        ]);
+        exit;
+    }
+
+    echo json_encode([
+        'success'   => true,
+        'username'  => $_SESSION['username'],
+        'coachName' => $_SESSION['coachName'] ?? $_SESSION['username'],
+        'role'      => $_SESSION['role'] ?? 'Coach'
+    ]);
+    exit;
+}
+
+// =========================
+// POST: Perform login
+// =========================
+$raw = file_get_contents('php://input');
+$input = json_decode($raw, true);
+
+// Fallback if form-encoded
+if (!is_array($input)) {
+    $input = $_POST;
+}
+
+$username = trim($input['username'] ?? '');
+$password = (string)($input['password'] ?? '');
 
 if ($username === '' || $password === '') {
+    http_response_code(400);
     echo json_encode(['success' => false, 'message' => 'Username and password required']);
     exit;
 }
 
-// Persistent storage location
-$coachesFile = __DIR__ . '/../uploads/coaches.json';
+$coaches = load_coaches($COACHES_FILE);
+$coach   = find_coach_by_username($coaches, $username);
 
-if (!file_exists($coachesFile)) {
-    echo json_encode(['success' => false, 'message' => 'System error: coaches.json missing']);
+if (!$coach) {
+    http_response_code(401);
+    echo json_encode(['success' => false, 'message' => 'Invalid username or password']);
     exit;
 }
 
-$coaches = json_decode(file_get_contents($coachesFile), true);
-if (!is_array($coaches)) {
-    echo json_encode(['success' => false, 'message' => 'Invalid coaches.json']);
+// Ensure a password hash exists
+if (empty($coach['Password'])) {
+    http_response_code(401);
+    echo json_encode(['success' => false, 'message' => 'Password not set for this account']);
     exit;
 }
 
-$found = null;
-foreach ($coaches as $coach) {
-    if (strcasecmp($coach['Username'], $username) === 0) {
-        $found = $coach;
-        break;
-    }
-}
-
-if (!$found) {
-    echo json_encode(['success' => false, 'message' => 'Coach not found']);
+// Verify password
+if (!password_verify($password, $coach['Password'])) {
+    http_response_code(401);
+    echo json_encode(['success' => false, 'message' => 'Invalid username or password']);
     exit;
 }
 
-if (!password_verify($password, $found['Password'])) {
-    echo json_encode(['success' => false, 'message' => 'Invalid password']);
-    exit;
-}
+// Success: set session
+$role = normalize_role($coach);
+$_SESSION['username']  = $coach['Username'];
+$_SESSION['coachName'] = $coach['CoachName'] ?? $coach['Username'];
+$_SESSION['role']      = $role;
 
-$_SESSION['username'] = $found['Username'];
+// Log login to activity_log.json using helper
+require_once __DIR__ . '/log_activity.php';
+log_coach_activity('login');
 
+// Response payload
 echo json_encode([
     'success'   => true,
-    'message'   => 'OK',
-    'username'  => $found['Username'],
-    'coachName' => $found['CoachName'] ?? $found['Username'],
-    'requireAgreement' => $found['requireAgreement'] ?? false
+    'message'   => 'Login successful',
+    'username'  => $_SESSION['username'],
+    'coachName' => $_SESSION['coachName'],
+    'role'      => $role
 ]);
