@@ -1,180 +1,178 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Coach Login | Global Carnivore Coaches</title>
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Lora&display=swap" rel="stylesheet">
-
-<style>
-:root { --primary:#C51230; --accent:#192168; }
-body {
-    font-family:'Lora',serif;
-    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-    color:var(--accent); margin:0; min-height:100vh;
-    display:flex; align-items:center; justify-content:center; padding:2rem;
-}
-.container {
-    max-width:420px; width:100%; background:#fff; padding:2rem;
-    border-radius:12px; box-shadow:0 10px 30px rgba(0,0,0,0.15);
-    border:2px solid var(--accent);
-}
-h2 {
-    font-family:'Cinzel',serif; color:var(--primary);
-    text-align:center; margin:0 0 1.5rem; font-size:1.8rem;
-}
-input {
-    width:100%; padding:.9rem; margin:0.6rem 0;
-    border:1px solid var(--accent); border-radius:6px; font-size:1rem;
-}
-button {
-    width:100%; padding:.9rem; font-size:1.1rem;
-    background:var(--primary); color:#fff; border:none; border-radius:6px;
-    cursor:pointer; font-family:'Cinzel',serif;
-}
-button:hover { background:#a10e28; }
-#homeBtn { background:var(--accent); margin-top:.4rem; }
-#homeBtn:hover { background:#0d123b; }
-#loginMsg { margin-top:1rem; text-align:center; min-height:1.4em; font-weight:bold; }
-
-/* Modal */
-#agreementModal {
-    position:fixed; inset:0; background:rgba(0,0,0,.7);
-    display:none; align-items:center; justify-content:center;
-    z-index:9999; backdrop-filter:blur(4px);
-}
-.modal-box {
-    background:#fff; width:95%; max-width:620px; max-height:85vh;
-    overflow-y:auto; padding:2rem; border-radius:12px; border:3px solid var(--primary);
-    box-shadow:0 15px 40px rgba(0,0,0,.3);
-}
-.modal-box h3 {
-    font-family:'Cinzel',serif; color:var(--primary);
-    text-align:center; font-size:1.7rem; margin-top:0;
-}
-.modal-box label { display:block; margin:1.2rem 0; font-size:1.05rem; }
-.modal-box a { color:var(--primary); text-decoration:underline; }
-.modal-actions { margin-top:2rem; text-align:right; }
-.modal-actions button { width:auto; padding:.7rem 1.5rem; margin-left:.8rem; }
-#cancelAgree { background:#666; }
-</style>
+  <meta charset="utf-8" />
+  <title>Coach Login • Global Carnivore Coaches</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --red:#C51230;
+      --blue:#192168;
+      --bg:#f5f7fa;
+      --card:#ffffff;
+    }
+    body {
+      margin:0;
+      font-family:'Inter',sans-serif;
+      background:radial-gradient(circle at 10% 10%, #F8F9FA 0%, #D0D2D5 40%, #B0B3BA 100%);
+      color:#111;
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:1.5rem;
+    }
+    .card {
+      background:var(--card);
+      border-radius:16px;
+      padding:2rem 2.2rem;
+      max-width:420px;
+      width:100%;
+      box-shadow:0 14px 40px rgba(0,0,0,.2);
+      border:1px solid rgba(25,33,104,.15);
+    }
+    h1 {
+      margin:0 0 .4rem;
+      font-family:'Cinzel',serif;
+      color:var(--blue);
+      font-size:1.9rem;
+      text-align:center;
+    }
+    .sub {
+      text-align:center;
+      font-size:.9rem;
+      color:#555;
+      margin-bottom:1.5rem;
+    }
+    label {
+      display:block;
+      font-weight:600;
+      margin-top:.8rem;
+      margin-bottom:.25rem;
+      color:var(--blue);
+      font-size:.9rem;
+    }
+    input {
+      width:100%;
+      padding:.6rem .75rem;
+      font-size:.95rem;
+      border-radius:10px;
+      border:2px solid #d2d4dd;
+      font-family:inherit;
+      box-sizing:border-box;
+    }
+    input:focus {
+      border-color:var(--red);
+      outline:none;
+      box-shadow:0 0 0 3px rgba(197,18,48,.2);
+    }
+    button {
+      width:100%;
+      margin-top:1.3rem;
+      padding:.8rem 1rem;
+      border-radius:999px;
+      border:none;
+      background:linear-gradient(180deg,var(--red),#8C1925);
+      color:#fff;
+      font-weight:700;
+      font-size:.95rem;
+      cursor:pointer;
+      box-shadow:0 10px 26px rgba(0,0,0,.25);
+    }
+    button:hover {
+      transform:translateY(-1px);
+      box-shadow:0 16px 40px rgba(0,0,0,.3);
+    }
+    .status {
+      margin-top:.8rem;
+      min-height:1rem;
+      font-size:.85rem;
+      text-align:center;
+    }
+    .status.err {
+      color:var(--red);
+    }
+    .status.ok {
+      color:green;
+    }
+    .links {
+      margin-top:1rem;
+      text-align:center;
+      font-size:.85rem;
+    }
+    .links a {
+      color:var(--blue);
+      text-decoration:none;
+      font-weight:600;
+    }
+  </style>
 </head>
 <body>
+  <div class="card">
+    <h1>Coach Login</h1>
+    <div class="sub">Access your profile & tools.</div>
 
-<div class="container">
-  <h2>Coach Login</h2>
-  <form id="loginForm" autocomplete="off">
-    <input type="text" id="username" placeholder="Username" required autocomplete="username">
-    <input type="password" id="password" placeholder="Password" required autocomplete="current-password">
-    <button type="submit" id="loginBtn">Login</button>
-    <button type="button" id="homeBtn">Home</button>
-  </form>
-  <div id="loginMsg"></div>
-</div>
+    <form id="loginForm" autocomplete="off">
+      <label for="username">Username</label>
+      <input id="username" name="username" required autofocus />
 
-<!-- AGREEMENT MODAL -->
-<div id="agreementModal">
-  <div class="modal-box">
-    <h3>Important – Please Read & Accept</h3>
-    <p>Before accessing your coach dashboard for the first time, you must accept:</p>
+      <label for="password">Password</label>
+      <input id="password" name="password" type="password" required />
 
-    <label><input type="checkbox" id="agreeTOS"> I agree to Terms of Service</label>
-    <label><input type="checkbox" id="agreePrivacy"> I agree to Privacy Policy</label>
-    <label><input type="checkbox" id="agreePhotos"> I agree to Photo Upload & Media Policy</label>
+      <button type="submit">Login</button>
+      <div class="status" id="status"></div>
+    </form>
 
-    <div class="modal-actions">
-      <button id="cancelAgree">Cancel</button>
-      <button id="confirmAgree">Accept & Continue</button>
+    <div class="links">
+      <a href="/">← Back to site</a>
     </div>
   </div>
-</div>
 
-<script>
-const API = '/webapi/';
-const loginMsg = document.getElementById('loginMsg');
-let pendingUsername = null, pendingPassword = null;
+  <script>
+    const API_BASE = window.location.origin + '/webapi/';
 
-document.getElementById('loginForm').addEventListener('submit', async e => {
-  e.preventDefault();
-  loginMsg.textContent = '';
+    const form   = document.getElementById('loginForm');
+    const status = document.getElementById('status');
 
-  const username = document.getElementById('username').value.trim();
-  const password = document.getElementById('password').value;
-
-  if(!username || !password){
-    loginMsg.textContent='Enter username & password';
-    return;
-  }
-
-  pendingUsername = username;
-  pendingPassword = password;
-
-  const btn = document.getElementById('loginBtn');
-  btn.disabled = true; btn.textContent = 'Logging in…';
-
-  try {
-    const body = new URLSearchParams({ username, password });
-
-    const res = await fetch(API+'login.php',{
-      method:'POST',
-      headers:{'Content-Type':'application/x-www-form-urlencoded'},
-      body
-    });
-    const json = await res.json();
-
-    if(json.requireAgreement === true){
-      document.getElementById('agreementModal').style.display='flex';
-      btn.disabled=false; btn.textContent='Login';
-      return;
+    function setStatus(msg, ok) {
+      status.textContent = msg || '';
+      status.className = 'status ' + (msg ? (ok ? 'ok' : 'err') : '');
     }
 
-    if(json.success){
-      localStorage.setItem('username', json.username);
-      localStorage.setItem('coachName', json.coachName||json.username);
-      window.location.href='profile.html';
-      return;
-    }
-    loginMsg.textContent=json.message||'Login failed';
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      setStatus('Logging in…', true);
 
-  } catch(err){
-    loginMsg.textContent='Server error';
-  } finally {
-    btn.disabled=false; btn.textContent='Login';
-  }
-});
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value;
 
-document.getElementById('homeBtn').onclick=()=>location.href='/index.html';
-document.getElementById('cancelAgree').onclick=()=>document.getElementById('agreementModal').style.display='none';
-document.getElementById('confirmAgree').onclick=saveAgreement;
+      try {
+        const res = await fetch(API_BASE + 'login.php', {
+          method: 'POST',
+          headers: {'Content-Type':'application/json'},
+          credentials: 'include',
+          cache: 'no-store',
+          body: JSON.stringify({ username, password })
+        });
 
-async function saveAgreement(){
-  if(!document.getElementById('agreeTOS').checked ||
-     !document.getElementById('agreePrivacy').checked ||
-     !document.getElementById('agreePhotos').checked){
-    alert('You must agree to all policies.'); return;
-  }
+        const data = await res.json();
+        if (!data.success) {
+          setStatus(data.message || 'Login failed', false);
+          return;
+        }
 
-  try {
-    await fetch(API+'accept_terms.php',{
-      method:'POST',
-      headers:{'Content-Type':'application/x-www-form-urlencoded'},
-      body:new URLSearchParams({username:pendingUsername})
+        // Save for convenience (not for security)
+        localStorage.setItem('username', data.username || username);
+        localStorage.setItem('role', (data.role || 'coach').toLowerCase());
+
+        setStatus('Success. Redirecting…', true);
+        window.location.href = '/profile.html';
+      } catch (err) {
+        console.error(err);
+        setStatus('Network error while logging in.', false);
+      }
     });
-
-    const res2 = await fetch(API+'login.php',{
-      method:'POST',
-      headers:{'Content-Type':'application/x-www-form-urlencoded'},
-      body:new URLSearchParams({username:pendingUsername,password:pendingPassword})
-    });
-    const r2 = await res2.json();
-    if(r2.success){
-      localStorage.setItem('username', r2.username);
-      localStorage.setItem('coachName', r2.coachName||r2.username);
-      location.href='profile.html';
-    }
-
-  }catch(err){ alert('Error: please login again'); location.href='login.html'; }
-}
-</script>
+  </script>
 </body>
 </html>
