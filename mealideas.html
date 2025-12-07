@@ -5,108 +5,180 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Shared Meal Ideas | Global Carnivore Coaches</title>
 <link rel="stylesheet" href="css/global.css">
+
 <style>
-  body {
-    padding:0;
-    margin:0;
-    overflow-x:hidden;
+  body { margin:0; padding:0; overflow-x:hidden; }
+
+  /* Lightbox Overlay */
+  #lightboxOverlay {
+    position:fixed; inset:0;
+    background:rgba(0,0,0,0.85);
+    display:none;
+    align-items:center;
+    justify-content:center;
+    z-index:2000;
+    animation:fadeIn .25s ease forwards;
+  }
+  @keyframes fadeIn { from{opacity:0} to{opacity:1} }
+
+  #lightboxImage {
+    max-width:90vw;
+    max-height:85vh;
+    border-radius:12px;
+    box-shadow:0 0 35px rgba(0,0,0,0.6);
+    transition:transform .25s ease;
+  }
+
+  /* Nav Arrows */
+  .lightbox-arrow {
+    position:absolute;
+    top:50%;
+    transform:translateY(-50%);
+    color:#fff;
+    font-size:3rem;
+    cursor:pointer;
+    user-select:none;
+    padding:10px;
+    background:rgba(0,0,0,0.4);
+    border-radius:12px;
+    line-height:1;
+    transition:background .2s ease;
+  }
+  .lightbox-arrow:hover { background:rgba(255,255,255,0.15); }
+  #prevArrow { left:30px; }
+  #nextArrow { right:30px; }
+
+  /* Close button */
+  #lightboxClose {
+    position:absolute;
+    top:20px;
+    right:30px;
+    font-size:3rem;
+    color:#fff;
+    cursor:pointer;
+    text-shadow:0 0 12px #000;
   }
 </style>
 </head>
+
 <body>
 
-  <!-- GALLERY GRID -->
-  <div class="gallery" aria-live="polite" aria-label="Ration images">
+  <!-- Thumbnail Grid -->
+  <div class="gallery" id="mealGallery">
 
-    <!-- Each tile stores modal image path in data-full -->
-    <a class="tile" href="#img-1" data-full="images/meatzza.jpg">
-      <img src="images/meatzza.jpg" loading="lazy"><div class="caption">Meatzza Bomb</div>
-    </a>
+    <!-- data-full stores FULL image path -->
+    <div class="tile" data-full="images/meatzza.jpg">
+      <img src="images/meatzza.jpg" alt="Meatzza Bomb" loading="lazy"><div class="caption">Meatzza Bomb</div>
+    </div>
 
-    <a class="tile" href="#img-2" data-full="images/image004.jpg">
-      <img src="images/image004.jpg" loading="lazy"><div class="caption">Beef Haunches</div>
-    </a>
+    <div class="tile" data-full="images/image004.jpg">
+      <img src="images/image004.jpg" alt="Beef Haunches" loading="lazy"><div class="caption">Beef Haunches</div>
+    </div>
 
-    <a class="tile" href="#img-3" data-full="images/image005.jpg">
-      <img src="images/image005.jpg" loading="lazy"><div class="caption">Beef Haunches 2</div>
-    </a>
+    <div class="tile" data-full="images/image005.jpg">
+      <img src="images/image005.jpg" alt="Beef Haunches 2" loading="lazy"><div class="caption">Beef Haunches 2</div>
+    </div>
 
-    <a class="tile" href="#img-4" data-full="images/image008.jpg">
-      <img src="images/image008.jpg" loading="lazy"><div class="caption">Smoked Trout</div>
-    </a>
+    <div class="tile" data-full="images/image008.jpg">
+      <img src="images/image008.jpg" alt="Smoked Trout" loading="lazy"><div class="caption">Smoked Trout</div>
+    </div>
 
-    <a class="tile" href="#img-5" data-full="images/image011.jpg">
-      <img src="images/image011.jpg" loading="lazy"><div class="caption">Simple Plate</div>
-    </a>
+    <div class="tile" data-full="images/image011.jpg">
+      <img src="images/image011.jpg" alt="Simple Plate" loading="lazy"><div class="caption">Simple Plate</div>
+    </div>
 
-    <a class="tile" href="#img-new1" data-full="images/image001.jpg">
-      <img src="images/image001.jpg" loading="lazy"><div class="caption">Field Brisket 1</div>
-    </a>
+    <div class="tile" data-full="images/image001.jpg">
+      <img src="images/image001.jpg" alt="Brisket 1" loading="lazy"><div class="caption">Field Brisket 1</div>
+    </div>
 
-    <a class="tile" href="#img-new2" data-full="images/image002.jpg">
-      <img src="images/image002.jpg" loading="lazy"><div class="caption">Field Brisket 2</div>
-    </a>
+    <div class="tile" data-full="images/image002.jpg">
+      <img src="images/image002.jpg" alt="Brisket 2" loading="lazy"><div class="caption">Field Brisket 2</div>
+    </div>
 
-    <a class="tile" href="#img-new3" data-full="images/image003.jpg">
-      <img src="images/image003.jpg" loading="lazy"><div class="caption">Field Brisket 3</div>
-    </a>
+    <div class="tile" data-full="images/image003.jpg">
+      <img src="images/image003.jpg" alt="Brisket 3" loading="lazy"><div class="caption">Field Brisket 3</div>
+    </div>
 
-    <a class="tile" href="#img-new4" data-full="images/image006.jpg">
-      <img src="images/image006.jpg" loading="lazy"><div class="caption">Brisket Slices</div>
-    </a>
+    <div class="tile" data-full="images/image006.jpg">
+      <img src="images/image006.jpg" alt="Brisket Bark" loading="lazy"><div class="caption">Brisket Slices</div>
+    </div>
 
-    <a class="tile" href="#img-new5" data-full="images/image007.jpg">
-      <img src="images/image007.jpg" loading="lazy"><div class="caption">Brisket Point</div>
-    </a>
+    <div class="tile" data-full="images/image007.jpg">
+      <img src="images/image007.jpg" alt="Brisket Point" loading="lazy"><div class="caption">Brisket Point</div>
+    </div>
 
-    <a class="tile" href="#img-new6" data-full="images/image009.jpg">
-      <img src="images/image009.jpg" loading="lazy"><div class="caption">Slicing Brisket</div>
-    </a>
+    <div class="tile" data-full="images/image009.jpg">
+      <img src="images/image009.jpg" alt="Slicing Brisket" loading="lazy"><div class="caption">Slicing Brisket</div>
+    </div>
 
-    <a class="tile" href="#img-new7" data-full="images/image010.jpg">
-      <img src="images/image010.jpg" loading="lazy"><div class="caption">Brisket Plate</div>
-    </a>
+    <div class="tile" data-full="images/image010.jpg">
+      <img src="images/image010.jpg" alt="Brisket Plate" loading="lazy"><div class="caption">Brisket Plate</div>
+    </div>
 
   </div>
 
 
-  <!-- SINGLE SHARED MODAL instead of 12 modals -->
-  <div id="mealModal" class="modal-target">
-    <div class="modal-content">
-      <a href="#" class="modal-close">&times;</a>
-      <img id="modalImage" alt="Meal Image" style="max-width:100%; max-height:70vh;">
-    </div>
+  <!-- Lightbox Modal -->
+  <div id="lightboxOverlay">
+    <span id="lightboxClose">&times;</span>
+    <span class="lightbox-arrow" id="prevArrow">&#10094;</span>
+    <img id="lightboxImage" src="" alt="Meal">
+    <span class="lightbox-arrow" id="nextArrow">&#10095;</span>
   </div>
 
 
 <script>
-// Stop scrolling the parent page on modal open
-function lockScroll(lock) {
-  document.body.style.overflow = lock ? "hidden" : "visible";
+let currentIndex = 0;
+const tiles = Array.from(document.querySelectorAll("#mealGallery .tile"));
+const overlay = document.getElementById("lightboxOverlay");
+const lightImg = document.getElementById("lightboxImage");
+const prev = document.getElementById("prevArrow");
+const next = document.getElementById("nextArrow");
+const closeBtn = document.getElementById("lightboxClose");
+
+// Open lightbox
+tiles.forEach((tile, i) => {
+  tile.addEventListener("click", () => {
+    currentIndex = i;
+    openLightbox();
+  });
+});
+
+function openLightbox() {
+  const full = tiles[currentIndex].dataset.full;
+  lightImg.src = full;
+  overlay.style.display = "flex";
+  document.body.style.overflow = "hidden";
 }
 
-// Load the correct full image when modal opens
-window.addEventListener("hashchange", () => {
-  const hash = window.location.hash;
-  const modal = document.getElementById('mealModal');
-  const img = document.getElementById('modalImage');
+function closeLightbox() {
+  overlay.style.display = "none";
+  document.body.style.overflow = "auto";
+  lightImg.src = "";
+}
 
-  if (hash.startsWith("#img")) {
-    // Find clicked tile
-    const tile = document.querySelector(`a[href="${hash}"]`);
-    const full = tile?.dataset.full;
+function showNext() {
+  currentIndex = (currentIndex + 1) % tiles.length;
+  openLightbox();
+}
 
-    if (full) {
-      img.src = full;
-    }
+function showPrev() {
+  currentIndex = (currentIndex - 1 + tiles.length) % tiles.length;
+  openLightbox();
+}
 
-    modal.classList.add("show");
-    lockScroll(true);
-  } else {
-    modal.classList.remove("show");
-    lockScroll(false);
-    img.src = ""; // unload when closed
-  }
+next.addEventListener("click", showNext);
+prev.addEventListener("click", showPrev);
+closeBtn.addEventListener("click", closeLightbox);
+
+overlay.addEventListener("click", (e) => {
+  if (e.target === overlay) closeLightbox(); // click outside image closes
+});
+
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") closeLightbox();
+  if (e.key === "ArrowRight") showNext();
+  if (e.key === "ArrowLeft") showPrev();
 });
 </script>
 
