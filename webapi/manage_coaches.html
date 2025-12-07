@@ -4,205 +4,203 @@
 <meta charset="utf-8"/>
 <title>Manage Coaches • Global Carnivore Coaches</title>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
+<link rel="icon" type="image/png" href="/images/earth_steak.png">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Cinzel:wght@700&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --red:#C51230;
-    --dark:#121212;
-    --light:#f8f9fa;
-    --card:#ffffff;
-    --border:#e0e0e0;
-  }
-  body {
-    margin:0;
-    font-family:'Inter',sans-serif;
-    background:var(--light);
-    color:#111;
-  }
-  header {
-    background:var(--red);
-    color:#fff;
-    padding:1.5rem 1rem;
-    box-shadow:0 6px 24px rgba(0,0,0,.35);
-  }
-  header h1 {
-    margin:0;
-    font-family:'Cinzel',serif;
-    font-size:2rem;
-  }
-  header .sub {
-    margin-top:.4rem;
-    font-size:.9rem;
-    opacity:.9;
-  }
-  .admin-info {
-    margin-top:.4rem;
-    font-size:.85rem;
-  }
-  .admin-info strong {
-    font-weight:700;
-  }
-  .top-links {
-    display:flex;
-    gap:.6rem;
-    font-size:.85rem;
-    margin-top:.4rem;
-    flex-wrap:wrap;
-  }
-  .top-links a {
-    color:#ffe;
-  }
+:root {
+  --red:#C51230;
+  --dark:#121212;
+  --light:#f8f9fa;
+  --card:#ffffff;
+  --border:#e0e0e0;
+  --blue:#192168;
+}
+body {
+  margin:0;
+  font-family:'Inter',sans-serif;
+  background:var(--light);
+  color:#111;
+}
+header {
+  background:var(--dark);
+  color:#fff;
+  padding:1.5rem 1rem;
+  box-shadow:0 6px 24px rgba(0,0,0,.35);
+}
+header h1 {
+  margin:0;
+  font-family:'Cinzel',serif;
+  font-size:2rem;
+}
+header .sub {
+  margin-top:.4rem;
+  font-size:.9rem;
+  opacity:.9;
+}
+.top-links {
+  display:flex;
+  gap:.6rem;
+  font-size:.85rem;
+  margin-top:.5rem;
+}
+.top-links a {
+  color:#ffe;
+  text-decoration:underline;
+}
+main {
+  max-width:1200px;
+  margin:1.5rem auto;
+  padding:0 1rem 2rem;
+  display:grid;
+  grid-template-columns: minmax(260px, 1.4fr) minmax(320px, 1.8fr);
+  gap:1.5rem;
+}
+@media (max-width:900px) {
   main {
-    max-width:1200px;
-    margin:1.5rem auto;
-    padding:0 1rem 2rem;
-    display:grid;
-    grid-template-columns: minmax(260px, 1.4fr) minmax(320px, 1.8fr);
-    gap:1.5rem;
+    grid-template-columns:1fr;
   }
-  @media (max-width:900px) {
-    main { grid-template-columns:1fr; }
-  }
-  .card {
-    background:var(--card);
-    border-radius:16px;
-    padding:1.5rem;
-    box-shadow:0 8px 28px rgba(0,0,0,.08);
-    border:1px solid var(--border);
-  }
-  h2 {
-    margin-top:0;
-    font-family:'Cinzel',serif;
-    font-size:1.3rem;
-  }
-  .coach-list {
-    max-height:480px;
-    overflow-y:auto;
-    border-top:1px solid var(--border);
-    margin-top:.75rem;
-  }
-  .coach-row {
-    padding:.7rem .2rem;
-    border-bottom:1px solid var(--border);
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    gap:.5rem;
-    cursor:pointer;
-  }
-  .coach-row:hover {
-    background:#f3f3f3;
-  }
-  .coach-row.active {
-    background:#ffecee;
-  }
-  .coach-name {
-    font-weight:600;
-  }
-  .coach-user {
-    font-size:.8rem;
-    opacity:.7;
-  }
-  .badge {
-    display:inline-block;
-    background:#222;
-    color:#fff;
-    padding:.1rem .4rem;
-    border-radius:999px;
-    font-size:.7rem;
-    margin-left:.4rem;
-  }
-  .toolbar {
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:.5rem;
-    margin-top:.5rem;
-    flex-wrap:wrap;
-  }
-  .btn {
-    display:inline-flex;
-    align-items:center;
-    justify-content:center;
-    padding:.45rem .9rem;
-    border-radius:999px;
-    border:1px solid var(--border);
-    background:#fff;
-    font-size:.85rem;
-    font-weight:600;
-    cursor:pointer;
-    gap:.35rem;
-  }
-  .btn-primary {
-    background:var(--red);
-    color:#fff;
-    border-color:#8e0d23;
-  }
-  .btn-danger {
-    background:#111;
-    color:#fff;
-    border-color:#000;
-  }
-  .btn:disabled {
-    opacity:.4;
-    cursor:default;
-  }
-  form label {
-    display:block;
-    font-size:.85rem;
-    font-weight:600;
-    margin-top:.6rem;
-  }
-  form input, form textarea, form select {
-    width:100%;
-    padding:.45rem .55rem;
-    border-radius:8px;
-    border:1px solid var(--border);
-    font-family:inherit;
-    font-size:.9rem;
-    margin-top:.15rem;
-    box-sizing:border-box;
-  }
-  form textarea {
-    min-height:90px;
-    resize:vertical;
-  }
-  small.helper {
-    display:block;
-    font-size:.75rem;
-    opacity:.7;
-    margin-top:.2rem;
-  }
+}
+.card {
+  background:var(--card);
+  border-radius:16px;
+  padding:1.5rem;
+  box-shadow:0 8px 28px rgba(0,0,0,.08);
+  border:1px solid var(--border);
+}
+h2 {
+  margin-top:0;
+  font-family:'Cinzel',serif;
+  font-size:1.3rem;
+}
+.coach-list {
+  max-height:480px;
+  overflow-y:auto;
+  border-top:1px solid var(--border);
+  margin-top:.75rem;
+}
+.coach-row {
+  padding:.7rem .2rem;
+  border-bottom:1px solid var(--border);
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:.5rem;
+  cursor:pointer;
+}
+.coach-row:hover {
+  background:#f3f3f3;
+}
+.coach-row.active {
+  background:#ffecee;
+}
+.coach-name {
+  font-weight:600;
+}
+.coach-user {
+  font-size:.8rem;
+  opacity:.7;
+}
+.badge {
+  display:inline-block;
+  background:#222;
+  color:#fff;
+  padding:.1rem .4rem;
+  border-radius:999px;
+  font-size:.7rem;
+  margin-left:.4rem;
+}
+.toolbar {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:.5rem;
+  margin-top:.5rem;
+  flex-wrap:wrap;
+}
+.btn {
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding:.45rem .9rem;
+  border-radius:999px;
+  border:1px solid var(--border);
+  background:#fff;
+  font-size:.85rem;
+  font-weight:600;
+  cursor:pointer;
+  gap:.35rem;
+}
+.btn-primary {
+  background:var(--red);
+  color:#fff;
+  border-color:#8e0d23;
+}
+.btn-danger {
+  background:#111;
+  color:#fff;
+  border-color:#000;
+}
+.btn:disabled {
+  opacity:.4;
+  cursor:default;
+}
+form label {
+  display:block;
+  font-size:.85rem;
+  font-weight:600;
+  margin-top:.6rem;
+}
+form input, form textarea, form select {
+  width:100%;
+  padding:.45rem .55rem;
+  border-radius:8px;
+  border:1px solid var(--border);
+  font-family:inherit;
+  font-size:.9rem;
+  margin-top:.15rem;
+  box-sizing:border-box;
+}
+form textarea {
+  min-height:90px;
+  resize:vertical;
+}
+small.helper {
+  display:block;
+  font-size:.75rem;
+  opacity:.7;
+  margin-top:.2rem;
+}
+.two-cols {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:.75rem;
+}
+@media (max-width:600px) {
   .two-cols {
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:.75rem;
+    grid-template-columns:1fr;
   }
-  @media (max-width:600px) {
-    .two-cols { grid-template-columns:1fr; }
-  }
-  .status {
-    margin-top:.7rem;
-    font-size:.85rem;
-    min-height:1rem;
-  }
-  .status.ok { color:green; }
-  .status.err { color:var(--red); }
+}
+.status {
+  margin-top:.7rem;
+  font-size:.85rem;
+  min-height:1rem;
+}
+.status.ok {
+  color:green;
+}
+.status.err {
+  color:var(--red);
+}
 </style>
 </head>
 <body>
 
 <header>
   <h1>Manage Coaches</h1>
-  <div class="sub">Add, edit, or remove coaches (writes to <code>uploads/coaches.json</code>).</div>
-  <div class="admin-info">
-    Signed in as <strong><span id="adminName">…</span></strong>,
-    role <strong><span id="adminRole">…</span></strong>
-  </div>
+  <div class="sub">Admin-only view. Edits are written directly to <code>uploads/coaches.json</code>.</div>
   <div class="top-links">
-    <a href="/webapi/visitor_dashboard.html">← Visitor Dashboard</a>
-    <a href="/profile.html">Coach Profile</a>
-    <a href="/">Public Site</a>
+    <a href="/profile.html">← Back to Profile</a>
+    <a href="/">View Site</a>
   </div>
 </header>
 
@@ -232,6 +230,13 @@
       <label for="email">Email</label>
       <input id="email" name="email" type="email">
 
+      <label for="role">Role</label>
+      <select id="role" name="role">
+        <option value="coach">Coach</option>
+        <option value="admin">Admin</option>
+      </select>
+      <small class="helper">Only <strong>Admin</strong> can access this page and manage coaches.</small>
+
       <label for="bio">Bio</label>
       <textarea id="bio" name="bio"></textarea>
 
@@ -239,42 +244,31 @@
       <textarea id="specializations" name="specializations" placeholder="e.g. Carnivore, Ketovore, Fasting"></textarea>
       <small class="helper">Comma, semicolon, or pipe-separated. Stored as an array in <code>coaches.json</code>.</small>
 
-      <label for="role">Role</label>
-      <select id="role" name="role">
-        <option value="Coach">Coach</option>
-        <option value="Admin">Admin</option>
-      </select>
-      <small class="helper">Only Admins can access this page. Use Admin role sparingly.</small>
-
-      <label for="tempPassword">Set / Reset Password</label>
-      <input id="tempPassword" name="tempPassword" type="text" autocomplete="new-password"
-             placeholder="Leave blank to keep current password">
-      <small class="helper">
-        This is only used once to hash a new password. We never store plain text.
-      </small>
-
       <div class="two-cols">
         <div>
           <label for="profile">Profile Image</label>
-          <input id="profile" name="profile" placeholder="e.g. uploads/coach1.jpg">
-          <small class="helper">Relative path under <code>/uploads</code>, e.g. <code>coach1.jpg</code> or <code>folder/coach1.jpg</code>.</small>
+          <input id="profile" name="profile" placeholder="e.g. coco_123_profile.jpg">
+          <small class="helper">Stored as filename only; frontend prefixes <code>/uploads/</code>.</small>
         </div>
         <div>
           <label for="certificate">Certificate Image</label>
-          <input id="certificate" name="certificate" placeholder="uploads/cert1.jpg">
+          <input id="certificate" name="certificate" placeholder="cert_123.jpg">
         </div>
       </div>
 
       <div class="two-cols">
         <div>
           <label for="before">Before Photo</label>
-          <input id="before" name="before" placeholder="uploads/before1.jpg">
+          <input id="before" name="before" placeholder="before_123.jpg">
         </div>
         <div>
           <label for="after">After Photo</label>
-          <input id="after" name="after" placeholder="uploads/after1.jpg">
+          <input id="after" name="after" placeholder="after_123.jpg">
         </div>
       </div>
+
+      <label for="tempPassword">Temporary Password (optional reset)</label>
+      <input id="tempPassword" name="tempPassword" type="text" placeholder="Set to reset coach password">
 
       <div class="toolbar" style="margin-top:1rem;">
         <div>
@@ -288,8 +282,9 @@
 </main>
 
 <script>
+const API_BASE = window.location.origin + '/webapi/';
 const COACHES_URL = '/uploads/coaches.json';
-const SAVE_URL    = 'save_coach.php';
+const SAVE_URL    = API_BASE + 'save_coach.php';
 
 let coaches = [];
 let currentUsername = null;
@@ -303,12 +298,29 @@ const btnNew      = document.getElementById('btnNew');
 const btnDelete   = document.getElementById('btnDelete');
 const usernameEl  = document.getElementById('username');
 
-const adminNameEl = document.getElementById('adminName');
-const adminRoleEl = document.getElementById('adminRole');
-
 function setStatus(msg, ok = true) {
   statusEl.textContent = msg || '';
   statusEl.className = 'status ' + (msg ? (ok ? 'ok' : 'err') : '');
+}
+
+async function ensureAdmin() {
+  try {
+    const res = await fetch(API_BASE + 'login.php', {
+      method: 'GET',
+      credentials: 'include',
+      cache: 'no-store'
+    });
+    const data = await res.json();
+    if (!data || !data.success || (data.role || '').toLowerCase() !== 'admin') {
+      window.location.href = '/index.html';
+      return false;
+    }
+    return true;
+  } catch (err) {
+    console.error('Admin check failed', err);
+    window.location.href = '/index.html';
+    return false;
+  }
 }
 
 function renderList() {
@@ -320,15 +332,16 @@ function renderList() {
   coachListEl.innerHTML = coaches.map(c => {
     const name = c.CoachName || c.Username || 'Coach';
     const user = c.Username || '';
-    const role = c.Role || 'Coach';
+    const role = (c.Role || 'coach').toUpperCase();
     const last = c.last_login ? new Date(c.last_login).toLocaleString() : '';
     return `
       <div class="coach-row" data-username="${user}">
         <div>
           <div class="coach-name">${name}</div>
-          <div class="coach-user">@${user} • ${role}</div>
+          <div class="coach-user">@${user}</div>
         </div>
         <div>
+          <span class="badge">${role}</span>
           ${last ? `<span class="badge">Last: ${last}</span>` : ''}
         </div>
       </div>`;
@@ -348,20 +361,15 @@ function renderList() {
 }
 
 function fillForm(coach) {
-  if (coach) {
-    formTitle.textContent = `Editing: ${coach.CoachName || coach.Username}`;
-  } else {
-    formTitle.textContent = 'New Coach';
-  }
+  formTitle.textContent = coach ? `Editing: ${coach.CoachName || coach.Username}` : 'New Coach';
 
   usernameEl.value       = coach?.Username || '';
   usernameEl.readOnly    = !!coach?.Username;
+  document.getElementById('coachName').value    = coach?.CoachName || '';
+  document.getElementById('email').value        = coach?.Email || '';
+  document.getElementById('role').value         = (coach?.Role || 'coach').toLowerCase();
+  document.getElementById('bio').value          = coach?.Bio || '';
 
-  document.getElementById('coachName').value       = coach?.CoachName || '';
-  document.getElementById('email').value           = coach?.Email || '';
-  document.getElementById('bio').value             = coach?.Bio || '';
-
-  // Specializations as CSV
   let specs = '';
   if (Array.isArray(coach?.Specializations)) {
     specs = coach.Specializations.join(', ');
@@ -370,17 +378,13 @@ function fillForm(coach) {
   }
   document.getElementById('specializations').value = specs;
 
-  const roleVal = coach?.Role || 'Coach';
-  document.getElementById('role').value = roleVal;
-
-  // Clear temp password on load
-  document.getElementById('tempPassword').value = '';
-
   const files = coach?.Files || {};
   document.getElementById('profile').value     = files.Profile     || '';
   document.getElementById('certificate').value = files.Certificate || '';
   document.getElementById('before').value      = files.Before      || '';
   document.getElementById('after').value       = files.After       || '';
+
+  document.getElementById('tempPassword').value = '';
 
   btnDelete.disabled = !coach;
 }
@@ -398,7 +402,7 @@ function selectCoach(username) {
 async function loadCoaches() {
   setStatus('Loading coaches…', true);
   try {
-    const res = await fetch(COACHES_URL + '?t=' + Date.now(), { credentials: 'include' });
+    const res = await fetch(COACHES_URL + '?t=' + Date.now());
     const data = await res.json();
     coaches = Array.isArray(data) ? data : [];
     renderList();
@@ -424,17 +428,17 @@ form.addEventListener('submit', async (e) => {
 
   const payload = {
     action: currentUsername ? 'update' : 'create',
-    Username:        usernameEl.value.trim(),
-    CoachName:       document.getElementById('coachName').value.trim(),
-    Email:           document.getElementById('email').value.trim(),
-    Bio:             document.getElementById('bio').value,
+    Username:      usernameEl.value.trim(),
+    CoachName:     document.getElementById('coachName').value.trim(),
+    Email:         document.getElementById('email').value.trim(),
+    Role:          document.getElementById('role').value.trim(),
+    Bio:           document.getElementById('bio').value,
     Specializations: document.getElementById('specializations').value,
-    Role:            document.getElementById('role').value,
-    TempPassword:    document.getElementById('tempPassword').value,
-    Profile:         document.getElementById('profile').value.trim(),
-    Certificate:     document.getElementById('certificate').value.trim(),
-    Before:          document.getElementById('before').value.trim(),
-    After:           document.getElementById('after').value.trim()
+    Profile:       document.getElementById('profile').value.trim(),
+    Certificate:   document.getElementById('certificate').value.trim(),
+    Before:        document.getElementById('before').value.trim(),
+    After:         document.getElementById('after').value.trim(),
+    TempPassword:  document.getElementById('tempPassword').value
   };
 
   if (!payload.Username) {
@@ -499,35 +503,11 @@ btnDelete.addEventListener('click', async () => {
   }
 });
 
-// Ensure admin before loading any data
-async function ensureAdmin() {
-  try {
-    const res = await fetch('login.php', {
-      method: 'GET',
-      credentials: 'include',
-      cache: 'no-store'
-    });
-    if (!res.ok) throw new Error('not ok');
-    const data = await res.json();
-    if (!data.success) throw new Error('no success');
-
-    const role = (data.role || 'Coach').toLowerCase();
-    if (role !== 'admin') throw new Error('not admin');
-
-    adminNameEl.textContent = data.coachName || data.username;
-    adminRoleEl.textContent = data.role || 'Admin';
-    return true;
-  } catch (err) {
-    // Not allowed → send to homepage
-    window.location.href = '/index.html';
-    throw err;
-  }
-}
-
-(async function init() {
-  await ensureAdmin();
+document.addEventListener('DOMContentLoaded', async () => {
+  const ok = await ensureAdmin();
+  if (!ok) return;
   await loadCoaches();
-})();
+});
 </script>
 </body>
 </html>
