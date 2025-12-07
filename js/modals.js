@@ -1,142 +1,136 @@
-// js/modals.js
-// Shared modal manager for Global Carnivore Coaches
-(() => {
-  const templates = {};
-  const searchPaths = ['components/', '/components/', '../components/'];
+/* ============================================
+   Global Carnivore Coaches - Modal System
+   FINAL VERSION — Public Coach Modal
+   December 2025
+============================================ */
 
-  async function fetchTemplate(name) {
-    if (templates[name]) return templates[name];
-    for (const base of searchPaths) {
-      try {
-        const r = await fetch(base + name, { cache: 'no-store' });
-        if (r.ok) {
-          const txt = await r.text();
-          templates[name] = txt;
-          return txt;
-        }
-      } catch (e) {
-        console.warn('Template fetch failed at', base + name, e);
+const GCCModals = (function() {
+
+  // Fade animation duration
+  const ANIM_TIME = 120;
+
+  // Create overlay
+  function createOverlay() {
+    const overlay = document.createElement('div');
+    overlay.id = 'coachModalOverlay';
+    overlay.style.opacity = '0';
+    overlay.style.transition = `opacity ${ANIM_TIME}ms ease`;
+    return overlay;
+  }
+
+  // Fetch the modal template
+  function fetchModalHtml() {
+    return fetch('/components/modal-coach.html').then(r => r.text());
+  }
+
+  // Build modal content
+  function populateModal(coach) {
+    document.getElementById('coachName').textContent = coach.CoachName || coach.Username;
+
+    const email = coach.Email || '';
+    const link = document.getElementById('coachEmail');
+    link.textContent = email;
+    link.href = email ? `mailto:${email}` : '#';
+
+    setCoachImages(coach.Files);
+    setCoachBio(coach.Bio);
+    setCoachSpecs(coach.Specializations);
+
+    // You can hook booking click here if needed
+    document.getElementById('bookBtn').onclick = () => {
+      if (email) window.location = `mailto:${email}`;
+    };
+  }
+
+  // Set Profile / Before/After / Certificate
+  function setCoachImages(files = {}) {
+    const profile = document.getElementById('coachProfilePic');
+    const ba = document.getElementById('beforeAfter');
+    const cert = document.getElementById('coachCertificates');
+
+    profile.src = files.Profile ? `/uploads/${files.Profile}?v=${Date.now()}` : '/images/earth_steak.png';
+
+    ba.innerHTML = '';
+    ['Before', 'After'].forEach(slot=>{
+      if(files[slot]) {
+        const img = document.createElement('img');
+        img.src = `/uploads/${files[slot]}?v=${Date.now()}`;
+        ba.appendChild(img);
       }
-    }
-    throw new Error('Could not load template: ' + name);
-  }
-
-  function replaceVars(tpl, map) {
-    let out = tpl;
-    for (const k in map) {
-      const val = map[k] == null ? '' : map[k];
-      out = out.split(`{{${k}}}`).join(val);
-    }
-    return out;
-  }
-
-  function ensureRoot() {
-    let root = document.getElementById('modalsRoot');
-    if (!root) {
-      root = document.createElement('div');
-      root.id = 'modalsRoot';
-      document.body.appendChild(root);
-    }
-    return root;
-  }
-
-  function insertModal(html) {
-    const root = ensureRoot();
-    const wrapper = document.createElement('div');
-    wrapper.innerHTML = html.trim();
-    const modal = wrapper.firstElementChild;
-    if (!modal) return null;
-
-    const existing = document.getElementById(modal.id);
-    if (existing) existing.remove();
-
-    root.appendChild(modal);
-
-    const closeBtn = modal.querySelector('.modal-close');
-    if (closeBtn) {
-      closeBtn.addEventListener('click', () => closeModal(modal));
-    }
-
-    const content = modal.querySelector('.modal-content');
-    if (content) {
-      content.addEventListener('click', (e) => e.stopPropagation());
-    }
-
-    // NOTE: Clicking the backdrop does NOT close the modal (per spec)
-    // modal.addEventListener('click', () => closeModal(modal));
-
-    return modal;
-  }
-
-  function openModal(modal) {
-    if (!modal) return;
-    modal.classList.add('show');
-    document.body.classList.add('modal-open');
-  }
-
-  function closeModal(modal) {
-    if (!modal) return;
-    modal.classList.remove('show');
-    document.body.classList.remove('modal-open');
-    setTimeout(() => {
-      if (modal.parentElement) modal.parentElement.removeChild(modal);
-    }, 260);
-  }
-
-  async function openCoachModal(coach) {
-    if (!coach) return;
-    const tpl = await fetchTemplate('modal-coach.html');
-
-    const files = coach.Files || {};
-    const name = coach.CoachName || coach.Username || 'Coach';
-    const username = (coach.Username || '').toLowerCase();
-    const certSrc = files.Certificate ? `/webapi/${files.Certificate}` : 'images/toon_cert.jpg';
-
-    const bioParagraphs = (coach.Bio || 'No bio yet. This coach is forged in ribeye and ice.')
-      .split(/\r?\n\r?\n/)
-      .filter(p => p.trim())
-      .map(p => `<p>${p.trim().replace(/\r?\n/g, ' ')}</p>`)
-      .join('');
-
-    let photos = '';
-    const before = files.Before ? `/webapi/${files.Before}` : '';
-    const after = files.After ? `/webapi/${files.After}` : (files.Profile ? `/webapi/${files.Profile}` : '');
-    if (before || after) {
-      photos = `
-        <div class="photo-container">
-          ${before ? `<img src="${before}" alt="${name} before" class="photo-old" onerror="this.style.display='none'">` : ''}
-          ${after ? `<img src="${after}" alt="${name} after" class="photo-new" onerror="this.style.display='none'">` : ''}
-        </div>
-      `;
-    }
-
-    const html = replaceVars(tpl, {
-      username,
-      name,
-      bio: bioParagraphs,
-      certSrc,
-      photos
     });
 
-    const modal = insertModal(html);
-    openModal(modal);
+    cert.innerHTML = '';
+    if(files.Certificate){
+      const img = document.createElement('img');
+      img.src = `/uploads/${files.Certificate}?v=${Date.now()}`;
+      cert.appendChild(img);
+    }
   }
 
-  async function openImageModal(src, title = '') {
-    if (!src) return;
-    const tpl = await fetchTemplate('modal-image.html');
-    const id = Math.random().toString(36).slice(2, 9);
-    const html = replaceVars(tpl, {
-      id,
-      src,
-      title: title || ''
+  // Bio block
+  function setCoachBio(text) {
+    const box = document.getElementById('coachBio');
+    box.innerHTML = '';
+    (text || '').split(/\n+/).forEach(p => {
+      if(p.trim()){
+        const el = document.createElement('p');
+        el.textContent = p.trim();
+        box.appendChild(el);
+      }
     });
-    const modal = insertModal(html);
-    openModal(modal);
   }
 
-  window.GCCModals = {
+  // Specializations list
+  function setCoachSpecs(list = []) {
+    const ul = document.getElementById('coachSpecs');
+    ul.innerHTML = '';
+    list.forEach(s => {
+      const li = document.createElement('li');
+      li.textContent = s;
+      ul.appendChild(li);
+    });
+  }
+
+  // Close modal (animation + cleanup)
+  function closeModal(e) {
+    if(e) e.preventDefault();
+    const overlay = document.getElementById('coachModalOverlay');
+    if(!overlay) return;
+
+    overlay.style.opacity = '0';
+    setTimeout(() => overlay.remove(), ANIM_TIME);
+  }
+
+  // Open modal
+  function openCoachModal(coach) {
+    closeModal(); // ensure clean single modal
+
+    fetchModalHtml().then(html => {
+      const wrapper = document.createElement('div');
+      wrapper.id = 'coachModalOverlay';
+      wrapper.innerHTML = html;
+      document.body.appendChild(wrapper);
+
+      // fade-in
+      requestAnimationFrame(() => {
+        wrapper.style.opacity = '1';
+      });
+
+      populateModal(coach);
+
+      // Wire close button
+      document.querySelector('.gcc-modal-close').onclick = closeModal;
+
+      // Clicking outside shell closes modal
+      wrapper.addEventListener('click', e=>{
+        if(e.target.id === 'coachModalOverlay') closeModal();
+      });
+    });
+  }
+
+  return {
     openCoachModal,
-    openImageModal
+    closeModal
   };
+
 })();
