@@ -4,6 +4,9 @@
  * - POST: login with username/password
  * - GET:  return current session info
  */
+ */Debugger
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
 
 header('Content-Type: application/json; charset=utf-8');
 
