@@ -6,6 +6,27 @@
  *  - Visitor dashboard / manage_coaches auth check (GET)
  */
 
+session_start();
+header('Content-Type: application/json');
+
+if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+    if (!isset($_SESSION['username'])) {
+        echo json_encode(['success' => false]);
+        exit;
+    }
+
+    echo json_encode([
+        'success' => true,
+        'username' => $_SESSION['username'],
+        'role' => $_SESSION['role'] ?? 'Coach',
+        'coachName' => $_SESSION['coachName'] ?? $_SESSION['username']
+    ]);
+    exit;
+}
+
+// POST login handler (unchanged)
+?>
+
 header('Content-Type: application/json; charset=utf-8');
 header('Cache-Control: no-cache');
 
