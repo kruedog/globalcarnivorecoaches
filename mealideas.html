@@ -12,7 +12,7 @@
   /* Lightbox Overlay */
   #lightboxOverlay {
     position:fixed; inset:0;
-    background:rgba(0,0,0,0.85);
+    background:rgba(0,0,0,0.88); /* slightly darker */
     display:none;
     align-items:center;
     justify-content:center;
@@ -21,11 +21,12 @@
   }
   @keyframes fadeIn { from{opacity:0} to{opacity:1} }
 
+  /* Larger fullscreen photo */
   #lightboxImage {
-    max-width:90vw;
-    max-height:85vh;
+    max-width:95vw;
+    max-height:92vh;
     border-radius:12px;
-    box-shadow:0 0 35px rgba(0,0,0,0.6);
+    box-shadow:0 0 50px rgba(0,0,0,0.7);
     transition:transform .25s ease;
   }
 
@@ -35,30 +36,30 @@
     top:50%;
     transform:translateY(-50%);
     color:#fff;
-    font-size:3rem;
+    font-size:3.8rem;  /* larger arrows */
     cursor:pointer;
     user-select:none;
-    padding:10px;
-    background:rgba(0,0,0,0.4);
+    padding:12px;
+    background:rgba(0,0,0,0.45);
     border-radius:12px;
-    line-height:1;
     transition:background .2s ease;
   }
-  .lightbox-arrow:hover { background:rgba(255,255,255,0.15); }
-  #prevArrow { left:30px; }
-  #nextArrow { right:30px; }
+  .lightbox-arrow:hover { background:rgba(255,255,255,0.22); }
+  #prevArrow { left:24px; }
+  #nextArrow { right:24px; }
 
   /* Close button */
   #lightboxClose {
     position:absolute;
     top:20px;
-    right:30px;
-    font-size:3rem;
+    right:32px;
+    font-size:3.8rem;  /* larger close button */
     color:#fff;
     cursor:pointer;
-    text-shadow:0 0 12px #000;
+    text-shadow:0 0 14px #000;
   }
 </style>
+
 </head>
 
 <body>
