@@ -1,17 +1,197 @@
-<!-- components/modal-coach.html -->
-<div class="modal-target" id="modal-coach-{{username}}" role="dialog" aria-modal="true" data-modal-type="coach">
-  <div class="modal-content" role="document">
-    <button class="modal-close" aria-label="Close profile">&times;</button>
-    <h3 class="modal-title">{{name}}</h3>
-    <div class="modal-bio">
-      {{bio}}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+
+<style>
+:root {
+  --white:#fff;
+  --text:#192168;
+  --blue:#192168;
+  --red:#AF1E2D;
+  --radius:20px;
+}
+
+/* Overlay (light & frosted) */
+.gcc-modal-overlay{
+  position:fixed;
+  inset:0;
+  background:rgba(255,255,255,0.88);
+  backdrop-filter:blur(14px);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:99999;
+  padding:2rem;
+}
+
+/* Modal Card */
+.gcc-modal-shell{
+  background:rgba(255,255,255,0.95);
+  border:3px solid var(--red);
+  border-radius:24px;
+  max-width:1200px;
+  width:100%;
+  max-height:95vh;
+  overflow-y:auto;
+  box-shadow:0 20px 60px rgba(0,0,0,0.35);
+  position:relative;
+  display:flex;
+  flex-direction:column;
+}
+
+/* Close button */
+.gcc-modal-close{
+  position:absolute;
+  top:1rem;
+  right:1.5rem;
+  font-size:2.6rem;
+  font-weight:800;
+  color:var(--red);
+  text-decoration:none;
+  transition:.2s;
+}
+.gcc-modal-close:hover{
+  transform:scale(1.15);
+  color:#8b1624;
+}
+
+/* Header */
+.gcc-modal-header{
+  padding:2rem 2.5rem 0;
+  text-align:left;
+}
+.gcc-modal-header h2{
+  margin:0;
+  font-family:'Cinzel',serif;
+  color:var(--blue);
+}
+
+/* Avatar */
+.gcc-profile-avatar{
+  position:absolute;
+  top:2rem;
+  right:2rem;
+  width:180px;
+  height:180px;
+  border-radius:50%;
+  border:5px solid var(--red);
+  overflow:hidden;
+  box-shadow:0 15px 45px rgba(0,0,0,0.35);
+}
+.gcc-profile-avatar img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+/* Modal body layout */
+.gcc-modal-body{
+  display:grid;
+  grid-template-columns:1.2fr 0.8fr;
+  gap:2.2rem;
+  padding:1.2rem 2.5rem 2.2rem;
+}
+
+/* Bio */
+.gcc-bio-box{
+  background:#fff;
+  border:2px solid var(--red);
+  border-radius:20px;
+  padding:1.4rem 1.6rem;
+  max-height:350px;
+  overflow-y:auto;
+  box-shadow:inset 0 5px 18px rgba(175,45,16,0.08);
+}
+
+/* Before/After */
+.gcc-before-after{
+  display:flex;gap:1.8rem;flex-wrap:wrap;
+}
+.gcc-before-after img{
+  width:180px;
+  height:260px;
+  object-fit:cover;
+  border-radius:16px;
+  border:4px solid var(--red);
+}
+
+/* Specs box */
+.gcc-specialization-box{
+  background:#fff;
+  border:2px solid var(--red);
+  border-radius:20px;
+  padding:1rem;
+  text-align:center;
+}
+.gcc-specialization-box li{
+  list-style:none;
+  margin:.35rem 0;
+  font-weight:600;
+  color:var(--blue);
+}
+
+/* Cert */
+#coachCertificates img{
+  width:260px;
+  border:4px solid var(--red);
+  border-radius:16px;
+  margin-top:1rem;
+  box-shadow:0 14px 45px rgba(0,0,0,0.35);
+}
+
+/* Book Button */
+.gcc-book-btn{
+  position:absolute;
+  bottom:1rem;
+  right:1.5rem;
+  padding:.9rem 2.3rem;
+  background:var(--red);
+  color:#fff;
+  font-size:1rem;
+  font-weight:700;
+  border:none;
+  border-radius:999px;
+  cursor:pointer;
+  box-shadow:0 12px 35px rgba(175,45,65,0.5);
+  transition:.2s;
+}
+.gcc-book-btn:hover{
+  background:#8b1624;
+  transform:translateY(-2px);
+}
+</style>
+</head>
+
+<body>
+<div id="coachModal" class="gcc-modal-overlay">
+  <div class="gcc-modal-shell">
+    <a href="#" class="gcc-modal-close">&times;</a>
+
+    <div class="gcc-modal-header">
+      <h2 id="coachName"></h2>
+      <p><a id="coachEmail"></a></p>
+      <div class="gcc-profile-avatar">
+        <img id="coachProfilePic">
+      </div>
     </div>
-    <div class="cert-container" style="margin-top: 16px;">
-      <a class="cert-tile" href="#" data-cert-src="{{certSrc}}">
-        <img src="{{certSrc}}" alt="Certification for {{name}}" loading="lazy">
-      </a>
-      <div class="cert-caption">Coaching Certificate</div>
+
+    <div class="gcc-modal-body">
+      <div class="gcc-left">
+        <div class="gcc-bio-box" id="coachBio"></div>
+        <div class="gcc-before-after" id="beforeAfter"></div>
+      </div>
+      <div class="gcc-right">
+        <div class="gcc-specialization-box">
+          <h3>I Specialize In</h3>
+          <ul id="coachSpecs"></ul>
+        </div>
+        <div id="coachCertificates"></div>
+      </div>
     </div>
-    {{photos}}
+
+    <button id="bookBtn" class="gcc-book-btn">Book This Coach</button>
   </div>
 </div>
+</body>
+</html>
