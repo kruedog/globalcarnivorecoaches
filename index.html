@@ -4,266 +4,204 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Global Carnivore Coaches | Durability. Focus. Freedom.</title>
+
+  <!-- Favicon -->
   <link rel="icon" type="image/png" href="images/earth_steak.png">
+
   <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
-  
-  <style>
-    /* ⛔️ Do NOT delete any of your existing CSS */
-    /* ⛔️ Only added the new Modal (Option-B) styles at the bottom */
 
-    /* ===============================
-       ALL YOUR ORIGINAL CSS REMAINS
-       (content truncated in message for space)
-       =============================== */
-
-    /* 🔴 START: Public Profile Modal (Option-B - same as profile.html) */
-    #publicProfileModal {
-      position: fixed;
-      inset: 0;
-      background: rgba(25, 33, 104, .97);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      padding: 2rem;
-      z-index: 99999;
-    }
-    #publicProfileModal .modal-shell {
-      background: rgba(255,255,255,.80);
-      border: 6px solid #AF1E2D;
-      border-radius: 28px;
-      max-width: 1500px;
-      width: 100%;
-      max-height: 96vh;
-      overflow: hidden;
-      position: relative;
-      box-shadow: 0 40px 100px rgba(0,0,0,.6);
-      display: flex;
-      flex-direction: column;
-    }
-    #publicProfileModal .modal-close {
-      position: absolute;
-      top: 1.8rem;
-      right: 2.5rem;
-      font-size: 3rem;
-      color: #ddd;
-      text-decoration: none;
-      transition: .3s;
-      line-height: 1;
-      z-index: 10;
-    }
-    #publicProfileModal .modal-close:hover { color:#fff; transform:scale(1.08) }
-
-    .profile-avatar {
-      position:absolute;
-      top:2.2rem;
-      right:5rem;
-      width:220px;
-      height:220px;
-      border:8px solid #AF1E2D;
-      border-radius:50%;
-      overflow:hidden;
-      background:#000;
-      box-shadow:0 25px 70px rgba(0,0,0,.65)
-    }
-    .profile-avatar img { width:100%; height:100%; object-fit:cover }
-
-    .modal-header {
-      text-align:left;
-      padding:2.5rem 4rem 0;
-    }
-    .modal-header h2 {
-      font-family:'Cinzel',serif;
-      font-size:2.4rem;
-      color:#AF1E2D;
-      margin:0 0 .3rem 0;
-    }
-    .modal-body {
-      display:grid;
-      grid-template-columns:1.1fr .9fr;
-      gap:3.5rem;
-      padding:0 4rem 2.5rem;
-      overflow-y:auto;
-    }
-    .bio-box {
-      background:#fff;
-      border:5px solid #AF1E2D;
-      border-radius:14px;
-      padding:2rem;
-      max-height:420px;
-      overflow-y:auto;
-      box-shadow:inset 0 8px 25px rgba(175,45,16,.2);
-    }
-    .before-after { display:flex; gap:1.8rem; flex-wrap:wrap }
-    .before-after img {
-      width:210px; height:300px;
-      object-fit:cover;
-      border-radius:18px;
-      border:6px solid #AF1E2D;
-      background:#000;
-    }
-    .specialization-box {
-      background:#fff;
-      border:4px solid #AF1E2D;
-      border-radius:14px;
-      padding:1rem;
-      text-align:center;
-      max-height:160px;
-      overflow-y:auto;
-    }
-    #specializationList li {
-      list-style:none;
-      margin:.35rem 0;
-      font-weight:700;
-      color:#192168;
-    }
-    #certificateContainer img {
-      max-width:260px;
-      border:4px solid #AF1E2D;
-      border-radius:12px;
-      box-shadow:0 14px 45px rgba(0,0,0,.5);
-      margin-top:1rem;
-    }
-    .book-btn-fixed {
-      position:absolute;
-      bottom:1.8rem;
-      right:3.5rem;
-      background:#AF1E2D;
-      color:#fff;
-      padding:1rem 3.2rem;
-      font-size:1.2rem;
-      font-weight:800;
-      border-radius:999px;
-      border:none;
-      cursor:pointer;
-      box-shadow:0 22px 65px rgba(175,45,65,.55);
-    }
-    .book-btn-fixed:hover { background:#8b1624 }
-    /* 🔴 END: Public Modal CSS */
-  </style>
+  <!-- 🔹 Global Site Styles -->
+  <link rel="stylesheet" href="css/global.css">
 </head>
 
-<body>
-
-  <!-- ALL OF YOUR EXISTING PAGE HTML IS HERE EXACTLY THE SAME -->
-  <!-- HERO, SERVICES, COACHES, MEALS, ETC (no modifications) -->
-
-  <!-- 🔹 Injected Modal at END of <main> -->
-  <div id="publicProfileModal">
-    <div class="modal-shell">
-      <a href="#" class="modal-close" id="closeModal">&times;</a>
-      <div class="modal-header">
-        <h2 id="modalName">Coach</h2>
-        <p><a id="modalEmail" style="color:#AF1E2D;font-weight:bold;"></a></p>
-        <div class="profile-avatar"><img id="modalProfilePic" src="images/earth_steak.png"></div>
-      </div>
-      <div class="modal-body">
-        <div>
-          <div class="bio-box" id="modalBio"></div>
-          <div class="before-after" id="beforeAfterContainer"></div>
-        </div>
-        <div>
-          <div class="specialization-box">
-            <h3>I Specialize In</h3>
-            <ul id="specializationList"></ul>
-          </div>
-          <div id="certificateContainer"></div>
-        </div>
-      </div>
-      <button class="book-btn-fixed" id="bookCoach">Book This Coach</button>
-    </div>
-  </div>
-
-
-  <!-- REMOVE THIS — NO MORE modals.js -->
-  <!-- <script src="js/modals.js"></script> -->
-
 <script>
-  async function loadCoaches() {
-    const r = await fetch('/webapi/get_coaches.php');
-    const data = await r.json();
-    if (!data.success) return;
+  // Track visit — works on BOTH ports
+  const protocol = window.location.protocol;
+  const hostname = window.location.hostname;
+  const port = protocol === 'https:' ? ':477' : ':8080';
 
-    const gallery = document.getElementById('coachGallery');
-    gallery.innerHTML = '';
-
-    data.coaches.forEach(coach => {
-      const name = coach.CoachName || coach.Username || 'Coach';
-      const files = coach.Files || {};
-
-      const card = document.createElement('div');
-      card.className = 'coach-card';
-      card.innerHTML = `
-        <a href="#" class="tile coach-tile">
-          <img src="${files.Profile ? '/uploads/'+files.Profile : '/images/WolfCoach_Profile.png'}">
-          <span class="caption">${name}</span>
-        </a>
-        <button class="view-btn">View Profile</button>`;
-
-      const open = () => openModal(coach);
-      card.querySelector('.coach-tile').onclick = open;
-      card.querySelector('.view-btn').onclick = open;
-
-      gallery.appendChild(card);
-    });
-  }
-
-  function openModal(coach) {
-    // Name & Email
-    document.getElementById('modalName').textContent = coach.CoachName || coach.Username;
-    const email = coach.Email || '';
-    const emailLink = document.getElementById('modalEmail');
-    emailLink.textContent = email;
-    emailLink.href = email ? `mailto:${email}` : '#';
-
-    // Profile image
-    const files = coach.Files || {};
-    document.getElementById('modalProfilePic').src =
-      files.Profile ? `/uploads/${files.Profile}` : '/images/earth_steak.png';
-
-    // Bio
-    document.getElementById('modalBio').innerHTML =
-      (coach.Bio || '').replace(/\n+/g, '<br>');
-
-    // Before/After
-    const BA = document.getElementById('beforeAfterContainer');
-    BA.innerHTML = '';
-    ['Before','After'].forEach(k => {
-      if (files[k]) BA.innerHTML += `<img src="/uploads/${files[k]}">`;
-    });
-
-    // Specs
-    const UL = document.getElementById('specializationList');
-    UL.innerHTML = '';
-    (coach.Specializations || []).forEach(s => {
-      UL.innerHTML += `<li>${s}</li>`;
-    });
-
-    // Certificate
-    const cert = document.getElementById('certificateContainer');
-    cert.innerHTML = files.Certificate
-      ? `<img src="/uploads/${files.Certificate}">`
-      : '';
-
-    // Book Btn
-    document.getElementById('bookCoach').onclick =
-      () => { if(email) location = `mailto:${email}` }
-
-    document.getElementById('publicProfileModal').style.display = 'flex';
-    document.body.classList.add('modal-open');
-  }
-
-  document.getElementById('closeModal').onclick = () => {
-    document.getElementById('publicProfileModal').style.display = 'none';
-    document.body.classList.remove('modal-open');
-  };
-
-  loadCoaches();
+  fetch('/webapi/track_visit.php', {
+    credentials: 'include',
+    cache: 'no-store'
+  }).catch(() => {});
 </script>
 
-<footer>
-  <p>&copy; 2025 Global Carnivore Coaches. All rights reserved.</p>
-</footer>
+<body>
+  <!-- NAV Section -->
+  <nav class="top-nav" aria-label="Main Navigation">
+    <div class="wrap nav-inner" style="padding:0;">
+      <div class="nav-left">
+        <a class="brand-mini" href="#about" aria-label="Global Carnivore Coaches home">
+          <img src="images/earth_steak.png" alt="Global Carnivore Coaches logo" onerror="this.style.display='none'">
+          <span>Global Carnivore Coaches</span>
+        </a>
+      </div>
+      <div class="nav-right" role="navigation" aria-label="Site links">
+        <a href="#services" class="nav-link">Programs</a>
+        <a href="#about" class="nav-link">About</a>
+        <a href="science.html" class="nav-link">Science</a>
+        <a href="#mealideas" class="nav-link">Gallery</a>
+        <a href="#contact" class="nav-link">Contact</a>
+        <a href="webapi/login.html" class="nav-link">Coach Login</a>
+      </div>
+    </div>
+  </nav>
 
+  <main class="wrap" id="maincontent">
+
+    <!-- HERO Section -->
+    <header class="hero" role="banner" aria-labelledby="hero-title">
+      <div class="logo">
+        <img src="images/earth_steak.png" alt="Planet Earth and Ribeye Steak">
+      </div>
+      <div>
+        <h1 id="hero-title">Global Carnivore Coaches</h1>
+        <p class="tag">Eat a primal Diet. Feel like a primal Human.</p>
+        <p class="lead-hero">
+          Active enrollment — evidence-minded carnivore coaching for durability, focus, and long-range endurance.
+        </p>
+      </div>
+    </header>
+
+    <!-- SERVICES Section -->
+    <section class="card" id="services" aria-labelledby="services-title">
+      <div class="cols">
+        <div>
+          <h2 id="services-title">
+            Core Programs: Transformation Blueprint
+            <span class="subline">Unleash • Optimize • Thrive</span>
+          </h2>
+          <p class="lead">
+            Reclaim your vitality with 30, 60, or 90-day coaching programs tailored for keto → Lion Diet.
+          </p>
+          <div class="benefits">
+            <div class="benefit"><strong>Tailored Journey</strong><div>Personalized plans.</div></div>
+            <div class="benefit"><strong>Resilient Body</strong><div>Reduce inflammation.</div></div>
+            <div class="benefit"><strong>Steady Energy</strong><div>Brain and stamina focus.</div></div>
+            <div class="benefit"><strong>Constant Support</strong><div>Check-ins + guidance.</div></div>
+            <div class="benefit"><strong>Simple Fuel</strong><div>Recipes & knowledge.</div></div>
+          </div>
+        </div>
+        <aside class="card-aside">
+          <h3>Mission Focus</h3>
+          <ul>
+            <li>gut reset</li>
+            <li>inflammation control</li>
+            <li>body composition</li>
+            <li>performance & focus</li>
+            <li>accountability & support</li>
+          </ul>
+        </aside>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- ABOUT / COACHES Section -->
+    <section class="card" id="about">
+      <h2>
+        Meet the Coaches
+        <span class="subline">Certified • Battle-Tested • Yours</span>
+      </h2>
+      <p class="lead">Carnivore coaches who have walked the path.</p>
+
+      <div class="cols">
+        <div class="gallery" id="coachGallery"></div>
+        <aside class="card-aside">
+          <h3>How It Works</h3>
+          <ol>
+            <li>Book a discovery call</li>
+            <li>Get your Blueprint</li>
+            <li>Gain momentum</li>
+            <li>Thrive for life</li>
+          </ol>
+        </aside>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- MEAL IDEAS Section (unchanged gallery) -->
+    <section class="card" id="mealideas">
+      <h2>Shared Meal Ideas<span class="subline">Inspiration for sustained performance</span></h2>
+      <div class="gallery">
+        <a class="tile" href="#img-1"><img src="images/meatzza.jpg"></a>
+        <a class="tile" href="#img-2"><img src="images/image004.jpg"></a>
+        <a class="tile" href="#img-3"><img src="images/image005.jpg"></a>
+        <a class="tile" href="#img-4"><img src="images/image008.jpg"></a>
+        <a class="tile" href="#img-5"><img src="images/image011.jpg"></a>
+        <a class="tile" href="#img-new1"><img src="images/image001.jpg"></a>
+        <a class="tile" href="#img-new2"><img src="images/image002.jpg"></a>
+        <a class="tile" href="#img-new3"><img src="images/image003.jpg"></a>
+        <a class="tile" href="#img-new4"><img src="images/image006.jpg"></a>
+        <a class="tile" href="#img-new5"><img src="images/image007.jpg"></a>
+        <a class="tile" href="#img-new6"><img src="images/image009.jpg"></a>
+        <a class="tile" href="#img-new7"><img src="images/image010.jpg"></a>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- CONTACT Section -->
+    <section class="card" id="contact">
+      <h2>Mobilize Your Transformation<span class="subline">Deploy your plan</span></h2>
+      <div class="cta">
+        <a class="btn" href="mailto:your@email.com">Book Discovery Call</a>
+        <a class="btn ghost" href="tiers.html">View Program Tiers</a>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer>
+    <p>&copy; 2025 Global Carnivore Coaches. All rights reserved.</p>
+  </footer>
+
+  <!-- Load Modal Logic (script stays for now) -->
+  <script src="js/modals.js"></script>
+
+  <script>
+    async function loadCoaches() {
+      try {
+        const res = await fetch('/webapi/get_coaches.php');
+        const data = await res.json();
+        if (!data.success) return;
+
+        const gallery = document.getElementById('coachGallery');
+        gallery.innerHTML = '';
+
+        data.coaches.forEach(coach => {
+          const card = document.createElement('div');
+          card.className = 'coach-card';
+          card.innerHTML = `
+            <a href="#" class="tile coach-tile">
+              <img src="${coach.Files?.Profile ? '/uploads/' + coach.Files.Profile : 'images/WolfCoach_Profile.png'}">
+            </a>
+            <button type="button" class="view-btn">View Profile</button>
+          `;
+
+          const openProfile = () => {
+            if (window.GCCModals && typeof window.GCCModals.openCoachModal === 'function') {
+              window.GCCModals.openCoachModal(coach);
+            }
+          };
+          card.querySelector('.tile').addEventListener('click', openProfile);
+          card.querySelector('.view-btn').addEventListener('click', openProfile);
+
+          gallery.appendChild(card);
+        });
+      } catch (err) {
+        console.error('Error loading coaches:', err);
+      }
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', loadCoaches);
+    } else {
+      loadCoaches();
+    }
+  </script>
 </body>
 </html>
