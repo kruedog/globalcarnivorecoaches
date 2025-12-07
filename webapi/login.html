@@ -1,34 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Coach Login • Global Carnivore Coaches</title>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Coach Login • Global Carnivore Coaches</title>
 
-  <link rel="icon" type="image/png" href="../images/earth_steak.png">
-  <link rel="stylesheet" href="../css/global.css">
+<link rel="icon" type="image/png" href="../images/earth_steak.png">
+<link rel="stylesheet" href="../css/global.css">
 
-  <style>
-    body {
+<style>
 :root {
-  --white:#fff;
-  --text:#192168;
-  --blue:#192168;
-  --red:#AF1E2D;
-  --muted:#555;
-  --radius:14px;
-  --shadow:0 12px 40px rgba(0,0,0,.18);
+  --white:#fff; --text:#192168; --blue:#192168; --red:#AF1E2D; --muted:#555;
+  --radius:14px; --shadow:0 12px 40px rgba(0,0,0,.18);
 }
-
 body {
   min-height:100vh;
   font-family:'Inter',sans-serif;
   background:radial-gradient(circle at 10% 10%,#F8F9FA 0%,#D0D2D5 40%,#B0B3BA 100%);
-  color:var(--text);
   display:flex;
   align-items:center;
   justify-content:center;
-  padding:2rem 1rem;
+  padding:2rem;
+  color:var(--text);
 }
 
 .login-card {
@@ -38,159 +31,163 @@ body {
   border-radius:var(--radius);
   padding:2.4rem 2rem;
   box-shadow:var(--shadow);
-  border:1px solid rgba(0,0,0,0.06);
+  border:1px solid rgba(0,0,0,.05);
 }
 
-h1 {
+h2 {
   font-family:'Cinzel',serif;
   color:var(--blue);
   font-size:2rem;
-  margin-bottom:.6rem;
   text-align:center;
+  margin-bottom:.7rem;
 }
 
 p.sub {
   text-align:center;
   color:var(--muted);
   margin-bottom:2rem;
+  font-size:.95rem;
 }
 
 label {
-  display:block;
   font-size:.9rem;
   font-weight:600;
-  margin-bottom:.3rem;
+  margin-bottom:.4rem;
+  display:block;
 }
 
 input {
   width:100%;
-  padding:.9rem 1rem;
-  border:2px solid #ccd;
+  padding:.85rem 1rem;
+  border:2px solid var(--blue);
   border-radius:var(--radius);
   font-size:1rem;
-  margin-bottom:1.2rem;
+  margin-bottom:1.3rem;
+  transition:all .2s;
   background:#fff;
   color:var(--blue);
-  transition:all .18s ease-in-out;
 }
-
 input:focus {
   border-color:var(--red);
-  box-shadow:0 0 0 3px rgba(175,30,45,0.25);
   outline:none;
+  box-shadow:0 0 0 3px rgba(175,30,45,0.25);
 }
 
 .btn {
   width:100%;
-  padding:1rem;
+  padding:.95rem;
   border-radius:999px;
   font-weight:700;
-  border:none;
-  cursor:pointer;
   font-size:1rem;
+  cursor:pointer;
   transition:all .2s;
-  margin-top:.25rem;
+  margin-top:.4rem;
+  border:none;
 }
-
 .btn-primary {
   background:var(--red);
   color:#fff;
-  box-shadow:0 6px 22px rgba(175,30,45,.35);
+  box-shadow:0 6px 22px rgba(175,30,45,.38);
 }
-
 .btn-primary:hover {
   background:#8b1624;
   transform:translateY(-1px);
 }
 
-.status-line {
-  text-align:center;
-  margin-top:1rem;
-  min-height:18px;
-  font-size:.9rem;
+.btn-ghost {
+  background:transparent;
+  border:2px solid var(--blue);
+  color:var(--blue);
+}
+.btn-ghost:hover {
+  background:var(--blue);
+  color:#fff;
 }
 
-.status-line.err { color:var(--red); }
-.status-line.ok  { color:green; }
-
-    }
-  </style>
+#error-msg {
+  margin-top:1rem;
+  text-align:center;
+  color:var(--red);
+  font-size:.9rem;
+  min-height:18px;
+}
+</style>
 </head>
 
 <body>
 
-  <div class="login-box">
-    <h2>Coach Login</h2>
+<div class="login-card">
+  <h2>Coach Login</h2>
+  <p class="sub">Secure access for Carnivore Coaches</p>
 
-    <label for="username">Username</label>
-    <input id="username" name="username" autocomplete="username" required />
+  <label for="username">Username</label>
+  <input id="username" name="username" autocomplete="username" required>
 
-    <label for="password">Password</label>
-    <input id="password" name="password"
-           type="password" autocomplete="current-password" required />
+  <label for="password">Password</label>
+  <input id="password" name="password" type="password"
+         autocomplete="current-password" required>
 
-    <button class="btn" id="loginBtn">Login</button>
+  <button class="btn btn-primary" id="loginBtn">Log In</button>
+  <button class="btn btn-ghost" onclick="window.location.href='/'">← Back Home</button>
 
-    <div id="error-msg"></div>
-  </div>
+  <div id="error-msg"></div>
+</div>
 
-  <script>
-    const API_BASE = window.location.origin + "/webapi/";
+<script>
+const API_BASE = window.location.origin + "/webapi/";
 
-    async function checkSession() {
-      try {
-        const res = await fetch(API_BASE + "login.php", {
-          method: "GET",
-          credentials: "include",
-          cache: "no-store"
-        });
-        const data = await res.json();
-        if (data && data.success) {
-          setTimeout(() => window.location.href = "/webapi/profile.html", 150);
-        }
-      } catch (_) {}
+// Redirect immediately only if already logged in
+(async () => {
+  try {
+    const res = await fetch(API_BASE + "login.php", {
+      method: "GET",
+      credentials: "include",
+      cache: "no-store"
+    });
+    const data = await res.json();
+    if (data.success) {
+      window.location.href = "/webapi/profile.html";
     }
-    checkSession();
+  } catch (_) {}
+})();
 
-    document.getElementById("loginBtn").onclick = async () => {
-      const username = document.getElementById("username").value.trim();
-      const password = document.getElementById("password").value.trim();
-      const err = document.getElementById("error-msg");
-      err.textContent = "";
+document.getElementById("loginBtn").onclick = async () => {
+  const username = document.getElementById("username").value.trim();
+  const password = document.getElementById("password").value.trim();
+  const err = document.getElementById("error-msg");
+  err.textContent = "";
 
-      if (!username || !password) {
-        err.textContent = "Enter username and password.";
-        return;
-      }
+  if (!username || !password) {
+    err.textContent = "Enter username and password.";
+    return;
+  }
 
-      try {
-        const res = await fetch(API_BASE + "login.php", {
-          method: "POST",
-          headers: {"Content-Type": "application/json"},
-          credentials: "include",
-          body: JSON.stringify({username, password})
-        });
+  try {
+    const res = await fetch(API_BASE + "login.php", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify({ username, password })
+    });
 
-        const data = await res.json();
+    const data = await res.json();
 
-        if (!data.success) {
-          err.textContent = data.message || "Login failed";
-          return;
-        }
+    if (!data.success) {
+      err.textContent = data.message || "Login failed";
+      return;
+    }
 
-        localStorage.setItem("username", data.username);
-        localStorage.setItem("role", (data.role || "coach").toLowerCase());
+    localStorage.setItem("username", data.username);
+    localStorage.setItem("role", (data.role || "coach").toLowerCase());
 
-        setTimeout(() => {
-          window.location.href = "/webapi/profile.html";
-        }, 150);
+    window.location.href = "/webapi/profile.html";
 
-      } catch (error) {
-        console.error(error);
-        err.textContent = "Server error — try again";
-      }
-    };
-  </script>
+  } catch (error) {
+    console.error(error);
+    err.textContent = "Server error — try again";
+  }
+};
+</script>
 
 </body>
 </html>
