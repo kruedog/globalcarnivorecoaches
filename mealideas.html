@@ -5,41 +5,110 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Shared Meal Ideas | Global Carnivore Coaches</title>
 <link rel="stylesheet" href="css/global.css">
+<style>
+  body {
+    padding:0;
+    margin:0;
+    overflow-x:hidden;
+  }
+</style>
 </head>
+<body>
 
-<body style="padding:0;margin:0;">
-
+  <!-- GALLERY GRID -->
   <div class="gallery" aria-live="polite" aria-label="Ration images">
 
-    <a class="tile" href="#img-1"><img src="images/meatzza.jpg" alt="Meatzza Bomb"><div class="caption">Meatzza Bomb</div></a>
-    <a class="tile" href="#img-2"><img src="images/image004.jpg" alt="Beef Haunches"><div class="caption">Beef Haunches</div></a>
-    <a class="tile" href="#img-3"><img src="images/image005.jpg" alt="Beef Haunches 2"><div class="caption">Beef Haunches 2</div></a>
-    <a class="tile" href="#img-4"><img src="images/image008.jpg" alt="Smoked Trout"><div class="caption">Smoked Trout</div></a>
-    <a class="tile" href="#img-5"><img src="images/image011.jpg" alt="Simple Plate"><div class="caption">Simple Plate</div></a>
+    <!-- Each tile stores modal image path in data-full -->
+    <a class="tile" href="#img-1" data-full="images/meatzza.jpg">
+      <img src="images/meatzza.jpg" loading="lazy"><div class="caption">Meatzza Bomb</div>
+    </a>
 
-    <a class="tile" href="#img-new1"><img src="images/image001.jpg" alt="Brisket 1"><div class="caption">Field Brisket 1</div></a>
-    <a class="tile" href="#img-new2"><img src="images/image002.jpg" alt="Brisket 2"><div class="caption">Field Brisket 2</div></a>
-    <a class="tile" href="#img-new3"><img src="images/image003.jpg" alt="Brisket 3"><div class="caption">Field Brisket 3</div></a>
-    <a class="tile" href="#img-new4"><img src="images/image006.jpg" alt="Brisket Bark"><div class="caption">Brisket Slices</div></a>
-    <a class="tile" href="#img-new5"><img src="images/image007.jpg" alt="Brisket Point"><div class="caption">Brisket Point</div></a>
-    <a class="tile" href="#img-new6"><img src="images/image009.jpg" alt="Slicing Brisket"><div class="caption">Slicing Brisket</div></a>
-    <a class="tile" href="#img-new7"><img src="images/image010.jpg" alt="Brisket Plate"><div class="caption">Brisket Plate</div></a>
+    <a class="tile" href="#img-2" data-full="images/image004.jpg">
+      <img src="images/image004.jpg" loading="lazy"><div class="caption">Beef Haunches</div>
+    </a>
+
+    <a class="tile" href="#img-3" data-full="images/image005.jpg">
+      <img src="images/image005.jpg" loading="lazy"><div class="caption">Beef Haunches 2</div>
+    </a>
+
+    <a class="tile" href="#img-4" data-full="images/image008.jpg">
+      <img src="images/image008.jpg" loading="lazy"><div class="caption">Smoked Trout</div>
+    </a>
+
+    <a class="tile" href="#img-5" data-full="images/image011.jpg">
+      <img src="images/image011.jpg" loading="lazy"><div class="caption">Simple Plate</div>
+    </a>
+
+    <a class="tile" href="#img-new1" data-full="images/image001.jpg">
+      <img src="images/image001.jpg" loading="lazy"><div class="caption">Field Brisket 1</div>
+    </a>
+
+    <a class="tile" href="#img-new2" data-full="images/image002.jpg">
+      <img src="images/image002.jpg" loading="lazy"><div class="caption">Field Brisket 2</div>
+    </a>
+
+    <a class="tile" href="#img-new3" data-full="images/image003.jpg">
+      <img src="images/image003.jpg" loading="lazy"><div class="caption">Field Brisket 3</div>
+    </a>
+
+    <a class="tile" href="#img-new4" data-full="images/image006.jpg">
+      <img src="images/image006.jpg" loading="lazy"><div class="caption">Brisket Slices</div>
+    </a>
+
+    <a class="tile" href="#img-new5" data-full="images/image007.jpg">
+      <img src="images/image007.jpg" loading="lazy"><div class="caption">Brisket Point</div>
+    </a>
+
+    <a class="tile" href="#img-new6" data-full="images/image009.jpg">
+      <img src="images/image009.jpg" loading="lazy"><div class="caption">Slicing Brisket</div>
+    </a>
+
+    <a class="tile" href="#img-new7" data-full="images/image010.jpg">
+      <img src="images/image010.jpg" loading="lazy"><div class="caption">Brisket Plate</div>
+    </a>
 
   </div>
 
-  <!-- Image modals (remain inside this file) -->
-  <div id="img-1" class="modal-target"><div class="modal-content"><a href="#" class="modal-close">&times;</a><img src="images/meatzza.jpg"></div></div>
-  <div id="img-2" class="modal-target"><div class="modal-content"><a href="#" class="modal-close">&times;</a><img src="images/image004.jpg"></div></div>
-  <div id="img-3" class="modal-target"><div class="modal-content"><a href="#" class="modal-close">&times;</a><img src="images/image005.jpg"></div></div>
-  <div id="img-4" class="modal-target"><div class="modal-content"><a href="#" class="modal-close">&times;</a><img src="images/image008.jpg"></div></div>
-  <div id="img-5" class="modal-target"><div class="modal-content"><a href="#" class="modal-close">&times;</a><img src="images/image011.jpg"></div></div>
-  <div id="img-new1" class="modal-target"><div class="modal-content"><a href="#" class="modal-close">&times;</a><img src="images/image001.jpg"></div></div>
-  <div id="img-new2" class="modal-target"><div class="modal-content"><a href="#" class="modal-close">&times;</a><img src="images/image002.jpg"></div></div>
-  <div id="img-new3" class="modal-target"><div class="modal-content"><a href="#" class="modal-close">&times;</a><img src="images/image003.jpg"></div></div>
-  <div id="img-new4" class="modal-target"><div class="modal-content"><a href="#" class="modal-close">&times;</a><img src="images/image006.jpg"></div></div>
-  <div id="img-new5" class="modal-target"><div class="modal-content"><a href="#" class="modal-close">&times;</a><img src="images/image007.jpg"></div></div>
-  <div id="img-new6" class="modal-target"><div class="modal-content"><a href="#" class="modal-close">&times;</a><img src="images/image009.jpg"></div></div>
-  <div id="img-new7" class="modal-target"><div class="modal-content"><a href="#" class="modal-close">&times;</a><img src="images/image010.jpg"></div></div>
+
+  <!-- SINGLE SHARED MODAL instead of 12 modals -->
+  <div id="mealModal" class="modal-target">
+    <div class="modal-content">
+      <a href="#" class="modal-close">&times;</a>
+      <img id="modalImage" alt="Meal Image" style="max-width:100%; max-height:70vh;">
+    </div>
+  </div>
+
+
+<script>
+// Stop scrolling the parent page on modal open
+function lockScroll(lock) {
+  document.body.style.overflow = lock ? "hidden" : "visible";
+}
+
+// Load the correct full image when modal opens
+window.addEventListener("hashchange", () => {
+  const hash = window.location.hash;
+  const modal = document.getElementById('mealModal');
+  const img = document.getElementById('modalImage');
+
+  if (hash.startsWith("#img")) {
+    // Find clicked tile
+    const tile = document.querySelector(`a[href="${hash}"]`);
+    const full = tile?.dataset.full;
+
+    if (full) {
+      img.src = full;
+    }
+
+    modal.classList.add("show");
+    lockScroll(true);
+  } else {
+    modal.classList.remove("show");
+    lockScroll(false);
+    img.src = ""; // unload when closed
+  }
+});
+</script>
 
 </body>
 </html>
