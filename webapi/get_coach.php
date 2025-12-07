@@ -1,90 +1,74 @@
 <?php
-/**
- * get_coach.php
- * Returns the currently logged-in coach from uploads/coaches.json
- */
+// webapi/get_coach.php
+// Returns currently logged-in coach using SESSION
+// NO PARAMS REQUIRED — session only
 
 declare(strict_types=1);
-
-header('Content-Type: application/json; charset=utf-8');
-header('Cache-Control: no-cache, no-store, must-revalidate');
-header('Access-Control-Allow-Origin: *');
 
 ini_set('display_errors', '0');
 error_reporting(E_ALL);
 
 session_start();
 
-// 1. Method check
-if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
-    echo json_encode([
-        'success' => false,
-        'message' => 'GET required'
-    ]);
+// Must allow cookie-based auth for fetch()
+header('Content-Type: application/json; charset=utf-8');
+header('Access-Control-Allow-Origin: https://globalcarnivorecoaches.onrender.com');
+header('Access-Control-Allow-Credentials: true');
+
+function send_json(array $payload): void {
+    echo json_encode($payload);
     exit;
 }
 
-// 2. Session check
+// Must be logged in
 if (empty($_SESSION['username'])) {
-    echo json_encode([
+    send_json([
         'success' => false,
         'message' => 'Not logged in'
     ]);
-    exit;
 }
 
-$username = strtolower(trim((string)$_SESSION['username']));
+$username = $_SESSION['username'];
 
-// 3. Load coaches.json (from /uploads)
-$coachesFile = __DIR__ . '/../uploads/coaches.json';
-
-if (!file_exists($coachesFile)) {
-    echo json_encode([
+// Load coaches.json from uploads folder
+$path = __DIR__ . '/../uploads/coaches.json';
+if (!file_exists($path)) {
+    send_json([
         'success' => false,
-        'message' => 'coaches.json not found'
+        'message' => 'coaches.json missing'
     ]);
-    exit;
 }
 
-$json = file_get_contents($coachesFile);
-if ($json === false) {
-    echo json_encode([
+$raw = file_get_contents($path);
+$data = json_decode($raw, true);
+if (!is_array($data)) {
+    send_json([
         'success' => false,
-        'message' => 'Unable to read coaches.json'
+        'message' => 'Invalid JSON in coaches.json'
     ]);
-    exit;
 }
 
-$coaches = json_decode($json, true);
-if (!is_array($coaches)) {
-    echo json_encode([
-        'success' => false,
-        'message' => 'Invalid coaches.json format'
-    ]);
-    exit;
-}
-
-// 4. Find matching coach
-$found = null;
-foreach ($coaches as $coach) {
-    $u = strtolower(trim((string)($coach['Username'] ?? '')));
-    if ($u === $username) {
-        $found = $coach;
+// Find coach matching session username
+$coachFound = null;
+foreach ($data as $coach) {
+    $u = $coach['Username'] ?? $coach['username'] ?? '';
+    if ($u !== '' && strcasecmp($u, $username) === 0) {
+        $coachFound = $coach;
         break;
     }
 }
 
-if (!$found) {
-    echo json_encode([
+if ($coachFound === null) {
+    send_json([
         'success' => false,
-        'message' => 'Coach not found for current session user'
+        'message' => 'Coach not found'
     ]);
-    exit;
 }
 
-// 5. Success
-echo json_encode([
+// Security: remove passwords before sending back
+unset($coachFound['Password'], $coachFound['password']);
+
+send_json([
     'success' => true,
-    'coach'   => $found
+    'coach' => $coachFound
 ]);
-exit;

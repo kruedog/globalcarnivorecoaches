@@ -1,78 +1,146 @@
 <?php
-// /webapi/login.php — FINAL & SESSION-SECURE VERSION
+// webapi/login.php
+// - POST  = login
+// - GET   = session check ("who am I?")
 
-header('Content-Type: application/json; charset=utf-8');
+declare(strict_types=1);
 
-session_set_cookie_params([
-    'lifetime' => 86400, // 24 hours
-    'path'     => '/',
-    'secure'   => false, // set true when HTTPS only
-    'httponly' => true,
-    'samesite' => 'Lax'
-]);
+ini_set('display_errors', '0');
+error_reporting(E_ALL);
+
 session_start();
 
-// GET = check session
-if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-    if (!isset($_SESSION['username'])) {
-        echo json_encode(['success' => false, 'message' => 'Not logged in']);
-        exit;
+header('Content-Type: application/json; charset=utf-8');
+// same-origin (Render) -> this is safe, and allows credentials
+header('Access-Control-Allow-Origin: https://globalcarnivorecoaches.onrender.com');
+header('Access-Control-Allow-Credentials: true');
+
+$method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
+
+/**
+ * Helper: send JSON and exit
+ */
+function send_json(array $payload): void {
+    echo json_encode($payload);
+    exit;
+}
+
+/**
+ * Helper: load coaches.json as array
+ */
+function load_coaches(): array {
+    $path = __DIR__ . '/../uploads/coaches.json';
+    if (!file_exists($path)) {
+        return [];
     }
-    echo json_encode([
-        'success' => true,
-        'username' => $_SESSION['username'],
-        'role' => $_SESSION['role'] ?? 'coach'
+    $raw = file_get_contents($path);
+    $data = json_decode($raw, true);
+    return is_array($data) ? $data : [];
+}
+
+/**
+ * Helper: find coach by username (case-insensitive)
+ */
+function find_coach(string $username): ?array {
+    $usernameLower = strtolower($username);
+    foreach (load_coaches() as $coach) {
+        $u = $coach['Username'] ?? $coach['username'] ?? '';
+        if ($u !== '' && strtolower($u) === $usernameLower) {
+            return $coach;
+        }
+    }
+    return null;
+}
+
+// =======================================
+// GET  =>  "who am I?"
+// =======================================
+if ($method === 'GET') {
+    if (!empty($_SESSION['username'])) {
+        send_json([
+            'success'  => true,
+            'username' => $_SESSION['username'],
+            'role'     => $_SESSION['role'] ?? 'coach',
+        ]);
+    } else {
+        send_json([
+            'success' => false,
+            'message' => 'Not logged in',
+        ]);
+    }
+}
+
+// =======================================
+// POST => login
+// =======================================
+if ($method !== 'POST') {
+    send_json([
+        'success' => false,
+        'message' => 'POST required',
     ]);
-    exit;
 }
 
-// POST = login attempt
-if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    echo json_encode(['success' => false, 'message' => 'POST required']);
-    exit;
+// Read JSON body from fetch()
+$raw = file_get_contents('php://input');
+$data = json_decode($raw, true);
+if (!is_array($data)) {
+    send_json([
+        'success' => false,
+        'message' => 'Invalid JSON body',
+    ]);
 }
 
-$input = json_decode(file_get_contents('php://input'), true);
-if (!is_array($input)) {
-    echo json_encode(['success' => false, 'message' => 'Invalid JSON']);
-    exit;
-}
-
-$username = trim($input['username'] ?? '');
-$password = $input['password'] ?? '';
+$username = trim($data['username'] ?? '');
+$password = (string)($data['password'] ?? '');
 
 if ($username === '' || $password === '') {
-    echo json_encode(['success' => false, 'message' => 'Missing credentials']);
-    exit;
+    send_json([
+        'success' => false,
+        'message' => 'Username and password required',
+    ]);
 }
 
-$coachesFile = __DIR__ . '/coaches.json';
-if (!file_exists($coachesFile)) {
-    echo json_encode(['success' => false, 'message' => 'System missing coaches.json']);
-    exit;
+// Look up coach
+$coach = find_coach($username);
+if ($coach === null) {
+    send_json([
+        'success' => false,
+        'message' => 'Invalid username or password',
+    ]);
 }
 
-$coaches = json_decode(file_get_contents($coachesFile), true);
-$user = null;
-foreach ($coaches as $c) {
-    if (strcasecmp($c['Username'], $username) === 0) {
-        $user = $c;
-        break;
+$storedHash = $coach['Password'] ?? $coach['password'] ?? '';
+
+$valid = false;
+
+// Normal case: password is a hash
+if (is_string($storedHash) && $storedHash !== '' && str_starts_with($storedHash, '$')) {
+    if (password_verify($password, $storedHash)) {
+        $valid = true;
+    }
+} else {
+    // Fallback (if some old record is still plain text)
+    if ($password === $storedHash) {
+        $valid = true;
     }
 }
 
-if (!$user || !password_verify($password, $user['Password'])) {
-    echo json_encode(['success' => false, 'message' => 'Invalid login']);
-    exit;
+if (!$valid) {
+    send_json([
+        'success' => false,
+        'message' => 'Invalid username or password',
+    ]);
 }
 
-// SUCCESS — Create session
-$_SESSION['username'] = $user['Username'];
-$_SESSION['role'] = $user['Role'] ?? 'coach';
+// At this point: LOGIN OK
+$_SESSION['username'] = $coach['Username'] ?? $username;
+$_SESSION['role']     = $coach['Role'] ?? $coach['role'] ?? 'coach';
 
-echo json_encode([
-    'success' => true,
-    'username' => $user['Username'],
-    'role' => $_SESSION['role']
+// (Optional) log the login into login_log.json or activity_log.json here
+
+send_json([
+    'success'  => true,
+    'username' => $_SESSION['username'],
+    'role'     => $_SESSION['role'],
+    'message'  => 'Login successful',
 ]);
-exit;
