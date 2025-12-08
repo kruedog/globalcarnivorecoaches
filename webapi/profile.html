@@ -4,61 +4,39 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Coach Profile • Global Carnivore Coaches</title>
-  <link rel="icon" type="image/png" href="/images/earth_steak.png">
+  <link rel="icon" type="image/png" href="/public/images/earth_steak.png">
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
 
   <style>
-    :root {
-      --white:#fff; --parch:#D0D2D5; --text:#192168; --blue:#192168; --red:#AF1E2D; --muted:#555;
-      --shadow:0 12px 40px rgba(0,0,0,.22); --radius:14px; --glass:rgba(255,255,255,.75);
+    :root{
+      --white:#fff;--parch:#D0D2D5;--text:#192168;--blue:#192168;--red:#AF1E2D;--muted:#555;
+      --shadow:0 12px 40px rgba(0,0,0,.22);--radius:14px;--glass:rgba(255,255,255,.75);
     }
     *{box-sizing:border-box;margin:0;padding:0}
     body{
-      min-height:100vh;
-      font-family:'Inter',sans-serif;
+      min-height:100vh;font-family:'Inter',sans-serif;
       background:radial-gradient(circle at 10% 10%,#F8F9FA 0%,var(--parch) 40%,#B0B3BA 100%);
-      color:var(--text);
-      padding:2rem 1rem;
-      line-height:1.6;
+      color:var(--text);padding:2rem 1rem;line-height:1.6;
     }
     .wrap{max-width:1160px;margin:auto}
-    h1{
-      font-family:'Cinzel',serif;
-      font-size:2.4rem;
-      color:var(--blue);
-      text-align:center;
-      margin-bottom:.4rem;
-    }
+    h1{font-family:'Cinzel',serif;font-size:2.4rem;color:var(--blue);text-align:center;margin-bottom:.4rem;}
     .lead{text-align:center;color:var(--muted);font-size:1.05rem;margin-bottom:2rem}
     .card{
-      background:var(--glass);
-      backdrop-filter:blur(16px);
-      padding:2.4rem;
-      border-radius:var(--radius);
-      box-shadow:var(--shadow);
-      margin-bottom:2rem;
-      border:1px solid rgba(255,255,255,.4);
+      background:var(--glass);backdrop-filter:blur(16px);
+      padding:2.4rem;border-radius:var(--radius);box-shadow:var(--shadow);
+      margin-bottom:2rem;border:1px solid rgba(255,255,255,.4);
     }
     label{font-weight:600;margin-bottom:.4rem;display:block;color:var(--blue);}
-    .form-grid{
-      display:grid;gap:1.4rem;
-      grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
-    }
+    .form-grid{display:grid;gap:1.4rem;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));}
     input,textarea{
-      width:100%;padding:.85rem 1rem;border:2px solid var(--blue);
-      border-radius:var(--radius);background:#fff;font-size:.96rem;
-      transition:border .2s,box-shadow .2s;
+      width:100%;padding:.85rem 1rem;border:2px solid var(--blue);border-radius:var(--radius);
+      background:#fff;font-size:.96rem;transition:border .2s,box-shadow .2s;
     }
-    input:focus,textarea:focus{
-      border-color:var(--red);
-      outline:none;
-      box-shadow:0 0 0 3px rgba(175,30,45,.18);
-    }
+    input:focus,textarea:focus{border-color:var(--red);outline:none;box-shadow:0 0 0 3px rgba(175,30,45,.18);}
     textarea{resize:vertical;min-height:140px}
     .btn{
       padding:.8rem 2.3rem;font-weight:700;border:none;border-radius:999px;
-      cursor:pointer;font-size:.95rem;transition:all .2s;
-      margin:.25rem .35rem;display:inline-block;
+      cursor:pointer;font-size:.95rem;transition:all .2s;margin:.25rem .35rem;display:inline-block;
     }
     .btn-primary{background:var(--red);color:#fff;box-shadow:0 8px 24px rgba(175,30,45,.35);}
     .btn-primary:hover{background:#8b1624;transform:translateY(-1px)}
@@ -79,7 +57,6 @@
     .specializations-list span{background:var(--red);color:#fff;padding:.35rem .9rem;border-radius:20px;font-size:.9rem;font-weight:600;cursor:pointer;}
     .status-line{text-align:center;font-size:.9rem;margin-top:.7rem;min-height:1rem;}
     .status-line.ok{color:green}.status-line.err{color:var(--red)}
-
     /* MODAL */
     #publicProfileModal{position:fixed;inset:0;background:rgba(25,33,104,.97);display:none;align-items:center;justify-content:center;padding:2rem;z-index:9999;}
     .modal-shell{background:var(--glass);border:6px solid var(--red);border-radius:28px;max-width:1500px;width:100%;max-height:96vh;overflow:hidden;position:relative;box-shadow:0 40px 100px rgba(0,0,0,.6);display:flex;flex-direction:column;}
@@ -105,11 +82,10 @@
     <!-- MAIN PROFILE CARD -->
     <div class="card">
       <form id="profileForm" enctype="multipart/form-data">
-
         <div class="form-grid">
           <div><label>Full Name</label><input id="coachNameInput" required></div>
           <div><label>Email</label><input id="email" type="email"></div>
-          <div><label>Phone</label><input id="phone"></div>
+          <div><label>Phone</label><input id="phone"></"></div>
         </div>
 
         <div style="margin-top:1.8rem">
@@ -156,9 +132,7 @@
     <!-- CHANGE PASSWORD -->
     <div class="card">
       <h2 class="section-title">Change Password</h2>
-      <p style="font-size:.9rem;color:var(--muted);margin-bottom:1rem;">
-        Update your password. You’ll need your current password to confirm the change.
-      </p>
+      <p style="font-size:.9rem;color:var(--muted);margin-bottom:1rem;">Update your password.</p>
       <div class="form-grid">
         <div><label>Current Password</label><input id="currentPassword" type="password"></div>
         <div><label>New Password</label><input id="newPassword" type="password"></div>
@@ -174,14 +148,17 @@
   <!-- PUBLIC PROFILE MODAL -->
   <div id="publicProfileModal" aria-hidden="true">
     <div class="modal-shell">
-      <button class="modal-close" id="closeModal" aria-label="Close profile preview">&times;</button>
+      <button class="modal-close" id="closeModal">&times;</button>
       <div class="modal-header">
         <h2 id="modalName">Coach</h2>
         <p><a id="modalEmail" style="color:var(--red);font-weight:bold;"></a></p>
-        <div class="profile-avatar"><img id="modalProfilePic" src="/images/earth_steak.png"></div>
+        <div class="profile-avatar"><img id="modalProfilePic" src="/public/images/earth_steak.png"></div>
       </div>
       <div class="modal-body">
-        <div><div class="bio-box" id="modalBio"></div><div class="before-after" id="beforeAfterContainer"></div></div>
+        <div>
+          <div class="bio-box" id="modalBio"></div>
+          <div class="before-after" id="beforeAfterContainer"></div>
+        </div>
         <div>
           <div class="specialization-box">
             <h3>I Specialize In</h3>
@@ -195,108 +172,92 @@
   </div>
 
 <script>
-const API_BASE = window.location.origin + '/webapi/';
+const API_BASE = '/public/webapi/';
 let currentCoach = {};
 let specializations = [];
 const newFiles = new Map();
 const pendingDeletes = new Set();
 
 function setStatus(el,msg,ok=true){if(!el)return;el.textContent=msg||'';el.className='status-line '+(msg?(ok?'ok':'err'):'');}
-function imgUrl(f){return f?('/uploads/'+f+'?v='+Date.now()):'/images/earth_steak.png';}
+function imgUrl(f){return f?('/uploads/'+f+'?v='+Date.now()):'/public/images/earth_steak.png';}
 
-// ---------- SESSION CHECK ----------
+// SESSION CHECK
 async function checkSession(){
   try{
-    const res = await fetch(API_BASE+'login.php',{
-      method:'GET',credentials:'include',cache:'no-store'
-    });
+    const res = await fetch(API_BASE+'login.php',{method:'GET',credentials:'include'});
     const data = await res.json();
-    if(!data.success) return null;
-    return data;
-  }catch(e){return null;}
+    return data.success?data:null;
+  }catch{ return null; }
 }
 
-// ---------- LOAD PROFILE ----------
+// LOAD PROFILE
 async function loadProfile(){
   const s = await checkSession();
-  if(!s) return window.location.href='/webapi/login.html';
+  if(!s) return window.location.href='/public/webapi/login.html';
 
-  try{
-    const res = await fetch(
-      API_BASE+'get_coach.php?username='+encodeURIComponent(s.username),
-      {method:'GET',credentials:'include',cache:'no-store'}
-    );
-    const data = await res.json();
-    if(!data.success){
-      alert('Failed to load profile: '+(data.message||''));return;
-    }
+  const res = await fetch(API_BASE+'get_coach.php?username='+encodeURI(s.username),
+    {method:'GET',credentials:'include'});
+  const data = await res.json();
+  if(!data.success) return alert('Failed: '+(data.message||''));
 
-    currentCoach = data.coach || {};
-    document.getElementById('coachName').textContent =
-      currentCoach.CoachName || currentCoach.Username || 'Coach';
+  currentCoach = data.coach;
+  document.getElementById('coachName').textContent = (currentCoach.CoachName || currentCoach.Username || 'Coach');
+  document.getElementById('coachNameInput').value=currentCoach.CoachName||'';
+  document.getElementById('email').value=currentCoach.Email||'';
+  document.getElementById('phone').value=currentCoach.Phone||'';
+  document.getElementById('bio').value=currentCoach.Bio||'';
 
-    document.getElementById('coachNameInput').value=currentCoach.CoachName||'';
-    document.getElementById('email').value=currentCoach.Email||'';
-    document.getElementById('phone').value=currentCoach.Phone||'';
-    document.getElementById('bio').value=currentCoach.Bio||'';
+  // specializations
+  specializations = Array.isArray(currentCoach.Specializations)
+    ? [...currentCoach.Specializations]
+    : (typeof currentCoach.Specializations==='string'
+      ? currentCoach.Specializations.split(/[;,|]/).map(s=>s.trim()).filter(Boolean)
+      : []);
+  renderSpecializations();
+  renderImages();
 
-    // Specs
-    if(Array.isArray(currentCoach.Specializations)) specializations=[...currentCoach.Specializations];
-    else if(typeof currentCoach.Specializations==='string')
-      specializations=currentCoach.Specializations.split(/[;,|]/).map(s=>s.trim()).filter(Boolean);
-    else specializations=[];
-    renderSpecializations();
-    renderImages();
-
-    const manageBtn=document.getElementById('manageCoachesBtn');
-    if(manageBtn && (s.role||'').toLowerCase()==='admin') manageBtn.style.display='inline-flex';
-  }catch(e){console.error(e);}
+  const manage=document.getElementById('manageCoachesBtn');
+  if(manage && (s.role||'').toLowerCase()==='admin') manage.style.display='inline-flex';
 }
 
-// ---------- SPECIALIZATIONS ----------
+// SPECIALIZATIONS
 function renderSpecializations(){
   const list=document.getElementById('specList');
   list.innerHTML='';
   specializations.forEach((s,i)=>{
     const tag=document.createElement('span');
-    tag.textContent=s;tag.onclick=()=>{specializations.splice(i,1);renderSpecializations();};
+    tag.textContent=s;
+    tag.onclick=()=>{specializations.splice(i,1);renderSpecializations();};
     list.appendChild(tag);
   });
 }
 
-// ---------- EXISTING IMAGES ----------
+// EXISTING IMAGES
 function renderImages(){
   const list=document.getElementById('uploadsList');list.innerHTML='';
-  const labels={Profile:'Profile',Before:'Before',After:'After',Certificate:'Certificate'};
   const files=currentCoach.Files||{};
-  Object.entries(files).forEach(([slot,file])=>{
-    if(!file)return;
+  Object.keys(files).forEach(slot=>{
+    const file=files[slot];
+    if(!file) return;
     const div=document.createElement('div');
     div.className='preview-item';
     div.innerHTML=`
-      <img src="${imgUrl(file)}" class="preview-img" alt="${slot}">
-      <div class="preview-caption">${labels[slot]||slot}</div>
-      <button class="remove-btn" data-slot="${slot}" type="button">&times;</button>`;
+      <img src="${imgUrl(file)}" class="preview-img">
+      <div class="preview-caption">${slot}</div>
+      <button class="remove-btn" data-slot="${slot}">&times;</button>`;
     div.querySelector('.remove-btn').onclick=()=>{
-      pendingDeletes.add(slot);
-      div.remove();
+      pendingDeletes.add(slot);div.remove();
     };
     list.appendChild(div);
   });
 }
 
-// ---------- UPLOAD ----------
-function setupUploader(zoneId,slot){
-  const zone=document.getElementById(zoneId);
-  const input=document.createElement('input');input.type='file';input.accept='image/*';
-  input.onchange=()=>{
-    if(input.files[0]){
-      newFiles.set(slot,input.files[0]);
-      pendingDeletes.delete(slot);
-      previewTemp(slot,input.files[0]);
-    }
-  };
-  zone.addEventListener('click',()=>input.click());
+// UPLOAD
+function setupUploader(zone,slot){
+  const el=document.getElementById(zone);
+  const inp=document.createElement('input');inp.type='file';inp.accept='image/*';
+  inp.onchange=()=>{ if(inp.files[0]){ newFiles.set(slot,inp.files[0]); pendingDeletes.delete(slot); previewTemp(slot,inp.files[0]); } };
+  el.onclick=()=>inp.click();
 }
 function previewTemp(slot,file){
   const list=document.getElementById('uploadsList');
@@ -304,128 +265,92 @@ function previewTemp(slot,file){
   const fr=new FileReader();
   fr.onload=e=>{
     div.innerHTML=`
-      <img src="${e.target.result}" class="preview-img" alt="${slot}">
+      <img src="${e.target.result}" class="preview-img">
       <div class="preview-caption">${slot}</div>
-      <button class="remove-btn" data-slot="${slot}" type="button">&times;</button>`;
+      <button class="remove-btn" data-slot="${slot}">&times;</button>`;
     div.querySelector('.remove-btn').onclick=()=>{newFiles.delete(slot);div.remove();};
     list.appendChild(div);
   };
   fr.readAsDataURL(file);
 }
 
-// ---------- SAVE PROFILE ----------
+// SAVE
 async function handleProfileSave(e){
   e.preventDefault();
-  const sEl=document.getElementById('profileStatus');
-  setStatus(sEl,'Saving…');
-
+  setStatus(profileStatus,'Saving…');
   const fd=new FormData();
-  fd.append('coachName',document.getElementById('coachNameInput').value.trim());
-  fd.append('email',document.getElementById('email').value.trim());
-  fd.append('phone',document.getElementById('phone').value.trim());
-  fd.append('bio',document.getElementById('bio').value);
+  fd.append('coachName',coachNameInput.value.trim());
+  fd.append('email',email.value.trim());
+  fd.append('phone',phone.value.trim());
+  fd.append('bio',bio.value);
   fd.append('specializations',JSON.stringify(specializations));
-  newFiles.forEach((f,slot)=>fd.append(`files[${slot}]`,f));
-  pendingDeletes.forEach(slot=>fd.append('deleteSlots[]',slot));
+  newFiles.forEach((f,s)=>fd.append(`files[${s}]`,f));
+  pendingDeletes.forEach(s=>fd.append('deleteSlots[]',s));
 
-  try{
-    const res = await fetch(API_BASE+'update_coach.php',{
-      method:'POST',credentials:'include',body:fd
-    });
-    const data = await res.json();
-    if(!data.success){setStatus(sEl,data.message,false);return;}
-    newFiles.clear();pendingDeletes.clear();
-    await loadProfile();
-    setStatus(sEl,'Profile updated.',true);
-  }catch(e){setStatus(sEl,'Network error',false);}
+  const res=await fetch(API_BASE+'update_coach.php',{method:'POST',credentials:'include',body:fd});
+  const data=await res.json();
+  if(!data.success){setStatus(profileStatus,data.message,false);return;}
+  newFiles.clear();pendingDeletes.clear();
+  await loadProfile();
+  setStatus(profileStatus,'Updated!',true);
 }
 
-// ---------- PUBLIC PROFILE ----------
+// MODAL
 function openProfileModal(){
   if(!currentCoach)return;
-  document.getElementById('modalName').textContent=currentCoach.CoachName||currentCoach.Username||'Coach';
-  const email=currentCoach.Email||'';
-  const eEl=document.getElementById('modalEmail');eEl.textContent=email;eEl.href=email?`mailto:${email}`:'#';
-  const files=currentCoach.Files||{};
-  document.getElementById('modalProfilePic').src=imgUrl(files.Profile);
+  document.getElementById('modalName').textContent=(currentCoach.CoachName||currentCoach.Username||'Coach');
+  const email=currentCoach.Email||'';const eEl=document.getElementById('modalEmail');
+  eEl.textContent=email;eEl.href=email?`mailto:${email}`:'#';
+  document.getElementById('modalProfilePic').src=imgUrl((currentCoach.Files||{}).Profile);
   const bioBox=document.getElementById('modalBio');bioBox.innerHTML='';
-  (currentCoach.Bio||'').split(/\n+/).forEach(t=>{
-    if(!t.trim())return;const p=document.createElement('p');p.textContent=t;bioBox.appendChild(p);
-  });
+  (currentCoach.Bio||'').split(/\n+/).forEach(t=>{if(t.trim()){const p=document.createElement('p');p.textContent=t;bioBox.appendChild(p);}});
   const ba=document.getElementById('beforeAfterContainer');ba.innerHTML='';
-  ['Before','After'].forEach(slot=>{
-    const f=files[slot];if(!f)return;
-    const w=document.createElement('div');w.className='ba-pair';
-    const img=document.createElement('img');img.src=imgUrl(f);
-    w.appendChild(img);ba.appendChild(w);
+  ['Before','After'].forEach(s=>{
+    const file=(currentCoach.Files||{})[s];if(file){const w=document.createElement('div');w.className='ba-pair';const img=document.createElement('img');img.src=imgUrl(file);w.appendChild(img);ba.appendChild(w);}
   });
   const list=document.getElementById('specializationList');list.innerHTML='';
   specializations.forEach(s=>{const li=document.createElement('li');li.textContent=s;list.appendChild(li);});
   const cert=document.getElementById('certificateContainer');cert.innerHTML='';
-  if(files.Certificate){const i=document.createElement('img');i.src=imgUrl(files.Certificate);cert.appendChild(i);}
+  if((currentCoach.Files||{}).Certificate){const i=document.createElement('img');i.src=imgUrl(currentCoach.Files.Certificate);cert.appendChild(i);}
   document.getElementById('bookCoachBtn').onclick=()=>email&&window.location.href=`mailto:${email}`;
-  const m=document.getElementById('publicProfileModal');m.style.display='flex';
+  document.getElementById('publicProfileModal').style.display='flex';
 }
-function closeProfileModal(){
-  const m=document.getElementById('publicProfileModal');m.style.display='none';
-}
+function closeProfileModal(){document.getElementById('publicProfileModal').style.display='none';}
 
-// ---------- CHANGE PASSWORD ----------
+// PASSWORD
 async function handleChangePassword(){
-  const cur=document.getElementById('currentPassword').value;
-  const nxt=document.getElementById('newPassword').value;
-  const cfm=document.getElementById('confirmPassword').value;
   const st=document.getElementById('passwordStatus');
-  if(!cur||!nxt||!cfm) return setStatus(st,'All fields required',false);
-  if(nxt!==cfm) return setStatus(st,'Password mismatch',false);
-  if(nxt.length<8) return setStatus(st,'Min 8 chars',false);
-
-  setStatus(st,'Updating…',true);
-  try{
-    const res=await fetch(API_BASE+'change_password.php',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      credentials:'include',
-      body:JSON.stringify({currentPassword:cur,newPassword:nxt})
-    });
-    const data=await res.json();
-    if(!data.success)return setStatus(st,data.message,false);
-    setStatus(st,'Password updated',true);
-  }catch(e){setStatus(st,'Network error',false);}
+  setStatus(st,'Updating...');
+  const res=await fetch(API_BASE+'change_password.php',{
+    method:'POST',headers:{'Content-Type':'application/json'},
+    credentials:'include',
+    body:JSON.stringify({currentPassword:currentPassword.value,newPassword:newPassword.value})
+  });
+  const data=await res.json();
+  if(!data.success)return setStatus(st,data.message,false);
+  setStatus(st,'Updated',true);
 }
 
-// ---------- LOGOUT ----------
-async function handleLogout(){
-  try{await fetch(API_BASE+'logout.php',{method:'POST',credentials:'include'});}catch(e){}
-  window.location.href='/webapi/login.html';
-}
+// LOGOUT
+async function handleLogout(){await fetch(API_BASE+'logout.php',{method:'POST',credentials:'include'});location.href='/public/webapi/login.html';}
 
-// ---------- INIT ----------
+// INIT
 document.addEventListener('DOMContentLoaded',()=>{
   setupUploader('profileUpload','Profile');
   setupUploader('beforeUpload','Before');
   setupUploader('afterUpload','After');
   setupUploader('certUpload','Certificate');
-
-  document.getElementById('addSpecBtn').onclick=()=>{
-    const v=document.getElementById('newSpec').value.trim();
-    if(v&&!specializations.includes(v)){specializations.push(v);renderSpecializations();}
-    document.getElementById('newSpec').value='';
-  };
-
-  document.getElementById('profileForm').addEventListener('submit',handleProfileSave);
-  document.getElementById('viewProfileBtn').onclick=openProfileModal;
-  document.getElementById('closeModal').onclick=closeProfileModal;
-  document.getElementById('publicProfileModal').onclick=e=>{if(e.target===e.currentTarget)closeProfileModal();};
-  document.getElementById('changePasswordBtn').onclick=handleChangePassword;
-  document.getElementById('dashboardBtn').onclick=()=>window.location.href='/webapi/visitor_dashboard.html';
-  const manage=document.getElementById('manageCoachesBtn');
-  if(manage) manage.onclick=()=>window.location.href='/webapi/manage_coaches.html';
-  document.getElementById('logoutBtn').onclick=handleLogout;
-
+  addSpecBtn.onclick=()=>{const v=newSpec.value.trim();if(v&&!specializations.includes(v)){specializations.push(v);renderSpecializations();}newSpec.value='';};
+  profileForm.onsubmit=handleProfileSave;
+  viewProfileBtn.onclick=openProfileModal;
+  closeModal.onclick=closeProfileModal;
+  publicProfileModal.onclick=e=>{if(e.target===e.currentTarget)closeProfileModal();};
+  changePasswordBtn.onclick=handleChangePassword;
+  dashboardBtn.onclick=()=>location.href='/public/webapi/visitor_dashboard.html';
+  manageCoachesBtn.onclick=()=>location.href='/public/webapi/manage_coaches.html';
+  logoutBtn.onclick=handleLogout;
   loadProfile();
 });
 </script>
-
 </body>
 </html>
