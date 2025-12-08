@@ -1,9 +1,4 @@
 <?php
-/**
- * get_profile_views.php
- * Returns profile view stats for dashboard charts
- */
-
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Credentials: true');
@@ -15,7 +10,7 @@ if (!isset($_SESSION['username'])) {
     exit;
 }
 
-$file = __DIR__ . '/profile_views.json';
+$file = '/data/uploads/profile_views.json';
 
 if (!file_exists($file)) {
     echo json_encode([
