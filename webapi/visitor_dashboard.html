@@ -11,6 +11,7 @@
 :root{
   --blue:#192168;
   --red:#AF1E2D;
+  --bg:#f5f7fb;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 body{
@@ -30,6 +31,7 @@ header{
   display:flex;
   align-items:center;
   justify-content:space-between;
+  gap:1.2rem;
 }
 header h1{
   font-family:'Cinzel',serif;
@@ -73,6 +75,13 @@ header p{
   font-size:.78rem;
   color:#666;
 }
+.delta-badge{
+  margin-top:.2rem;
+  font-size:.78rem;
+  font-weight:600;
+}
+.delta-badge.pos{color:#0a8a2a;}
+.delta-badge.neg{color:#c21807;}
 .locations-list{
   margin-top:.6rem;
   max-height:350px;
@@ -87,11 +96,13 @@ header p{
   border-bottom:1px solid rgba(0,0,0,.04);
 }
 .location-row span:first-child{font-weight:600;}
-.status{margin-top:.6rem;font-size:.85rem;min-height:1rem;}
-.status.err{color:var(--red);}
-.chart-wrap{
-  margin-top:1.3rem;
+.status{
+  margin-top:.6rem;
+  font-size:.85rem;
+  min-height:1rem;
 }
+.status.err{color:var(--red);}
+.chart-wrap{margin-top:1.3rem;}
 .chart-inner{
   position:relative;
   height:220px;
@@ -117,14 +128,17 @@ header p{
     <div class="card">
       <h2>Today’s Visits</h2>
       <div class="big-num" id="statToday">–</div>
+      <div class="delta-badge" id="deltaToday"></div>
     </div>
     <div class="card">
       <h2>Last 7 Days</h2>
       <div class="big-num" id="statWeek">–</div>
+      <div class="delta-badge" id="deltaWeek"></div>
     </div>
     <div class="card">
       <h2>All-Time Visits</h2>
       <div class="big-num" id="statTotal">–</div>
+      <div class="delta-badge" id="deltaTotal"></div>
     </div>
   </div>
 
@@ -166,9 +180,10 @@ async function ensureSession() {
       return null;
     }
     document.getElementById('userBadge').textContent =
-      `${data.username || 'coach'} • ${data.role || 'coach'}`;
+      (data.username || 'coach') + ' • ' + (data.role || 'coach');
     return data;
-  } catch {
+  } catch (err) {
+    console.error('Session check failed', err);
     window.location.href = '/webapi/login.html';
     return null;
   }
@@ -192,9 +207,13 @@ async function loadStats() {
       return;
     }
 
-    document.getElementById('statToday').textContent = data.today ?? '0';
-    document.getElementById('statWeek').textContent  = data.week ?? '0';
-    document.getElementById('statTotal').textContent = data.total ?? '0';
+    const today = data.today ?? 0;
+    const week  = data.week ?? 0;
+    const total = data.total ?? 0;
+
+    document.getElementById('statToday').textContent = today;
+    document.getElementById('statWeek').textContent  = week;
+    document.getElementById('statTotal').textContent = total;
 
     const list = document.getElementById('locationList');
     list.innerHTML = '';
@@ -220,6 +239,31 @@ async function loadStats() {
   }
 }
 
+// — Helper to show % change (using chart data) —
+function setDeltaBadge(elId, current, previous) {
+  const el = document.getElementById(elId);
+  if (!el || previous === null || previous === 0) {
+    el.textContent = '';
+    el.className = 'delta-badge';
+    return;
+  }
+  const diff = current - previous;
+  const pct  = (diff / previous) * 100;
+  const rounded = Math.round(pct);
+  if (rounded === 0) {
+    el.textContent = 'No change vs previous';
+    el.className = 'delta-badge';
+    return;
+  }
+  if (rounded > 0) {
+    el.textContent = `+${rounded}% vs previous`;
+    el.className = 'delta-badge pos';
+  } else {
+    el.textContent = `${rounded}% vs previous`;
+    el.className = 'delta-badge neg';
+  }
+}
+
 // — Load 14-day Visit Chart —
 async function loadVisitChart() {
   try {
@@ -233,32 +277,69 @@ async function loadVisitChart() {
       return;
     }
 
-    const labels = data.points.map(p => p.date);
-    const counts = data.points.map(p => p.count);
+    const points = data.points;
+    const labels = points.map(p => p.date);
+    const counts = points.map(p => p.count);
+
+    // Compute daily % change for "today" card (if last date is today)
+    if (points.length >= 2) {
+      const last = points[points.length - 1];
+      const prev = points[points.length - 2];
+      if (last && prev) {
+        setDeltaBadge('deltaToday', last.count, prev.count);
+      }
+    }
 
     const ctx = document.getElementById('visitsChart').getContext('2d');
+    const gradient = ctx.createLinearGradient(0, 0, 0, 220);
+    gradient.addColorStop(0, 'rgba(175, 30, 45, 0.45)');  // red-ish top
+    gradient.addColorStop(1, 'rgba(25, 33, 104, 0.05)');  // blue-ish bottom
 
-	const gradient = ctx.createLinearGradient(0, 0, 0, 220);
-	gradient.addColorStop(0, 'rgba(175, 30, 45, 0.45)');  // top red
-	gradient.addColorStop(1, 'rgba(25, 33, 104, 0.05)');  // bottom blue
-
-	new Chart(ctx, {
-	  type: 'line',
-	  data: {
-		labels,
-		datasets: [{
-		  label: 'Visits',
-		  data: counts,
-		  borderWidth: 3,
-		  tension: 0.35,
-		  pointRadius: 4,
-		  pointHoverRadius: 6,
-		  pointBackgroundColor: 'var(--red)',
-		  borderColor: 'var(--red)',
-		  fill: true,
-		  backgroundColor: gradient
-		}]
-	  },
+    new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels,
+        datasets: [{
+          label: 'Visits',
+          data: counts,
+          borderWidth: 3,
+          tension: 0.35,
+          pointRadius: 4,
+          pointHoverRadius: 6,
+          pointBackgroundColor: 'var(--red)',
+          borderColor: 'var(--red)',
+          fill: true,
+          backgroundColor: gradient
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        animation: {
+          duration: 800,
+          easing: 'easeOutCubic'
+        },
+        plugins: {
+          legend: {
+            display: false
+          },
+          tooltip: {
+            callbacks: {
+              label: function(ctx) {
+                const v = ctx.parsed.y || 0;
+                return `${v} visit${v === 1 ? '' : 's'}`;
+              }
+            }
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: { precision: 0 }
+          }
+        }
+      }
+    });
 
   } catch (err) {
     console.error('Chart load error', err);
