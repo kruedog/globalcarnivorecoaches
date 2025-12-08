@@ -201,7 +201,8 @@ async function loadProfile(){
   if(!data.success) return alert('Failed: '+(data.message||''));
 
   currentCoach = data.coach;
-  document.getElementById('coachName').textContent = (currentCoach.CoachName || currentCoach.Username || 'Coach');
+  document.getElementById('coachName').textContent =
+  (currentCoach.CoachName || currentCoach.Username || 'Coach');
   document.getElementById('coachNameInput').value=currentCoach.CoachName||'';
   document.getElementById('email').value=currentCoach.Email||'';
   document.getElementById('phone').value=currentCoach.Phone||'';
@@ -298,7 +299,7 @@ async function handleProfileSave(e){
 // MODAL
 function openProfileModal(){
   if(!currentCoach)return;
-  document.getElementById('modalName').textContent=(currentCoach.CoachName||currentCoach.Username||'Coach');
+  document.getElementById('modalName').textContent = (currentCoach.CoachName || currentCoach.Username || 'Coach');
   const email=currentCoach.Email||'';const eEl=document.getElementById('modalEmail');
   eEl.textContent=email;eEl.href=email?`mailto:${email}`:'#';
   document.getElementById('modalProfilePic').src=imgUrl((currentCoach.Files||{}).Profile);
