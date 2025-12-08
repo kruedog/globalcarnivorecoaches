@@ -37,10 +37,7 @@ header h1{
   font-family:'Cinzel',serif;
   font-size:2rem;
 }
-header p{
-  font-size:.9rem;
-  opacity:.9;
-}
+header p{font-size:.9rem;opacity:.9;}
 .badge{
   display:inline-block;
   padding:.15rem .6rem;
@@ -61,57 +58,24 @@ header p{
   box-shadow:0 10px 26px rgba(0,0,0,.18);
   border:1px solid rgba(25,33,104,.12);
 }
-.card h2{
-  font-size:1rem;
-  margin-bottom:.4rem;
-  color:var(--blue);
-}
-.big-num{
-  font-size:2rem;
-  font-weight:800;
-  color:var(--red);
-}
-.small{
-  font-size:.78rem;
-  color:#666;
-}
-.delta-badge{
-  margin-top:.2rem;
-  font-size:.78rem;
-  font-weight:600;
-}
-.delta-badge.pos{color:#0a8a2a;}
-.delta-badge.neg{color:#c21807;}
 .chart-wrap{margin-top:1.3rem;}
-.chart-inner{
-  position:relative;
-  height:220px;
+.chart-inner{position:relative;height:220px;}
+.big-num{font-size:2rem;font-weight:800;color:var(--red);}
+.small{font-size:.78rem;color:#666;}
+#updateTime{
+  font-size:.8rem;
+  opacity:.9;
+  margin-top:.4rem;
 }
-
-/* NEW styles */
-#profileViewsChart{height:220px;}
-.top-coaches-list{
-  margin-top:.6rem;
-  padding-top:.6rem;
-  border-top:1px solid rgba(0,0,0,.1);
-  max-height:280px;
-  overflow-y:auto;
-}
-.top-row{
-  padding:.45rem 0;
-  display:flex;
-  justify-content:space-between;
-  font-size:.9rem;
-  border-bottom:1px solid rgba(0,0,0,.04);
-}
-.top-row span:first-child{font-weight:600;color:var(--blue);}
-.top-row span:last-child{font-weight:600;color:var(--red);}
-.status{
-  margin-top:.6rem;
+#refreshStatus{
+  margin-top:.3rem;
   font-size:.85rem;
-  min-height:1rem;
+  color:var(--blue);
+  font-weight:600;
+  opacity:0;
+  transition:opacity .25s;
 }
-.status.err{color:var(--red);}
+#refreshStatus.show{opacity:1;}
 .locations-list{
   margin-top:.6rem;
   max-height:350px;
@@ -125,323 +89,220 @@ header p{
   font-size:.9rem;
   border-bottom:1px solid rgba(0,0,0,.04);
 }
-.location-row span:first-child{font-weight:600;}
+.status.err{color:var(--red);}
+.cols{display:flex;gap:1rem;flex-wrap:wrap;}
+.leader-list .leader-row{
+  display:flex;justify-content:space-between;
+  padding:.4rem 0;font-size:.88rem;
+  border-bottom:1px solid rgba(0,0,0,.06);
+}
 </style>
 </head>
 
 <body>
 <div class="wrap">
-  <header>
-    <div>
-      <h1>Visitor Dashboard</h1>
-      <p>Visitor analytics — visible only to logged-in coaches.</p>
-      <span class="badge" id="userBadge"></span>
-    </div>
-    <div>
-      <a href="/profile.html" style="color:#fff;text-decoration:underline;">← Back to Profile</a>
-    </div>
-  </header>
-
-  <!-- Summary cards -->
-  <div class="cards">
-    <div class="card">
-      <h2>Today’s Visits</h2>
-      <div class="big-num" id="statToday">–</div>
-      <div class="delta-badge" id="deltaToday"></div>
-    </div>
-    <div class="card">
-      <h2>Last 7 Days</h2>
-      <div class="big-num" id="statWeek">–</div>
-      <div class="delta-badge" id="deltaWeek"></div>
-    </div>
-    <div class="card">
-      <h2>All-Time Visits</h2>
-      <div class="big-num" id="statTotal">–</div>
-      <div class="delta-badge" id="deltaTotal"></div>
-    </div>
-
-    <!-- NEW CARD -->
-    <div class="card">
-      <h2>All-Time Profile Views</h2>
-      <div class="big-num" id="statProfileTotal">–</div>
-      <div class="small">Total profile opens logged so far.</div>
-    </div>
+<header>
+  <div>
+    <h1>Visitor Dashboard</h1>
+    <p>Live analytics — visible only to logged-in coaches.</p>
+    <span class="badge" id="userBadge"></span>
+    <div id="updateTime"></div>
+    <div id="refreshStatus">Refreshing…</div>
   </div>
+  <div><a href="/profile.html" style="color:#fff;text-decoration:underline;">← Back to Profile</a></div>
+</header>
 
-  <!-- Visitor chart -->
-  <div class="card chart-wrap">
-    <h2>Visitor Activity — Last 14 Days</h2>
-    <div class="small">Based on real visit events recorded by track_visit.php</div>
-    <div class="chart-inner">
-      <canvas id="visitsChart"></canvas>
-    </div>
+<!-- Summary cards -->
+<div class="cards">
+  <div class="card">
+    <h2>Today’s Visits</h2>
+    <div class="big-num" id="statToday">–</div>
   </div>
-
-  <!-- NEW: Profile views chart -->
-  <div class="card chart-wrap" style="margin-top:1.3rem;">
-    <h2>Profile Views — Last 14 Days</h2>
-    <div class="small">Unique daily profile opens recorded by visitors.</div>
-    <div class="chart-inner">
-      <canvas id="profileViewsChart"></canvas>
-    </div>
+  <div class="card">
+    <h2>Last 7 Days</h2>
+    <div class="big-num" id="statWeek">–</div>
   </div>
-
-  <!-- NEW: Top coaches -->
-  <div class="card" style="margin-top:1.3rem;">
-    <h2>Top Coaches by Profile Views</h2>
-    <div class="small">Which coaching profiles visitors open most often.</div>
-    <div class="top-coaches-list" id="topCoachList"></div>
+  <div class="card">
+    <h2>All-Time Visits</h2>
+    <div class="big-num" id="statTotal">–</div>
   </div>
-
-  <!-- Locations -->
-  <div class="card" style="margin-top:1.3rem;">
-    <h2>Visitor Locations</h2>
-    <div class="small">Geo approximations from visits.json</div>
-    <div class="locations-list" id="locationList"></div>
-    <div id="dashStatus" class="status"></div>
+  <div class="card">
+    <h2>All-Time Profile Views</h2>
+    <div class="big-num" id="statProfileTotal">–</div>
   </div>
 </div>
 
-<!-- Chart.js -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!-- Visits chart -->
+<div class="card chart-wrap">
+  <h2>Visitor Activity — Last 14 Days</h2>
+  <div class="small">Based on track_visit.php events</div>
+  <div class="chart-inner"><canvas id="visitsChart"></canvas></div>
+</div>
 
+<!-- Profile views -->
+<div class="card chart-wrap">
+  <h2>Profile Views — Last 14 Days</h2>
+  <div class="small">Public & coach view events</div>
+  <div class="chart-inner"><canvas id="profileChart"></canvas></div>
+</div>
+
+<!-- Top coaches -->
+<div class="card" style="margin-top:1.3rem;">
+  <h2>Top Coaches (Total Views)</h2>
+  <div class="leader-list" id="leaderList"></div>
+</div>
+
+<!-- Locations -->
+<div class="card" style="margin-top:1.3rem;">
+  <h2>Visitor Locations</h2>
+  <div class="small">Geo approximations from visits.json</div>
+  <div class="locations-list" id="locationList"></div>
+  <div id="dashStatus" class="status"></div>
+</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
 const API_BASE = window.location.origin + '/webapi/';
+const DASH_API = API_BASE + 'dashboard/';
+let visitsChartObj = null;
+let profileChartObj = null;
 
-async function ensureSession() {
-  try {
-    const res = await fetch(API_BASE + 'login.php', {
-      method: 'GET',
-      credentials: 'include',
-      cache: 'no-store'
-    });
+async function ensureSession(){
+  try{
+    const res = await fetch(API_BASE + 'login.php',{credentials:'include'});
     const data = await res.json();
-    if (!data.success) {
-      window.location.href = '/webapi/login.html';
+    if(!data.success){
+      window.location.href='/webapi/login.html';
       return null;
     }
-    document.getElementById('userBadge').textContent =
-      (data.username || 'coach') + ' • ' + (data.role || 'coach');
+    document.getElementById('userBadge').textContent = (data.username||'coach');
     return data;
-  } catch (err) {
-    window.location.href = '/webapi/login.html';
+  }catch(err){
+    window.location.href='/webapi/login.html';
     return null;
   }
 }
 
-async function loadStats() {
-  const statusEl = document.getElementById('dashStatus');
-  statusEl.textContent = 'Loading visitor analytics…';
+function showRefresh(){
+  const rs=document.getElementById('refreshStatus');
+  rs.classList.add('show');
+  setTimeout(()=>rs.classList.remove('show'),1500);
+}
 
-  try {
-    const res = await fetch(API_BASE + 'webapi.php?action=get_stats', {
-      credentials: 'include',
-      cache: 'no-store'
-    });
-    const data = await res.json();
+function updateTimestamp(){
+  const now=new Date();
+  document.getElementById('updateTime')
+    .textContent = 'Last updated: ' +
+    now.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit',second:'2-digit'});
+}
 
-    if (!data.success) {
-      statusEl.textContent = data.message || 'Failed to load stats.';
-      statusEl.classList.add('err');
-      return;
-    }
-
+// VISIT STATS
+async function loadStats(){
+  showRefresh();
+  try{
+    const res=await fetch(API_BASE+'webapi.php?action=get_stats',{credentials:'include'});
+    const data=await res.json();
     document.getElementById('statToday').textContent = data.today ?? 0;
     document.getElementById('statWeek').textContent  = data.week ?? 0;
     document.getElementById('statTotal').textContent = data.total ?? 0;
 
-    const list = document.getElementById('locationList');
-    list.innerHTML = '';
-
-    const entries = Object.entries(data.locationCount || {}).sort((a,b)=>b[1]-a[1]);
-    if (!entries.length) {
-      list.innerHTML = '<div style="padding:.6rem 0;">No location data yet.</div>';
-    } else {
-      entries.forEach(([loc,count]) => {
-        const row = document.createElement('div');
-        row.className = 'location-row';
-        row.innerHTML = `<span>${loc || 'Unknown'}</span><span>${count}</span>`;
-        list.appendChild(row);
-      });
+    const list=document.getElementById('locationList');
+    list.innerHTML='';
+    for(const [loc,count] of Object.entries(data.locationCount || {}).sort((a,b)=>b[1]-a[1])){
+      const row=document.createElement('div');
+      row.className='location-row';
+      row.innerHTML=`<span>${loc||'Unknown'}</span><span>${count}</span>`;
+      list.appendChild(row);
     }
-
-    statusEl.textContent = '';
-  } catch (err) {
-    statusEl.textContent = 'Analytics unavailable.';
-    statusEl.classList.add('err');
+    updateTimestamp();
+  }catch(err){
+    document.getElementById('dashStatus').textContent='Analytics unavailable.';
   }
 }
 
-function setDeltaBadge(elId, current, previous) {
-  const el = document.getElementById(elId);
-  if (!el || previous === null || previous === 0) {
-    el.textContent = '';
-    el.className = 'delta-badge';
-    return;
-  }
-  const diff = current - previous;
-  const pct  = (diff / previous) * 100;
-  const rounded = Math.round(pct);
-  if (rounded > 0) {
-    el.textContent = `+${rounded}% vs previous`;
-    el.className = 'delta-badge pos';
-  } else if (rounded < 0) {
-    el.textContent = `${rounded}% vs previous`;
-    el.className = 'delta-badge neg';
-  } else {
-    el.textContent = 'No change vs previous';
-    el.className = 'delta-badge';
-  }
+// VISITS CHART
+async function loadVisitChart(){
+  try{
+    const res=await fetch(API_BASE+'webapi.php?action=get_visits_14days',{credentials:'include'});
+    const data=await res.json();
+    if(!Array.isArray(data.points))return;
+    const labels=data.points.map(p=>p.date);
+    const counts=data.points.map(p=>p.count);
+    const ctx=document.getElementById('visitsChart').getContext('2d');
+    const gradient=ctx.createLinearGradient(0,0,0,220);
+    gradient.addColorStop(0,'rgba(175,30,45,0.45)');
+    gradient.addColorStop(1,'rgba(25,33,104,0.05)');
+    if(visitsChartObj) visitsChartObj.destroy();
+    visitsChartObj=new Chart(ctx,{
+      type:'line',
+      data:{labels,datasets:[{data:counts,borderColor:'var(--red)',backgroundColor:gradient,fill:true,tension:0.35}]},
+      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}}}
+    });
+  }catch(err){}
 }
 
-async function loadVisitChart() {
-  try {
-    const res = await fetch(API_BASE + 'webapi.php?action=get_visits_14days', {
-      credentials: 'include',
-      cache: 'no-store'
+// PROFILE DATA + CHART
+async function loadProfileViews(){
+  try{
+    const res=await fetch(DASH_API+'get_profile_views.php',{credentials:'include'});
+    const data=await res.json();
+    if(!data.success) return;
+
+    document.getElementById('statProfileTotal').textContent = data.total_views ?? 0;
+
+    // History to 14-day aggregate
+    const now=new Date();
+    let dayMap={};
+    for(let i=13;i>=0;i--){
+      let d=new Date(now);
+      d.setDate(d.getDate()-i);
+      dayMap[d.toISOString().split('T')[0]]=0;
+    }
+    (data.history||[]).forEach(r=>{
+      if(dayMap[r.date]!==undefined) dayMap[r.date]+=r.views;
     });
-    const data = await res.json();
-    if (!data.success || !Array.isArray(data.points)) return;
+    const labels=Object.keys(dayMap);
+    const views=Object.values(dayMap);
 
-    const points = data.points;
-    const labels = points.map(p => p.date);
-    const counts = points.map(p => p.count);
-
-    const ctx = document.getElementById('visitsChart').getContext('2d');
-    const gradient = ctx.createLinearGradient(0, 0, 0, 220);
-    gradient.addColorStop(0, 'rgba(175, 30, 45, 0.45)');
-    gradient.addColorStop(1, 'rgba(25, 33, 104, 0.05)');
-
-    new Chart(ctx, {
-      type: 'line',
-      data: {
-        labels,
-        datasets: [{
-          label: 'Visits',
-          data: counts,
-          borderWidth: 3,
-          tension: 0.35,
-          pointRadius: 4,
-          pointHoverRadius: 6,
-          pointBackgroundColor: 'var(--red)',
-          borderColor: 'var(--red)',
-          fill: true,
-          backgroundColor: gradient
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: { legend: { display: false }},
-        scales: { y: { beginAtZero: true, ticks: { precision: 0 }}}
-      }
-    });
-  } catch (err) { console.error(err); }
-}
-
-/* NEW: Load Profile View Data */
-async function loadProfileViews() {
-  try {
-    const res = await fetch(API_BASE + 'dashboard/get_profile_views.php', {
-      credentials: 'include',
-      cache: 'no-store'
-    });
-    const data = await res.json();
-    if (!data.success) return;
-
-    // All-time total
-    document.getElementById('statProfileTotal').textContent =
-      data.total_views ?? 0;
-
-    const labels = getLastNDaysLabels(14);
-    const counts = toDailyCounts(data.history || [], labels);
-
-    const ctx = document.getElementById('profileViewsChart').getContext('2d');
-    const gradient = ctx.createLinearGradient(0, 0, 0, 220);
-    gradient.addColorStop(0, 'rgba(175, 30, 45, 0.45)');
-    gradient.addColorStop(1, 'rgba(25, 33, 104, 0.05)');
-
-    new Chart(ctx, {
-      type: 'line',
-      data: {
-        labels,
-        datasets: [{
-          label: 'Profile Views',
-          data: counts,
-          borderWidth: 3,
-          tension: 0.35,
-          pointRadius: 4,
-          pointHoverRadius: 6,
-          pointBackgroundColor: 'var(--red)',
-          borderColor: 'var(--red)',
-          fill: true,
-          backgroundColor: gradient
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: { legend: { display: false }},
-        scales: { y: { beginAtZero: true, ticks: { precision: 0 }}}
-      }
+    const ctx=document.getElementById('profileChart').getContext('2d');
+    const grad=ctx.createLinearGradient(0,0,0,220);
+    grad.addColorStop(0,'rgba(25,33,104,0.45)');
+    grad.addColorStop(1,'rgba(175,30,45,0.05)');
+    if(profileChartObj) profileChartObj.destroy();
+    profileChartObj=new Chart(ctx,{
+      type:'line',
+      data:{labels,datasets:[{data:views,borderColor:'var(--blue)',backgroundColor:grad,fill:true,tension:0.35}]},
+      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}}}
     });
 
-    renderTopCoaches(data.totals_per_coach || {});
-  } catch (err) { console.error(err); }
+    const leaders=document.getElementById('leaderList');
+    leaders.innerHTML=(Object.entries(data.totals_per_coach||{})
+      .sort((a,b)=>b[1]-a[1])
+      .slice(0,5)
+      .map(([name,count])=>`<div class="leader-row"><span>${name}</span><span>${count}</span></div>`)
+      .join('')) || '<div>No data yet</div>';
+
+  }catch(err){}
 }
 
-function getLastNDaysLabels(n) {
-  const labels = [];
-  const today = new Date();
-  for (let i = n-1; i >= 0; i--) {
-    const d = new Date(today);
-    d.setDate(d.getDate() - i);
-    const y = d.getFullYear();
-    const m = String(d.getMonth()+1).padStart(2,'0');
-    const dd = String(d.getDate()).padStart(2,'0');
-    labels.push(`${y}-${m}-${dd}`);
-  }
-  return labels;
-}
-
-function toDailyCounts(history, labels) {
-  const map = {};
-  history.forEach(row => {
-    const date = row.date;
-    const v = Number(row.views) || 0;
-    if (!map[date]) map[date] = 0;
-    map[date] += v;
-  });
-  return labels.map(date => map[date] || 0);
-}
-
-function renderTopCoaches(totals) {
-  const list = document.getElementById('topCoachList');
-  list.innerHTML = '';
-
-  const entries = Object.entries(totals);
-  if (!entries.length) {
-    list.innerHTML = '<div style="padding:.6rem 0;">No profile view data yet.</div>';
-    return;
-  }
-
-  entries.sort((a,b)=>b[1]-a[1]).slice(0,5).forEach(([coach, views], i) => {
-    const row = document.createElement('div');
-    row.className = 'top-row';
-    row.innerHTML = `<span>${i+1}. ${coach}</span><span>${views}</span>`;
-    list.appendChild(row);
-  });
-}
-
-document.addEventListener('DOMContentLoaded', async () => {
-  const session = await ensureSession();
-  if (!session) return;
-
+// INIT
+document.addEventListener('DOMContentLoaded', async ()=>{
+  const ses=await ensureSession();
+  if(!ses)return;
   await loadStats();
   await loadVisitChart();
   await loadProfileViews();
+
+  // AUTO REFRESH every 60s
+  setInterval(async ()=>{
+    showRefresh();
+    await loadStats();
+    await loadVisitChart();
+    await loadProfileViews();
+    updateTimestamp();
+  },60000);
 });
 </script>
-
 </body>
 </html>
