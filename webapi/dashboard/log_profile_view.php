@@ -1,16 +1,11 @@
 <?php
-/**
- * log_profile_view.php
- * Logs unique profile views per coach per day per session
- */
-
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Credentials: true');
 
 session_start();
 
-// Require coach login session
+// Require login
 if (!isset($_SESSION['username'])) {
     http_response_code(403);
     echo json_encode(['success' => false, 'message' => 'Not authorized']);
@@ -33,35 +28,31 @@ if ($coach === '') {
 
 $today = date('Y-m-d');
 $sessionKey = "viewed_{$coach}_{$today}";
-
 if (isset($_SESSION[$sessionKey])) {
-    echo json_encode(['success' => true, 'message' => 'Already logged this session']);
+    echo json_encode(['success' => true, 'message' => 'Already logged today']);
     exit;
 }
 $_SESSION[$sessionKey] = true;
 
-$file = __DIR__ . '/profile_views.json';
+$file = '/data/uploads/profile_views.json';
 $data = [
     "totals" => [],
     "history" => []
 ];
 
 if (file_exists($file)) {
-    $raw = file_get_contents($file);
-    $decoded = json_decode($raw, true);
+    $decoded = json_decode(file_get_contents($file), true);
     if (is_array($decoded)) {
         $data = array_merge($data, $decoded);
     }
 }
 
-// Increment totals
 $data['totals'][$coach] = ($data['totals'][$coach] ?? 0) + 1;
 
-// Update daily record
 $found = false;
 foreach ($data['history'] as &$row) {
     if ($row['date'] === $today && $row['coach'] === $coach) {
-        $row['views'] = ($row['views'] ?? 0) + 1;
+        $row['views']++;
         $found = true;
         break;
     }
@@ -69,14 +60,10 @@ foreach ($data['history'] as &$row) {
 unset($row);
 
 if (!$found) {
-    $data['history'][] = [
-        "date" => $today,
-        "coach" => $coach,
-        "views" => 1
-    ];
+    $data['history'][] = ["date" => $today, "coach" => $coach, "views" => 1];
 }
 
-// Keep last 180 days only
+// Keep last 180 days
 $cutoff = (new DateTime())->modify('-180 days')->format('Y-m-d');
 $data['history'] = array_values(array_filter($data['history'], fn($r) =>
     isset($r['date']) && $r['date'] >= $cutoff
