@@ -1,13 +1,13 @@
 <?php
 /**
  * save_coach.php — Create / Update / Delete coaches
- * Requires admin session.
+ * Global Carnivore Coaches — Admin Only
  */
 
 session_start();
 header('Content-Type: application/json');
 
-// --- Admin/session guard ---
+// === ADMIN SESSION ENFORCEMENT ===
 if (!isset($_SESSION['username'])) {
     echo json_encode([
         'success' => false,
@@ -26,7 +26,7 @@ if (strtolower($_SESSION['role'] ?? 'coach') !== 'admin') {
     exit;
 }
 
-// --- Method & input ---
+// === HTTP GUARD ===
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     echo json_encode([
         'success' => false,
@@ -36,6 +36,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
+// === INPUT PARSE ===
 $input = json_decode(file_get_contents('php://input'), true);
 if (!is_array($input)) {
     echo json_encode([
@@ -58,34 +59,17 @@ if ($username === '') {
     exit;
 }
 
-// --- Load coaches.json ---
+// === LOAD COACHES FILE ===
 $coachesPath = __DIR__ . '/../uploads/coaches.json';
-if (!file_exists($coachesPath)) {
-    // Start with empty list if file missing
+$coaches = file_exists($coachesPath)
+    ? json_decode(file_get_contents($coachesPath), true)
+    : [];
+
+if (!is_array($coaches)) {
     $coaches = [];
-} else {
-    $raw = file_get_contents($coachesPath);
-    $coaches = json_decode($raw, true);
-    if (!is_array($coaches)) {
-        echo json_encode([
-            'success' => false,
-            'message' => 'Invalid coaches.json',
-            'code'    => 'BAD_COACHES_FILE'
-        ]);
-        exit;
-    }
 }
 
-// Helper: save file
-function save_coaches_file($path, $data) {
-    $json = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
-    if (file_put_contents($path, $json) === false) {
-        return false;
-    }
-    return true;
-}
-
-// --- Find coach index ---
+// === FIND INDEX IF EXISTS ===
 $foundIndex = null;
 foreach ($coaches as $i => $c) {
     if (strcasecmp($c['Username'] ?? '', $username) === 0) {
@@ -94,7 +78,7 @@ foreach ($coaches as $i => $c) {
     }
 }
 
-// --- DELETE ---
+// === DELETE FLOW ===
 if ($action === 'delete') {
     if ($foundIndex === null) {
         echo json_encode([
@@ -106,29 +90,22 @@ if ($action === 'delete') {
     }
 
     array_splice($coaches, $foundIndex, 1);
+    // Re-index after deletion
+    autoRenumber($coaches);
 
-    if (!save_coaches_file($coachesPath, $coaches)) {
-        echo json_encode([
-            'success' => false,
-            'message' => 'Failed to write coaches.json',
-            'code'    => 'WRITE_ERROR'
-        ]);
-        exit;
+    if (!saveFile($coachesPath, $coaches)) {
+        failWrite();
     }
 
-    echo json_encode([
-        'success' => true,
-        'message' => 'Coach deleted'
-    ]);
+    echo json_encode(['success' => true, 'message' => 'Coach deleted']);
     exit;
 }
 
-// --- CREATE / UPDATE ---
-
+// === GATHER NEW DATA ===
 $coachName     = trim($input['CoachName'] ?? '');
 $email         = trim($input['Email'] ?? '');
 $role          = strtolower(trim($input['Role'] ?? 'coach'));
-$displayOrder  = isset($input['DisplayOrder']) ? (int)$input['DisplayOrder'] : 999;
+$displayOrder  = isset($input['DisplayOrder']) ? intval($input['DisplayOrder']) : 999;
 $bio           = $input['Bio'] ?? '';
 $specRaw       = $input['Specializations'] ?? '';
 $profileFile   = trim($input['Profile'] ?? '');
@@ -138,21 +115,17 @@ $afterFile     = trim($input['After'] ?? '');
 $tempPassword  = trim($input['TempPassword'] ?? '');
 
 // Normalize specializations → array
-$specList = [];
-if (is_array($specRaw)) {
-    $specList = $specRaw;
-} else {
-    $specList = array_values(array_filter(array_map('trim', preg_split('/[;,|]+/', (string)$specRaw)), 'strlen'));
-}
+$specList = is_array($specRaw)
+    ? $specRaw
+    : array_values(array_filter(array_map('trim', preg_split('/[;,|]+/', (string)$specRaw)), 'strlen'));
 
-// Base record
 $newData = [
-    'Username'      => $username,
-    'CoachName'     => $coachName,
-    'Email'         => $email,
-    'Role'          => $role === 'admin' ? 'admin' : 'coach',
-    'DisplayOrder'  => $displayOrder,
-    'Bio'           => $bio,
+    'Username'        => $username,
+    'CoachName'       => $coachName,
+    'Email'           => $email,
+    'Role'            => $role === 'admin' ? 'admin' : 'coach',
+    'DisplayOrder'    => $displayOrder,
+    'Bio'             => $bio,
     'Specializations' => $specList,
     'Files' => [
         'Profile'     => $profileFile,
@@ -162,20 +135,18 @@ $newData = [
     ]
 ];
 
-// If updating, preserve fields that we don't overwrite (like Password, last_login, etc.)
+// === PRESERVE PASSWORD & METADATA FOR UPDATE ===
 if ($foundIndex !== null) {
     $existing = $coaches[$foundIndex];
 
-    // Preserve password unless tempPassword is provided
+    // Keep or replace password
     if ($tempPassword !== '') {
         $newData['Password'] = password_hash($tempPassword, PASSWORD_DEFAULT);
-    } else {
-        if (!empty($existing['Password'])) {
-            $newData['Password'] = $existing['Password'];
-        }
+    } elseif (!empty($existing['Password'])) {
+        $newData['Password'] = $existing['Password'];
     }
 
-    // Preserve any other metadata keys you may already have
+    // Preserve any extra metadata
     foreach ($existing as $k => $v) {
         if (!array_key_exists($k, $newData) && $k !== 'Files') {
             $newData[$k] = $v;
@@ -185,7 +156,7 @@ if ($foundIndex !== null) {
     $coaches[$foundIndex] = $newData;
     $msg = 'Coach updated';
 } else {
-    // CREATE
+    // If creating new coach
     if ($tempPassword !== '') {
         $newData['Password'] = password_hash($tempPassword, PASSWORD_DEFAULT);
     }
@@ -193,8 +164,27 @@ if ($foundIndex !== null) {
     $msg = 'Coach created';
 }
 
-// Save file
-if (!save_coaches_file($coachesPath, $coaches)) {
+// === AUTO-SORT + AUTO-RENUMBER ===
+autoRenumber($coaches);
+
+// === SAVE FILE ===
+if (!saveFile($coachesPath, $coaches)) {
+    failWrite();
+}
+
+echo json_encode(['success' => true, 'message' => $msg]);
+
+
+// ============================================================
+// SUPPORT FUNCTIONS
+// ============================================================
+
+function saveFile($path, $data) {
+    $json = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+    return file_put_contents($path, $json) !== false;
+}
+
+function failWrite() {
     echo json_encode([
         'success' => false,
         'message' => 'Failed to write coaches.json',
@@ -203,7 +193,20 @@ if (!save_coaches_file($coachesPath, $coaches)) {
     exit;
 }
 
-echo json_encode([
-    'success' => true,
-    'message' => $msg
-]);
+/**
+ * Sort by DisplayOrder asc, fallback: Alpha name
+ * Then rewrite DisplayOrder as clean 1…N
+ */
+function autoRenumber(&$arr) {
+    usort($arr, function($a, $b) {
+        $da = intval($a['DisplayOrder'] ?? 999);
+        $db = intval($b['DisplayOrder'] ?? 999);
+        if ($da !== $db) return $da - $db;
+        return strcasecmp($a['CoachName'] ?? '', $b['CoachName'] ?? '');
+    });
+
+    foreach ($arr as $i => &$c) {
+        $c['DisplayOrder'] = $i + 1;
+    }
+    unset($c);
+}
