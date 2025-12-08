@@ -1,48 +1,39 @@
 <?php
 /**
- * update_coach.php — FINAL STABLE VERSION
- * Global Carnivore Coaches — December 2025
+ * update_coach.php — FINAL COOKIE-COMPATIBLE VERSION
+ * Global Carnivore Coaches — Dec 2025
  *
  * Saves:
- * ✔ CoachName / Email / Phone / Bio / Specializations
- * ✔ Profile / Before / After / Certificate images
- * ✔ Deletes replaced images
- *
- * Reads/writes: /data/uploads/coaches.json (persistent disk)
+ * - Name / Email / Phone / Bio / Specializations
+ * - Image uploads (Profile, Before, After, Certificate)
+ * - Deletes old replaced images
  */
 
-header('Content-Type: application/json');
+// Must be BEFORE session_start()
+session_set_cookie_params([
+    'lifetime' => 0,
+    'path' => '/',
+    'domain' => 'globalcarnivorecoaches.onrender.com',
+    'secure' => true,
+    'httponly' => true,
+    'samesite' => 'None'
+]);
 
-// === CORS SAFETY (restrict to known origins) ===
-$origin = $_SERVER['HTTP_ORIGIN'] ?? '';
-$allowed_origins = [
-    'http://kruedog.ddns.net:8080',
-    'https://globalcarnivorecoaches.onrender.com'
-];
-
-if (in_array($origin, $allowed_origins, true)) {
-    header("Access-Control-Allow-Origin: $origin");
-    header("Access-Control-Allow-Credentials: true");
-}
-
-// Required for login session access
 session_start();
 
-// === AUTH CHECK ===
-if (empty($_SESSION['Username'])) {
+// CORS for cookie-based auth
+header('Content-Type: application/json; charset=utf-8');
+header('Access-Control-Allow-Origin: https://globalcarnivorecoaches.onrender.com');
+header('Access-Control-Allow-Credentials: true');
+
+// ==== AUTH CHECK ====
+if (empty($_SESSION['username'])) {
     http_response_code(401);
     echo json_encode(['success' => false, 'message' => 'Not logged in']);
     exit;
 }
 
-// Logged-in username is the ONLY username allowed to update
-$username = $_SESSION['Username'];
-
-// === DEBUG LOGS (Optional: comment out in production) ===
-ini_set('log_errors', 1);
-ini_set('error_log', '/data/uploads/php_errors.log');
-// file_put_contents('/data/uploads/debug_post.log', print_r($_POST, true), FILE_APPEND);
-// file_put_contents('/data/uploads/debug_files.log', print_r($_FILES, true), FILE_APPEND);
+$username = $_SESSION['username'];
 
 // Must be POST
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -50,7 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
-$coachesFile = '/data/uploads/coaches.json';
+$coachesFile = __DIR__ . '/../uploads/coaches.json';
 if (!file_exists($coachesFile)) {
     echo json_encode(['success' => false, 'message' => 'coaches.json missing']);
     exit;
@@ -62,21 +53,21 @@ if (!is_array($coaches)) {
     exit;
 }
 
-// === Locate this coach in JSON ===
+// ==== FIND RECORD ====
 $index = null;
 foreach ($coaches as $i => $coach) {
-    if (($coach['Username'] ?? '') === $username) {
+    $u = $coach['Username'] ?? '';
+    if ($u !== '' && strcasecmp($u, $username) === 0) {
         $index = $i;
         break;
     }
 }
-
 if ($index === null) {
     echo json_encode(['success' => false, 'message' => 'Coach not found']);
     exit;
 }
 
-// === TEXT FIELDS ===
+// ==== TEXT FIELDS ====
 $map = [
     'coachName' => 'CoachName',
     'email'     => 'Email',
@@ -90,31 +81,31 @@ foreach ($map as $posted => $field) {
     }
 }
 
-// Specializations stored as array
+// Specializations as JSON array
 if (isset($_POST['specializations'])) {
-    $specs = json_decode($_POST['specializations'], true);
-    if (is_array($specs)) {
-        $coaches[$index]['Specializations'] = array_values($specs);
+    $spec = json_decode($_POST['specializations'], true);
+    if (is_array($spec)) {
+        $coaches[$index]['Specializations'] = array_values($spec);
     }
 }
 
 // Ensure Files array exists
 if (!isset($coaches[$index]['Files']) || !is_array($coaches[$index]['Files'])) {
     $coaches[$index]['Files'] = [
-        'Profile' => null,
-        'Before' => null,
-        'After' => null,
+        'Profile'     => null,
+        'Before'      => null,
+        'After'       => null,
         'Certificate' => null
     ];
 }
 
-// Upload directory
-$uploadDir = '/data/uploads/';
+// Upload destination
+$uploadDir = __DIR__ . '/../uploads/';
 if (!is_dir($uploadDir)) {
     mkdir($uploadDir, 0775, true);
 }
 
-// Helper to extract grouped file (files[Slot])
+// Extract file input
 function get_upload($slot) {
     if (!empty($_FILES['files']['name'][$slot] ?? null)) {
         return [
@@ -126,7 +117,7 @@ function get_upload($slot) {
     return null;
 }
 
-// === IMAGE UPLOAD HANDLING ===
+// ==== FILE UPLOADS ====
 $allowed_ext = ['jpg', 'jpeg', 'png', 'webp'];
 $slots = ['Profile', 'Before', 'After', 'Certificate'];
 $updatedSlots = [];
@@ -157,13 +148,13 @@ foreach ($slots as $slot) {
     }
 }
 
-// === SAVE BACK TO DISK ===
+// ==== SAVE JSON ====
 if (file_put_contents($coachesFile, json_encode($coaches, JSON_PRETTY_PRINT)) === false) {
-    echo json_encode(['success' => false, 'message' => 'Failed to update file']);
+    echo json_encode(['success' => false, 'message' => 'Failed to write updated data']);
     exit;
 }
 
-// === SUCCESS ===
+// ==== SUCCESS ====
 echo json_encode([
     'success' => true,
     'message' => 'Profile updated',
