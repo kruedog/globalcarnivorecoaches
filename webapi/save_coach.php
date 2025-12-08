@@ -7,7 +7,7 @@
 session_start();
 header('Content-Type: application/json');
 
-// === ADMIN SESSION ENFORCEMENT ===
+// ===== ADMIN SESSION CHECK =====
 if (!isset($_SESSION['username'])) {
     echo json_encode([
         'success' => false,
@@ -16,7 +16,6 @@ if (!isset($_SESSION['username'])) {
     ]);
     exit;
 }
-
 if (strtolower($_SESSION['role'] ?? 'coach') !== 'admin') {
     echo json_encode([
         'success' => false,
@@ -26,7 +25,7 @@ if (strtolower($_SESSION['role'] ?? 'coach') !== 'admin') {
     exit;
 }
 
-// === HTTP GUARD ===
+// ===== METHOD & PAYLOAD VALIDATION =====
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     echo json_encode([
         'success' => false,
@@ -36,7 +35,6 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
-// === INPUT PARSE ===
 $input = json_decode(file_get_contents('php://input'), true);
 if (!is_array($input)) {
     echo json_encode([
@@ -49,7 +47,6 @@ if (!is_array($input)) {
 
 $action   = $input['action']   ?? '';
 $username = trim($input['Username'] ?? '');
-
 if ($username === '') {
     echo json_encode([
         'success' => false,
@@ -59,17 +56,15 @@ if ($username === '') {
     exit;
 }
 
-// === LOAD COACHES FILE ===
+// ===== LOAD EXISTING COACHES =====
 $coachesPath = __DIR__ . '/../uploads/coaches.json';
 $coaches = file_exists($coachesPath)
     ? json_decode(file_get_contents($coachesPath), true)
     : [];
 
-if (!is_array($coaches)) {
-    $coaches = [];
-}
+if (!is_array($coaches)) $coaches = [];
 
-// === FIND INDEX IF EXISTS ===
+// ===== FIND EXISTING COACH INDEX =====
 $foundIndex = null;
 foreach ($coaches as $i => $c) {
     if (strcasecmp($c['Username'] ?? '', $username) === 0) {
@@ -78,7 +73,7 @@ foreach ($coaches as $i => $c) {
     }
 }
 
-// === DELETE FLOW ===
+// ===== DELETE ACTION =====
 if ($action === 'delete') {
     if ($foundIndex === null) {
         echo json_encode([
@@ -90,98 +85,88 @@ if ($action === 'delete') {
     }
 
     array_splice($coaches, $foundIndex, 1);
-    // Re-index after deletion
-    autoRenumber($coaches);
+    renumberPositions($coaches);
 
-    if (!saveFile($coachesPath, $coaches)) {
-        failWrite();
-    }
+    if (!saveFile($coachesPath, $coaches)) failWrite();
 
     echo json_encode(['success' => true, 'message' => 'Coach deleted']);
     exit;
 }
 
-// === GATHER NEW DATA ===
-$coachName     = trim($input['CoachName'] ?? '');
-$email         = trim($input['Email'] ?? '');
-$role          = strtolower(trim($input['Role'] ?? 'coach'));
-$displayOrder  = isset($input['DisplayOrder']) ? intval($input['DisplayOrder']) : 999;
-$bio           = $input['Bio'] ?? '';
-$specRaw       = $input['Specializations'] ?? '';
-$profileFile   = trim($input['Profile'] ?? '');
-$certFile      = trim($input['Certificate'] ?? '');
-$beforeFile    = trim($input['Before'] ?? '');
-$afterFile     = trim($input['After'] ?? '');
-$tempPassword  = trim($input['TempPassword'] ?? '');
-
-// Normalize specializations → array
-$specList = is_array($specRaw)
-    ? $specRaw
-    : array_values(array_filter(array_map('trim', preg_split('/[;,|]+/', (string)$specRaw)), 'strlen'));
-
+// ===== EXTRACT UPDATED FIELDS =====
 $newData = [
     'Username'        => $username,
-    'CoachName'       => $coachName,
-    'Email'           => $email,
-    'Role'            => $role === 'admin' ? 'admin' : 'coach',
-    'DisplayOrder'    => $displayOrder,
-    'Bio'             => $bio,
-    'Specializations' => $specList,
+    'CoachName'       => trim($input['CoachName'] ?? ''),
+    'Email'           => trim($input['Email'] ?? ''),
+    'Role'            => strtolower(trim($input['Role'] ?? 'coach')) === 'admin' ? 'admin' : 'coach',
+    'DisplayOrder'    => max(1, intval($input['DisplayOrder'] ?? 999)),
+    'Bio'             => $input['Bio'] ?? '',
+    'Specializations' => normalizeSpecs($input['Specializations'] ?? ''),
     'Files' => [
-        'Profile'     => $profileFile,
-        'Certificate' => $certFile,
-        'Before'      => $beforeFile,
-        'After'       => $afterFile
+        'Profile'     => trim($input['Profile'] ?? ''),
+        'Certificate' => trim($input['Certificate'] ?? ''),
+        'Before'      => trim($input['Before'] ?? ''),
+        'After'       => trim($input['After'] ?? '')
     ]
 ];
 
-// === PRESERVE PASSWORD & METADATA FOR UPDATE ===
+$tempPassword = trim($input['TempPassword'] ?? '');
+
+// ===== KEEP PASSWORD & METADATA ON UPDATE =====
 if ($foundIndex !== null) {
     $existing = $coaches[$foundIndex];
 
-    // Keep or replace password
+    // Password handling
     if ($tempPassword !== '') {
         $newData['Password'] = password_hash($tempPassword, PASSWORD_DEFAULT);
     } elseif (!empty($existing['Password'])) {
         $newData['Password'] = $existing['Password'];
     }
 
-    // Preserve any extra metadata
+    // Preserve untouched keys (e.g., last_login)
     foreach ($existing as $k => $v) {
         if (!array_key_exists($k, $newData) && $k !== 'Files') {
             $newData[$k] = $v;
         }
     }
 
-    $coaches[$foundIndex] = $newData;
+    // Remove old before reinserting properly
+    array_splice($coaches, $foundIndex, 1);
     $msg = 'Coach updated';
 } else {
-    // If creating new coach
+    // Brand new coach
     if ($tempPassword !== '') {
         $newData['Password'] = password_hash($tempPassword, PASSWORD_DEFAULT);
     }
-    $coaches[] = $newData;
     $msg = 'Coach created';
 }
 
-// === AUTO-SORT + AUTO-RENUMBER ===
-autoRenumber($coaches);
+// ===== INSERT INTO CORRECT POSITION =====
+insertAtPosition($coaches, $newData);
 
-// === SAVE FILE ===
-if (!saveFile($coachesPath, $coaches)) {
-    failWrite();
-}
+// ===== SAVE FILE =====
+if (!saveFile($coachesPath, $coaches)) failWrite();
 
 echo json_encode(['success' => true, 'message' => $msg]);
 
 
-// ============================================================
+// =====================================================
 // SUPPORT FUNCTIONS
-// ============================================================
+// =====================================================
+
+// Normalize specializations into array
+function normalizeSpecs($raw) {
+    if (is_array($raw)) return $raw;
+    return array_values(array_filter(
+        array_map('trim', preg_split('/[;,|]+/', (string)$raw)),
+        'strlen'
+    ));
+}
 
 function saveFile($path, $data) {
-    $json = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
-    return file_put_contents($path, $json) !== false;
+    return file_put_contents($path,
+        json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)
+    ) !== false;
 }
 
 function failWrite() {
@@ -194,18 +179,31 @@ function failWrite() {
 }
 
 /**
- * Sort by DisplayOrder asc, fallback: Alpha name
- * Then rewrite DisplayOrder as clean 1…N
+ * Insert or move coach to requested DisplayOrder exactly
  */
-function autoRenumber(&$arr) {
-    usort($arr, function($a, $b) {
-        $da = intval($a['DisplayOrder'] ?? 999);
-        $db = intval($b['DisplayOrder'] ?? 999);
-        if ($da !== $db) return $da - $db;
-        return strcasecmp($a['CoachName'] ?? '', $b['CoachName'] ?? '');
-    });
+function insertAtPosition(&$list, $coach) {
+    $target = intval($coach['DisplayOrder']);
+    if ($target < 1) $target = 1;
 
-    foreach ($arr as $i => &$c) {
+    // Sort by current order then ensure it is unique keys
+    usort($list, fn($a,$b) =>
+        intval($a['DisplayOrder'] ?? 999) - intval($b['DisplayOrder'] ?? 999)
+    );
+
+    $maxIndex = count($list);
+    if ($target > $maxIndex + 1) $target = $maxIndex + 1;
+
+    array_splice($list, $target - 1, 0, [$coach]);
+
+    // Renumber after insert
+    renumberPositions($list);
+}
+
+/**
+ * 1..N numbering with no alphabetical fallback
+ */
+function renumberPositions(&$list) {
+    foreach ($list as $i => &$c) {
         $c['DisplayOrder'] = $i + 1;
     }
     unset($c);
