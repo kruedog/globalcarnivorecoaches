@@ -108,7 +108,7 @@
 </main>
 
 <script>
-const API_BASE   = window.location.origin + '/webapi/';
+const API_BASE    = window.location.origin + '/webapi/';
 const COACHES_URL = '/uploads/coaches.json';
 const SAVE_URL    = API_BASE + 'save_coach.php';
 
@@ -129,7 +129,7 @@ function setStatus(msg, ok = true) {
   statusEl.className = 'status ' + (msg ? (ok ? 'ok' : 'err') : '');
 }
 
-// Simple admin check using existing login.php
+// Strong admin check using login.php GET
 async function ensureAdmin() {
   try {
     const res = await fetch(API_BASE + 'login.php', {
@@ -139,13 +139,15 @@ async function ensureAdmin() {
     });
     const data = await res.json();
     if (!data || !data.success || (data.role || '').toLowerCase() !== 'admin') {
-      window.location.href = '/index.html';
+      alert('Admin session required. Please log in again.');
+      window.location.href = '/webapi/login.html';
       return false;
     }
     return true;
   } catch (err) {
     console.error('Admin check failed', err);
-    window.location.href = '/index.html';
+    alert('Admin session check failed. Please log in again.');
+    window.location.href = '/webapi/login.html';
     return false;
   }
 }
@@ -238,10 +240,10 @@ function selectCoach(username) {
 async function loadCoaches() {
   setStatus('Loading coaches…', true);
   try {
-    const res  = await fetch(COACHES_URL + '?t=' + Date.now());
+    const res  = await fetch(COACHES_URL + '?t=' + Date.now(), { cache: 'no-store' });
     const data = await res.json();
     coaches = Array.isArray(data)
-      ? data.sort((a, b) => (a.DisplayOrder ?? 999) - (b.DisplayOrder ?? 999))
+      ? data.slice().sort((a, b) => (a.DisplayOrder ?? 999) - (b.DisplayOrder ?? 999))
       : [];
     renderList();
     setStatus('');
@@ -295,6 +297,12 @@ form.addEventListener('submit', async (e) => {
     const out = await res.json();
 
     if (!out.success) {
+      // If backend says login/admin required, kick back to login page.
+      if ((out.code || '') === 'NOT_ADMIN' || (out.code || '') === 'NO_SESSION') {
+        alert(out.message || 'Admin login required. Redirecting to login page.');
+        window.location.href = '/webapi/login.html';
+        return;
+      }
       setStatus(out.message || 'Save failed.', false);
       return;
     }
@@ -328,6 +336,11 @@ btnDelete.addEventListener('click', async () => {
     const out = await res.json();
 
     if (!out.success) {
+      if ((out.code || '') === 'NOT_ADMIN' || (out.code || '') === 'NO_SESSION') {
+        alert(out.message || 'Admin login required. Redirecting to login page.');
+        window.location.href = '/webapi/login.html';
+        return;
+      }
       setStatus(out.message || 'Delete failed.', false);
       return;
     }
