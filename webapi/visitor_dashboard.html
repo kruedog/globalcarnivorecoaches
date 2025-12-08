@@ -6,11 +6,11 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <link rel="icon" type="image/png" href="/images/earth_steak.png">
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+
 <style>
 :root{
   --blue:#192168;
   --red:#AF1E2D;
-  --bg:#f5f7fb;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 body{
@@ -37,7 +37,6 @@ header h1{
   font-size:2rem;
   margin-bottom:.25rem;
 }
-header p{font-size:.9rem;opacity:.9}
 .badge{
   display:inline-block;
   padding:.15rem .6rem;
@@ -105,12 +104,13 @@ header p{font-size:.9rem;opacity:.9}
 }
 </style>
 </head>
+
 <body>
 <div class="wrap">
   <header>
     <div>
       <h1>Visitor Dashboard</h1>
-      <p>Sessions, login activity, and coach list. Accessible only to logged-in coaches.</p>
+      <p>Visitor stats & Coach list (visible to logged-in coaches only).</p>
       <span class="badge" id="userBadge"></span>
     </div>
     <div>
@@ -119,19 +119,19 @@ header p{font-size:.9rem;opacity:.9}
   </header>
 
   <div class="top-nav">
-    <div>Visitor stats are approximate; based on <code>visits.json</code> & <code>activity_log.json</code>.</div>
+    <div>Visitor data from <code>visits.json</code> & <code>activity_log.json</code></div>
   </div>
 
   <div class="cards">
     <div class="card">
       <h2>Today’s Visits</h2>
       <div class="big-num" id="statToday">–</div>
-      <div class="small">Unique or approximate sessions today.</div>
+      <div class="small">Unique visits today.</div>
     </div>
     <div class="card">
       <h2>Last 7 Days</h2>
       <div class="big-num" id="statWeek">–</div>
-      <div class="small">Visitors in the last 7 days.</div>
+      <div class="small">Visitors in the last week.</div>
     </div>
     <div class="card">
       <h2>All-Time Visits</h2>
@@ -141,18 +141,18 @@ header p{font-size:.9rem;opacity:.9}
     <div class="card">
       <h2>Logins Today</h2>
       <div class="big-num" id="statLoginsToday">–</div>
-      <div class="small">Coach logins recorded today.</div>
+      <div class="small">Coach logins today.</div>
     </div>
   </div>
 
   <div class="card">
     <h2>Recent Visitor Locations</h2>
-    <div class="small">Approximate location data from <code>visits.json</code>.</div>
+    <div class="small">Approximate geo data</div>
     <div id="locationList" class="coach-list"></div>
   </div>
 
   <div class="card" style="margin-top:1.3rem;">
-    <h2>All Coaches (from coaches.json)</h2>
+    <h2>All Coaches</h2>
     <div class="coach-list" id="coachList"></div>
     <div id="dashStatus" class="status"></div>
   </div>
@@ -160,9 +160,8 @@ header p{font-size:.9rem;opacity:.9}
 
 <script>
 const API_BASE = window.location.origin + '/webapi/';
-const WEBAPI_AGG = API_BASE + 'webapi.php';
-const COACHES_URL = '/uploads/coaches.json';
 
+// ===== CHECK LOGIN SESSION =====
 async function ensureSession() {
   try {
     const res = await fetch(API_BASE + 'login.php', {
@@ -171,85 +170,89 @@ async function ensureSession() {
       cache: 'no-store'
     });
     const data = await res.json();
-    if (!data || !data.success) {
-      window.location.href = '/index.html';
+    if (!data.success) {
+      window.location.href = '/webapi/login.html';
       return null;
     }
     document.getElementById('userBadge').textContent =
       (data.username || 'coach') + ' • ' + (data.role || 'coach');
     return data;
   } catch (err) {
-    console.error('Session check failed', err);
-    window.location.href = '/index.html';
+    window.location.href = '/webapi/login.html';
     return null;
   }
 }
 
+// ===== LOAD VISITOR STATS =====
 async function loadStats() {
   try {
-    const res = await fetch(WEBAPI_AGG + '?action=get_stats', {
-      cache: 'no-store'
-    });
+    const res = await fetch(API_BASE + 'webapi.php?action=get_stats', { cache:'no-store' });
     const data = await res.json();
+
     document.getElementById('statToday').textContent       = data.today ?? '0';
     document.getElementById('statWeek').textContent        = data.week ?? '0';
     document.getElementById('statTotal').textContent       = data.total ?? '0';
     document.getElementById('statLoginsToday').textContent = data.loginsToday ?? '0';
 
-    const locContainer = document.getElementById('locationList');
-    locContainer.innerHTML = '';
-    const locCounts = data.locationCount || {};
-    const entries = Object.entries(locCounts).sort((a,b)=>b[1]-a[1]);
+    const list = document.getElementById('locationList');
+    list.innerHTML = '';
+    const entries = Object.entries(data.locationCount || {}).sort((a,b)=>b[1]-a[1]);
     if (!entries.length) {
-      locContainer.innerHTML = '<div style="padding:.6rem 0;">No location data yet.</div>';
+      list.innerHTML = '<div style="padding:.6rem 0;">No location data yet.</div>';
     } else {
-      entries.forEach(([loc,count])=>{
+      entries.forEach(([loc,count]) => {
         const row = document.createElement('div');
         row.className = 'coach-row';
-        row.innerHTML = `
-          <span>${loc || 'Unknown'}</span>
-          <span>${count}</span>
-        `;
-        locContainer.appendChild(row);
+        row.innerHTML = `<span>${loc || 'Unknown'}</span><span>${count}</span>`;
+        list.appendChild(row);
       });
     }
+
   } catch (err) {
-    console.error(err);
+    console.error('Stats load error', err);
   }
 }
 
+// ===== LOAD COACH LIST =====
 async function loadCoaches() {
   const statusEl = document.getElementById('dashStatus');
   statusEl.textContent = 'Loading coaches…';
+
   try {
-    const res = await fetch(COACHES_URL + '?t=' + Date.now(), {
-      cache: 'no-store'
+    const res = await fetch(API_BASE + 'get_all_coaches.php', {
+      method:'GET',
+      cache:'no-store'
     });
     const data = await res.json();
-    const listEl = document.getElementById('coachList');
-    listEl.innerHTML = '';
-    if (!Array.isArray(data) || !data.length) {
-      listEl.innerHTML = '<div style="padding:.6rem 0;">No coaches found.</div>';
+    const list = document.getElementById('coachList');
+    list.innerHTML = '';
+
+    if (!data.success || !Array.isArray(data.coaches) || !data.coaches.length) {
+      list.innerHTML = '<div style="padding:.6rem 0;">No coaches found.</div>';
       statusEl.textContent = '';
       return;
     }
-    data.forEach(c => {
+
+    data.coaches.forEach(c => {
       const row = document.createElement('div');
       row.className = 'coach-row';
       row.innerHTML = `
         <span>${c.CoachName || c.Username || 'Coach'}</span>
         <span>${(c.Role || 'coach').toUpperCase()}</span>
       `;
-      listEl.appendChild(row);
+      list.appendChild(row);
     });
+
     statusEl.textContent = '';
+
   } catch (err) {
-    console.error(err);
-    statusEl.textContent = 'Failed to load coaches.json.';
-    statusEl.className = 'status err';
+    console.error('Coach list error', err);
+    statusEl.textContent = 'Failed to load coaches.';
+    statusEl.classList.add('err');
   }
 }
 
+// ===== INIT =====
 document.addEventListener('DOMContentLoaded', async () => {
   const session = await ensureSession();
   if (!session) return;
