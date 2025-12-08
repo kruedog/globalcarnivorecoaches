@@ -378,6 +378,36 @@ document.getElementById("publicProfileModal").onclick = e=>{
 document.readyState==="loading"
   ? document.addEventListener("DOMContentLoaded", loadCoaches)
   : loadCoaches();
+  
+  //--------------------------------------------------
+//  Profile View Logging  (SAFE ADD-ON)
+//--------------------------------------------------
+const DASHBOARD_API = window.location.origin + '/webapi/dashboard';
+
+async function logProfileView(username) {
+  try {
+    await fetch(`${DASHBOARD_API}/log_profile_view.php`, {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      credentials: 'include',
+      body: JSON.stringify({ coach: username })
+    });
+  } catch(e) {
+    console.warn('Profile view log failed:', e);
+  }
+}
+
+// 🧩 Wrap the existing openCoachModal to log views
+const originalOpenCoachModal = openCoachModal;
+openCoachModal = function(coach) {
+  try {
+    const uname = coach.Username || coach.CoachName;
+    if (uname) logProfileView(uname);
+  } catch(e) {}
+
+  originalOpenCoachModal(coach);
+};
+
 </script>
 
 </body>
