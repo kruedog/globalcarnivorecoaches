@@ -30,12 +30,10 @@ header{
   display:flex;
   align-items:center;
   justify-content:space-between;
-  gap:1.2rem;
 }
 header h1{
   font-family:'Cinzel',serif;
   font-size:2rem;
-  margin-bottom:.25rem;
 }
 .badge{
   display:inline-block;
@@ -46,7 +44,7 @@ header h1{
 }
 .cards{
   display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+  grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
   gap:1rem;
   margin:1.8rem 0;
 }
@@ -71,37 +69,22 @@ header h1{
   font-size:.78rem;
   color:#666;
 }
-.coach-list{
-  margin-top:.4rem;
-  max-height:320px;
+.locations-list{
+  margin-top:.6rem;
+  max-height:350px;
   overflow-y:auto;
   border-top:1px solid rgba(0,0,0,.1);
 }
-.coach-row{
+.location-row{
   padding:.45rem 0;
   display:flex;
   justify-content:space-between;
   font-size:.9rem;
-  border-bottom:1px solid rgba(0,0,0,.05);
+  border-bottom:1px solid rgba(0,0,0,.04);
 }
-.coach-row span:first-child{font-weight:600}
-.status{
-  margin-top:.6rem;
-  font-size:.85rem;
-  min-height:1rem;
-}
-.status.err{color:var(--red)}
-.top-nav{
-  margin-top:1rem;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  font-size:.85rem;
-}
-.top-nav a{
-  color:var(--blue);
-  text-decoration:underline;
-}
+.location-row span:first-child{font-weight:600;}
+.status{margin-top:.6rem;font-size:.85rem;min-height:1rem;}
+.status.err{color:var(--red);}
 </style>
 </head>
 
@@ -110,7 +93,9 @@ header h1{
   <header>
     <div>
       <h1>Visitor Dashboard</h1>
-      <p>Visitor stats & Coach list (visible to logged-in coaches only).</p>
+      <p style="font-size:.9rem;opacity:.9;">
+        Visitor analytics — visible only to logged-in coaches.
+      </p>
       <span class="badge" id="userBadge"></span>
     </div>
     <div>
@@ -118,42 +103,25 @@ header h1{
     </div>
   </header>
 
-  <div class="top-nav">
-    <div>Visitor data from <code>visits.json</code> & <code>activity_log.json</code></div>
-  </div>
-
   <div class="cards">
     <div class="card">
       <h2>Today’s Visits</h2>
       <div class="big-num" id="statToday">–</div>
-      <div class="small">Unique visits today.</div>
     </div>
     <div class="card">
       <h2>Last 7 Days</h2>
       <div class="big-num" id="statWeek">–</div>
-      <div class="small">Visitors in the last week.</div>
     </div>
     <div class="card">
       <h2>All-Time Visits</h2>
       <div class="big-num" id="statTotal">–</div>
-      <div class="small">Total recorded visits.</div>
-    </div>
-    <div class="card">
-      <h2>Logins Today</h2>
-      <div class="big-num" id="statLoginsToday">–</div>
-      <div class="small">Coach logins today.</div>
     </div>
   </div>
 
   <div class="card">
-    <h2>Recent Visitor Locations</h2>
-    <div class="small">Approximate geo data</div>
-    <div id="locationList" class="coach-list"></div>
-  </div>
-
-  <div class="card" style="margin-top:1.3rem;">
-    <h2>All Coaches</h2>
-    <div class="coach-list" id="coachList"></div>
+    <h2>Visitor Locations</h2>
+    <div class="small">Geo approximations from visits.json</div>
+    <div class="locations-list" id="locationList"></div>
     <div id="dashStatus" class="status"></div>
   </div>
 </div>
@@ -161,7 +129,7 @@ header h1{
 <script>
 const API_BASE = window.location.origin + '/webapi/';
 
-// ===== CHECK LOGIN SESSION =====
+// — Session Check —
 async function ensureSession() {
   try {
     const res = await fetch(API_BASE + 'login.php', {
@@ -175,89 +143,55 @@ async function ensureSession() {
       return null;
     }
     document.getElementById('userBadge').textContent =
-      (data.username || 'coach') + ' • ' + (data.role || 'coach');
+      `${data.username || 'coach'} • ${data.role || 'coach'}`;
     return data;
-  } catch (err) {
+  } catch {
     window.location.href = '/webapi/login.html';
     return null;
   }
 }
 
-// ===== LOAD VISITOR STATS =====
+// — Load Stats + Locations —
 async function loadStats() {
+  const statusEl = document.getElementById('dashStatus');
+  statusEl.textContent = 'Loading visitor analytics…';
+
   try {
-    const res = await fetch(API_BASE + 'webapi.php?action=get_stats', { cache:'no-store' });
+    const res = await fetch(API_BASE + 'webapi.php?action=get_stats', {cache:'no-store'});
     const data = await res.json();
 
-    document.getElementById('statToday').textContent       = data.today ?? '0';
-    document.getElementById('statWeek').textContent        = data.week ?? '0';
-    document.getElementById('statTotal').textContent       = data.total ?? '0';
-    document.getElementById('statLoginsToday').textContent = data.loginsToday ?? '0';
+    document.getElementById('statToday').textContent = data.today ?? '0';
+    document.getElementById('statWeek').textContent = data.week ?? '0';
+    document.getElementById('statTotal').textContent = data.total ?? '0';
 
     const list = document.getElementById('locationList');
     list.innerHTML = '';
+
     const entries = Object.entries(data.locationCount || {}).sort((a,b)=>b[1]-a[1]);
     if (!entries.length) {
       list.innerHTML = '<div style="padding:.6rem 0;">No location data yet.</div>';
     } else {
       entries.forEach(([loc,count]) => {
         const row = document.createElement('div');
-        row.className = 'coach-row';
+        row.className = 'location-row';
         row.innerHTML = `<span>${loc || 'Unknown'}</span><span>${count}</span>`;
         list.appendChild(row);
       });
     }
 
-  } catch (err) {
-    console.error('Stats load error', err);
-  }
-}
-
-// ===== LOAD COACH LIST =====
-async function loadCoaches() {
-  const statusEl = document.getElementById('dashStatus');
-  statusEl.textContent = 'Loading coaches…';
-
-  try {
-    const res = await fetch(API_BASE + 'get_all_coaches.php', {
-      method:'GET',
-      cache:'no-store'
-    });
-    const data = await res.json();
-    const list = document.getElementById('coachList');
-    list.innerHTML = '';
-
-    if (!data.success || !Array.isArray(data.coaches) || !data.coaches.length) {
-      list.innerHTML = '<div style="padding:.6rem 0;">No coaches found.</div>';
-      statusEl.textContent = '';
-      return;
-    }
-
-    data.coaches.forEach(c => {
-      const row = document.createElement('div');
-      row.className = 'coach-row';
-      row.innerHTML = `
-        <span>${c.CoachName || c.Username || 'Coach'}</span>
-        <span>${(c.Role || 'coach').toUpperCase()}</span>
-      `;
-      list.appendChild(row);
-    });
-
     statusEl.textContent = '';
 
-  } catch (err) {
-    console.error('Coach list error', err);
-    statusEl.textContent = 'Failed to load coaches.';
+  } catch(err) {
+    console.error('Stats error', err);
+    statusEl.textContent = 'Analytics unavailable.';
     statusEl.classList.add('err');
   }
 }
 
-// ===== INIT =====
 document.addEventListener('DOMContentLoaded', async () => {
   const session = await ensureSession();
   if (!session) return;
   await loadStats();
-  await loadCoaches();
 });
 </script>
 </body>
