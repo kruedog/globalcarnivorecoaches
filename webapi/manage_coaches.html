@@ -1,201 +1,22 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8"/>
-<title>Manage Coaches • Global Carnivore Coaches</title>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
-<link rel="icon" type="image/png" href="/images/earth_steak.png">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Cinzel:wght@700&display=swap" rel="stylesheet">
-<style>
-:root {
-  --red:#C51230;
-  --dark:#121212;
-  --light:#f8f9fa;
-  --card:#ffffff;
-  --border:#e0e0e0;
-  --blue:#192168;
-}
-body {
-  margin:0;
-  font-family:'Inter',sans-serif;
-  background:var(--light);
-  color:#111;
-}
-header {
-  background:var(--dark);
-  color:#fff;
-  padding:1.5rem 1rem;
-  box-shadow:0 6px 24px rgba(0,0,0,.35);
-}
-header h1 {
-  margin:0;
-  font-family:'Cinzel',serif;
-  font-size:2rem;
-}
-header .sub {
-  margin-top:.4rem;
-  font-size:.9rem;
-  opacity:.9;
-}
-.top-links {
-  display:flex;
-  gap:.6rem;
-  font-size:.85rem;
-  margin-top:.5rem;
-}
-.top-links a {
-  color:#ffe;
-  text-decoration:underline;
-}
-main {
-  max-width:1200px;
-  margin:1.5rem auto;
-  padding:0 1rem 2rem;
-  display:grid;
-  grid-template-columns: minmax(260px, 1.4fr) minmax(320px, 1.8fr);
-  gap:1.5rem;
-}
-@media (max-width:900px) {
-  main {
-    grid-template-columns:1fr;
-  }
-}
-.card {
-  background:var(--card);
-  border-radius:16px;
-  padding:1.5rem;
-  box-shadow:0 8px 28px rgba(0,0,0,.08);
-  border:1px solid var(--border);
-}
-h2 {
-  margin-top:0;
-  font-family:'Cinzel',serif;
-  font-size:1.3rem;
-}
-.coach-list {
-  max-height:480px;
-  overflow-y:auto;
-  border-top:1px solid var(--border);
-  margin-top:.75rem;
-}
-.coach-row {
-  padding:.7rem .2rem;
-  border-bottom:1px solid var(--border);
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:.5rem;
-  cursor:pointer;
-}
-.coach-row:hover {
-  background:#f3f3f3;
-}
-.coach-row.active {
-  background:#ffecee;
-}
-.coach-name {
-  font-weight:600;
-}
-.coach-user {
-  font-size:.8rem;
-  opacity:.7;
-}
-.badge {
-  display:inline-block;
-  background:#222;
-  color:#fff;
-  padding:.1rem .4rem;
-  border-radius:999px;
-  font-size:.7rem;
-  margin-left:.4rem;
-}
-.toolbar {
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:.5rem;
-  margin-top:.5rem;
-  flex-wrap:wrap;
-}
-.btn {
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  padding:.45rem .9rem;
-  border-radius:999px;
-  border:1px solid var(--border);
-  background:#fff;
-  font-size:.85rem;
-  font-weight:600;
-  cursor:pointer;
-  gap:.35rem;
-}
-.btn-primary {
-  background:var(--red);
-  color:#fff;
-  border-color:#8e0d23;
-}
-.btn-danger {
-  background:#111;
-  color:#fff;
-  border-color:#000;
-}
-.btn:disabled {
-  opacity:.4;
-  cursor:default;
-}
-form label {
-  display:block;
-  font-size:.85rem;
-  font-weight:600;
-  margin-top:.6rem;
-}
-form input, form textarea, form select {
-  width:100%;
-  padding:.45rem .55rem;
-  border-radius:8px;
-  border:1px solid var(--border);
-  font-family:inherit;
-  font-size:.9rem;
-  margin-top:.15rem;
-  box-sizing:border-box;
-}
-form textarea {
-  min-height:90px;
-  resize:vertical;
-}
-small.helper {
-  display:block;
-  font-size:.75rem;
-  opacity:.7;
-  margin-top:.2rem;
-}
-.two-cols {
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:.75rem;
-}
-@media (max-width:600px) {
-  .two-cols {
-    grid-template-columns:1fr;
-  }
-}
-.status {
-  margin-top:.7rem;
-  font-size:.85rem;
-  min-height:1rem;
-}
-.status.ok {
-  color:green;
-}
-.status.err {
-  color:var(--red);
-}
-</style>
-</head>
-<body>
+  <meta charset="utf-8"/>
+  <title>Manage Coaches • Global Carnivore Coaches</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <link rel="icon" type="image/png" href="/images/earth_steak.png">
 
-<header>
+  <!-- Fonts (same as index/profile) -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Cinzel:wght@700&display=swap" rel="stylesheet">
+
+  <!-- Global site theme -->
+  <link rel="stylesheet" href="/css/global.css">
+  <!-- Admin layout & components -->
+  <link rel="stylesheet" href="/css/admin.css">
+</head>
+<body class="admin-page">
+
+<header class="admin-header">
   <h1>Manage Coaches</h1>
   <div class="sub">Admin-only view. Edits are written directly to <code>uploads/coaches.json</code>.</div>
   <div class="top-links">
@@ -204,7 +25,7 @@ small.helper {
   </div>
 </header>
 
-<main>
+<main class="admin-main">
   <!-- LEFT: COACH LIST -->
   <section class="card">
     <div class="toolbar">
@@ -235,7 +56,12 @@ small.helper {
         <option value="coach">Coach</option>
         <option value="admin">Admin</option>
       </select>
-      <small class="helper">Only <strong>Admin</strong> can access this page and manage coaches.</small>
+      <small class="helper">Only <strong>Admin</strong> can access this page.</small>
+
+      <!-- Display Order -->
+      <label for="displayOrder">Display Order</label>
+      <input id="displayOrder" name="displayOrder" type="number" min="1" placeholder="1 = first shown">
+      <small class="helper">Controls placement on homepage — lower number = top-left.</small>
 
       <label for="bio">Bio</label>
       <textarea id="bio" name="bio"></textarea>
@@ -282,7 +108,7 @@ small.helper {
 </main>
 
 <script>
-const API_BASE = window.location.origin + '/webapi/';
+const API_BASE   = window.location.origin + '/webapi/';
 const COACHES_URL = '/uploads/coaches.json';
 const SAVE_URL    = API_BASE + 'save_coach.php';
 
@@ -303,6 +129,7 @@ function setStatus(msg, ok = true) {
   statusEl.className = 'status ' + (msg ? (ok ? 'ok' : 'err') : '');
 }
 
+// Simple admin check using existing login.php
 async function ensureAdmin() {
   try {
     const res = await fetch(API_BASE + 'login.php', {
@@ -330,10 +157,12 @@ function renderList() {
   }
 
   coachListEl.innerHTML = coaches.map(c => {
-    const name = c.CoachName || c.Username || 'Coach';
-    const user = c.Username || '';
-    const role = (c.Role || 'coach').toUpperCase();
-    const last = c.last_login ? new Date(c.last_login).toLocaleString() : '';
+    const name  = c.CoachName || c.Username || 'Coach';
+    const user  = c.Username || '';
+    const role  = (c.Role || 'coach').toUpperCase();
+    const order = c.DisplayOrder ? `<span class="badge">#${c.DisplayOrder}</span>` : '';
+    const last  = c.last_login ? new Date(c.last_login).toLocaleString() : '';
+
     return `
       <div class="coach-row" data-username="${user}">
         <div>
@@ -342,6 +171,7 @@ function renderList() {
         </div>
         <div>
           <span class="badge">${role}</span>
+          ${order}
           ${last ? `<span class="badge">Last: ${last}</span>` : ''}
         </div>
       </div>`;
@@ -363,12 +193,14 @@ function renderList() {
 function fillForm(coach) {
   formTitle.textContent = coach ? `Editing: ${coach.CoachName || coach.Username}` : 'New Coach';
 
-  usernameEl.value       = coach?.Username || '';
-  usernameEl.readOnly    = !!coach?.Username;
-  document.getElementById('coachName').value    = coach?.CoachName || '';
-  document.getElementById('email').value        = coach?.Email || '';
-  document.getElementById('role').value         = (coach?.Role || 'coach').toLowerCase();
-  document.getElementById('bio').value          = coach?.Bio || '';
+  usernameEl.value                        = coach?.Username || '';
+  usernameEl.readOnly                     = !!coach?.Username;
+  document.getElementById('coachName').value   = coach?.CoachName || '';
+  document.getElementById('email').value       = coach?.Email || '';
+  document.getElementById('role').value        = (coach?.Role || 'coach').toLowerCase();
+  document.getElementById('displayOrder').value = coach?.DisplayOrder || '';
+
+  document.getElementById('bio').value = coach?.Bio || '';
 
   let specs = '';
   if (Array.isArray(coach?.Specializations)) {
@@ -391,10 +223,14 @@ function fillForm(coach) {
 
 function selectCoach(username) {
   currentUsername = username;
-  const coach = coaches.find(c => (c.Username || '').toLowerCase() === String(username).toLowerCase());
+  const coach = coaches.find(c =>
+    (c.Username || '').toLowerCase() === String(username).toLowerCase()
+  );
+
   coachListEl.querySelectorAll('.coach-row').forEach(r => r.classList.remove('active'));
   const activeRow = coachListEl.querySelector(`[data-username="${username}"]`);
   if (activeRow) activeRow.classList.add('active');
+
   fillForm(coach || null);
   setStatus('');
 }
@@ -402,9 +238,11 @@ function selectCoach(username) {
 async function loadCoaches() {
   setStatus('Loading coaches…', true);
   try {
-    const res = await fetch(COACHES_URL + '?t=' + Date.now());
+    const res  = await fetch(COACHES_URL + '?t=' + Date.now());
     const data = await res.json();
-    coaches = Array.isArray(data) ? data : [];
+    coaches = Array.isArray(data)
+      ? data.sort((a, b) => (a.DisplayOrder ?? 999) - (b.DisplayOrder ?? 999))
+      : [];
     renderList();
     setStatus('');
   } catch (err) {
@@ -432,6 +270,7 @@ form.addEventListener('submit', async (e) => {
     CoachName:     document.getElementById('coachName').value.trim(),
     Email:         document.getElementById('email').value.trim(),
     Role:          document.getElementById('role').value.trim(),
+    DisplayOrder:  parseInt(document.getElementById('displayOrder').value) || 999,
     Bio:           document.getElementById('bio').value,
     Specializations: document.getElementById('specializations').value,
     Profile:       document.getElementById('profile').value.trim(),
@@ -454,6 +293,7 @@ form.addEventListener('submit', async (e) => {
       body: JSON.stringify(payload)
     });
     const out = await res.json();
+
     if (!out.success) {
       setStatus(out.message || 'Save failed.', false);
       return;
@@ -474,9 +314,7 @@ btnDelete.addEventListener('click', async () => {
   const username = usernameEl.value.trim();
   if (!username) return;
 
-  if (!confirm(`Delete coach "${username}"? This cannot be undone.`)) {
-    return;
-  }
+  if (!confirm(`Delete coach "${username}"? This cannot be undone.`)) return;
 
   setStatus('Deleting coach…', true);
 
@@ -488,6 +326,7 @@ btnDelete.addEventListener('click', async () => {
       body: JSON.stringify({ action: 'delete', Username: username })
     });
     const out = await res.json();
+
     if (!out.success) {
       setStatus(out.message || 'Delete failed.', false);
       return;
