@@ -59,7 +59,7 @@ body.admin-page {
   }
 }
 
-/* Use same card style idea as site, but scoped for admin */
+/* Card (reuses brand but scoped for admin) */
 .admin-page .card {
   background: linear-gradient(180deg, var(--off-white), #C8C8C8);
   padding: 1.5rem;
@@ -78,7 +78,7 @@ body.admin-page {
   flex-wrap: wrap;
 }
 
-/* Button system (matches brand buttons on public site) */
+/* Buttons (align with brand style) */
 .btn {
   display: inline-flex;
   align-items: center;
