@@ -268,45 +268,64 @@ fetch('/webapi/track_visit.php', {
 <script>
 const COACHES_JSON_URL = "https://globalcarnivorecoaches.onrender.com/uploads/coaches.json";
 
-function fixPath(p){
-  if(!p) return "";
+function fixPath(p) {
+  if (!p) return "";
   return "/uploads/" + String(p)
-    .replace(/^https?:\/\/[^/]+\/+/i,"")
-    .replace(/^\/?uploads\/+/i,"")
-    .replace(/^public\/+/i,"");
+    .replace(/^https?:\/\/[^/]+\/+/i, "")
+    .replace(/^\/?uploads\/+/i, "")
+    .replace(/^public\/+/i, "");
 }
 
-function getSpecs(raw){
-  if(!raw) return [];
-  if(Array.isArray(raw)) return raw;
+function getSpecs(raw) {
+  if (!raw) return [];
+  if (Array.isArray(raw)) return raw;
   return String(raw)
     .split(/[;,|]/)
-    .map(s=>s.trim())
+    .map(s => s.trim())
     .filter(Boolean);
 }
 
-async function loadCoaches(){
-  try{
-    const res = await fetch(COACHES_JSON_URL, {cache:"no-store"});
-    const data = await res.json();
+async function loadCoaches() {
+  const gallery = document.getElementById("coachGallery");
+  gallery.innerHTML = `<div style="padding:20px;color:var(--muted);">Loading coaches…</div>`;
 
-    const gallery = document.getElementById("coachGallery");
+  try {
+    const res = await fetch(COACHES_JSON_URL + "?t=" + Date.now(), { cache: "no-store" });
+    let data = await res.json();
+
+    // 🔥 Sort logically: DisplayOrder (numeric) then name
+    data = Array.isArray(data)
+      ? data.slice().sort((a, b) => {
+          const da = Number(a.DisplayOrder) || 999;
+          const db = Number(b.DisplayOrder) || 999;
+          if (da !== db) return da - db;
+          return (a.CoachName || "").localeCompare(b.CoachName || "");
+        })
+      : [];
+
     gallery.innerHTML = "";
 
-    data.forEach(coach=>{
+    if (data.length === 0) {
+      gallery.innerHTML = `<div style="padding:20px;color:var(--muted);">No coaches yet.</div>`;
+      return;
+    }
+
+    data.forEach(coach => {
       const files = coach.Files || {};
-      const profileImg = fixPath(files.Profile) || "images/WolfCoach_Profile.png";
+      const img = fixPath(files.Profile) || "images/WolfCoach_Profile.png";
 
       const card = document.createElement("div");
       card.className = "coach-card";
       card.innerHTML = `
-        <a href="#" class="tile coach-tile">
-          <img src="${profileImg}">
-        </a>
-        <button class="view-btn">View Profile</button>
+        <button class="tile coach-tile" aria-label="View ${coach.CoachName || coach.Username}">
+          <img src="${img}" loading="lazy" alt="Coach photo">
+        </button>
+        <button class="view-btn" aria-label="View ${coach.CoachName || coach.Username} profile">
+          View Profile
+        </button>
       `;
 
-      const open = evt=>{
+      const open = evt => {
         evt.preventDefault();
         openCoachModal(coach);
       };
@@ -315,19 +334,20 @@ async function loadCoaches(){
 
       gallery.appendChild(card);
     });
-  }
-  catch(err){
+
+  } catch (err) {
     console.error("Error loading coaches.json:", err);
+    gallery.innerHTML = `<div style="color:red;padding:20px;">Failed to load coaches</div>`;
   }
 }
 
-function openCoachModal(coach){
+
+function openCoachModal(coach) {
   const files = coach.Files || {};
-  const name = coach.CoachName || coach.Username || "Coach";
+  const name  = coach.CoachName || coach.Username || "Coach";
   const email = coach.Email || "";
 
   document.getElementById("modalName").textContent = name;
-
   const emailEl = document.getElementById("modalEmail");
   emailEl.textContent = email;
   emailEl.href = email ? `mailto:${email}` : "#";
@@ -336,79 +356,76 @@ function openCoachModal(coach){
     fixPath(files.Profile) || "images/WolfCoach_Profile.png";
 
   document.getElementById("modalBio").innerHTML =
-    String(coach.Bio||"").replace(/\n/g,"<br>");
+    String(coach.Bio || "").replace(/\n/g, "<br>");
 
   const ba = document.getElementById("beforeAfterContainer");
   ba.innerHTML = "";
-  ["Before","After"].forEach(key=>{
-    if(files[key]){
-      ba.innerHTML += `<img src="${fixPath(files[key])}">`;
+  ["Before","After"].forEach(key => {
+    if (files[key]) {
+      ba.innerHTML += `<img src="${fixPath(files[key])}" loading="lazy">`;
     }
   });
 
   const specs = getSpecs(coach.Specializations);
   document.getElementById("specList").innerHTML =
-    specs.map(s=>`<li>${s}</li>`).join("");
+    specs.map(s => `<li>${s}</li>`).join("");
 
   const certBox = document.getElementById("certificateContainer");
   certBox.innerHTML = files.Certificate
-    ? `<img src="${fixPath(files.Certificate)}">`
+    ? `<img src="${fixPath(files.Certificate)}" loading="lazy">`
     : "";
 
-  document.getElementById("bookCoach").onclick = ()=>{
-    if(email) window.location.href = `mailto:${email}`;
+  document.getElementById("bookCoach").onclick = () => {
+    if (email) window.location.href = `mailto:${email}`;
   };
 
-  document.getElementById("publicProfileModal").classList.add("show");
+  // Show modal, trap focus
+  const modal = document.getElementById("publicProfileModal");
+  modal.classList.add("show");
+  modal.setAttribute("aria-modal", "true");
+  modal.setAttribute("role", "dialog");
+  document.body.style.overflow = "hidden";
+  document.getElementById("closeModal").focus();
+
+  // Log view
+  try {
+    logProfileView(coach.Username || coach.CoachName);
+  } catch {}
 }
 
-document.getElementById("closeModal").onclick = () =>
-  document.getElementById("publicProfileModal").classList.remove("show");
-
-document.addEventListener("keydown", e=>{
-  if(e.key==="Escape")
-    document.getElementById("publicProfileModal").classList.remove("show");
+// Close modal anywhere outside shell
+document.getElementById("publicProfileModal").onclick = e => {
+  if (e.target === e.currentTarget) closeModal();
+};
+document.getElementById("closeModal").onclick = () => closeModal();
+document.addEventListener("keydown", e => {
+  if (e.key === "Escape") closeModal();
 });
 
-document.getElementById("publicProfileModal").onclick = e=>{
-  if(e.target===e.currentTarget)
-    e.currentTarget.classList.remove("show");
-};
+function closeModal() {
+  const m = document.getElementById("publicProfileModal");
+  m.classList.remove("show");
+  document.body.style.overflow = "";
+}
 
+// Logging
+const DASHBOARD_API = window.location.origin + '/webapi/dashboard';
+async function logProfileView(username) {
+  if (!username) return;
+  await fetch(`${DASHBOARD_API}/log_profile_view.php`, {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    credentials: 'include',
+    body: JSON.stringify({ coach: username })
+  }).catch(() => {});
+}
+
+// Init
 document.readyState==="loading"
   ? document.addEventListener("DOMContentLoaded", loadCoaches)
   : loadCoaches();
-  
-  //--------------------------------------------------
-//  Profile View Logging  (SAFE ADD-ON)
-//--------------------------------------------------
-const DASHBOARD_API = window.location.origin + '/webapi/dashboard';
-
-async function logProfileView(username) {
-  try {
-    await fetch(`${DASHBOARD_API}/log_profile_view.php`, {
-      method: 'POST',
-      headers: {'Content-Type':'application/json'},
-      credentials: 'include',
-      body: JSON.stringify({ coach: username })
-    });
-  } catch(e) {
-    console.warn('Profile view log failed:', e);
-  }
-}
-
-// 🧩 Wrap the existing openCoachModal to log views
-const originalOpenCoachModal = openCoachModal;
-openCoachModal = function(coach) {
-  try {
-    const uname = coach.Username || coach.CoachName;
-    if (uname) logProfileView(uname);
-  } catch(e) {}
-
-  originalOpenCoachModal(coach);
-};
-
 </script>
+
 
 </body>
 </html>
