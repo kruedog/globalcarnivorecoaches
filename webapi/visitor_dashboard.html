@@ -33,11 +33,7 @@ header{
   justify-content:space-between;
   gap:1.2rem;
 }
-header h1{
-  font-family:'Cinzel',serif;
-  font-size:2rem;
-}
-header p{font-size:.9rem;opacity:.9;}
+header h1{font-family:'Cinzel',serif;font-size:2rem;}
 .badge{
   display:inline-block;
   padding:.15rem .6rem;
@@ -68,7 +64,6 @@ header p{font-size:.9rem;opacity:.9;}
   margin-top:.4rem;
 }
 #refreshStatus{
-  margin-top:.3rem;
   font-size:.85rem;
   color:var(--blue);
   font-weight:600;
@@ -89,11 +84,12 @@ header p{font-size:.9rem;opacity:.9;}
   font-size:.9rem;
   border-bottom:1px solid rgba(0,0,0,.04);
 }
-.status.err{color:var(--red);}
 .cols{display:flex;gap:1rem;flex-wrap:wrap;}
 .leader-list .leader-row{
-  display:flex;justify-content:space-between;
-  padding:.4rem 0;font-size:.88rem;
+  display:flex;
+  justify-content:space-between;
+  padding:.4rem 0;
+  font-size:.88rem;
   border-bottom:1px solid rgba(0,0,0,.06);
 }
 </style>
@@ -114,22 +110,10 @@ header p{font-size:.9rem;opacity:.9;}
 
 <!-- Summary cards -->
 <div class="cards">
-  <div class="card">
-    <h2>Today’s Visits</h2>
-    <div class="big-num" id="statToday">–</div>
-  </div>
-  <div class="card">
-    <h2>Last 7 Days</h2>
-    <div class="big-num" id="statWeek">–</div>
-  </div>
-  <div class="card">
-    <h2>All-Time Visits</h2>
-    <div class="big-num" id="statTotal">–</div>
-  </div>
-  <div class="card">
-    <h2>All-Time Profile Views</h2>
-    <div class="big-num" id="statProfileTotal">–</div>
-  </div>
+  <div class="card"><h2>Today’s Visits</h2><div class="big-num" id="statToday">–</div></div>
+  <div class="card"><h2>Last 7 Days</h2><div class="big-num" id="statWeek">–</div></div>
+  <div class="card"><h2>All-Time Visits</h2><div class="big-num" id="statTotal">–</div></div>
+  <div class="card"><h2>All-Time Profile Views</h2><div class="big-num" id="statProfileTotal">–</div></div>
 </div>
 
 <!-- Visits chart -->
@@ -139,26 +123,27 @@ header p{font-size:.9rem;opacity:.9;}
   <div class="chart-inner"><canvas id="visitsChart"></canvas></div>
 </div>
 
-<!-- Profile views -->
+<!-- Profile views chart -->
 <div class="card chart-wrap">
   <h2>Profile Views — Last 14 Days</h2>
   <div class="small">Public & coach view events</div>
   <div class="chart-inner"><canvas id="profileChart"></canvas></div>
 </div>
 
-<!-- Top coaches -->
+<!-- Top coaches leaderboard -->
 <div class="card" style="margin-top:1.3rem;">
   <h2>Top Coaches (Total Views)</h2>
   <div class="leader-list" id="leaderList"></div>
 </div>
 
-<!-- Locations -->
+<!-- Visitor Locations -->
 <div class="card" style="margin-top:1.3rem;">
   <h2>Visitor Locations</h2>
   <div class="small">Geo approximations from visits.json</div>
   <div class="locations-list" id="locationList"></div>
   <div id="dashStatus" class="status"></div>
 </div>
+
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -168,15 +153,30 @@ const DASH_API = API_BASE + 'dashboard/';
 let visitsChartObj = null;
 let profileChartObj = null;
 
+// 🔹 Coach Name Map (username → CoachName)
+let coachNameMap = {};
+async function loadCoachNames(){
+  try{
+    const res = await fetch('/uploads/coaches.json', {cache:'no-store'});
+    const data = await res.json();
+    data.forEach(c=>{
+      const uname = (c.Username||'').toLowerCase();
+      const cname = c.CoachName || c.Username;
+      if(uname) coachNameMap[uname] = cname;
+    });
+  }catch(err){ console.warn("Coach name load failed:",err); }
+}
+
+// Session check
 async function ensureSession(){
   try{
-    const res = await fetch(API_BASE + 'login.php',{credentials:'include'});
+    const res = await fetch(API_BASE+'login.php',{credentials:'include'});
     const data = await res.json();
     if(!data.success){
       window.location.href='/webapi/login.html';
       return null;
     }
-    document.getElementById('userBadge').textContent = (data.username||'coach');
+    document.getElementById('userBadge').textContent = data.username;
     return data;
   }catch(err){
     window.location.href='/webapi/login.html';
@@ -185,116 +185,118 @@ async function ensureSession(){
 }
 
 function showRefresh(){
-  const rs=document.getElementById('refreshStatus');
-  rs.classList.add('show');
-  setTimeout(()=>rs.classList.remove('show'),1500);
+  const e=document.getElementById('refreshStatus');
+  e.classList.add('show');
+  setTimeout(()=>e.classList.remove('show'),1200);
 }
-
 function updateTimestamp(){
-  const now=new Date();
   document.getElementById('updateTime')
-    .textContent = 'Last updated: ' +
-    now.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit',second:'2-digit'});
+    .textContent = 'Last updated: ' + new Date().toLocaleTimeString();
 }
 
-// VISIT STATS
+// Visits summary
 async function loadStats(){
   showRefresh();
   try{
-    const res=await fetch(API_BASE+'webapi.php?action=get_stats',{credentials:'include'});
-    const data=await res.json();
+    const res = await fetch(API_BASE+'webapi.php?action=get_stats',{credentials:'include'});
+    const data = await res.json();
     document.getElementById('statToday').textContent = data.today ?? 0;
     document.getElementById('statWeek').textContent  = data.week ?? 0;
     document.getElementById('statTotal').textContent = data.total ?? 0;
 
     const list=document.getElementById('locationList');
     list.innerHTML='';
-    for(const [loc,count] of Object.entries(data.locationCount || {}).sort((a,b)=>b[1]-a[1])){
+    for(const [loc,count] of Object.entries(data.locationCount||{}).sort((a,b)=>b[1]-a[1])){
       const row=document.createElement('div');
       row.className='location-row';
       row.innerHTML=`<span>${loc||'Unknown'}</span><span>${count}</span>`;
       list.appendChild(row);
     }
-    updateTimestamp();
   }catch(err){
     document.getElementById('dashStatus').textContent='Analytics unavailable.';
   }
 }
 
-// VISITS CHART
+// Visits chart
 async function loadVisitChart(){
   try{
-    const res=await fetch(API_BASE+'webapi.php?action=get_visits_14days',{credentials:'include'});
-    const data=await res.json();
+    const res = await fetch(API_BASE+'webapi.php?action=get_visits_14days',{credentials:'include'});
+    const data = await res.json();
     if(!Array.isArray(data.points))return;
     const labels=data.points.map(p=>p.date);
     const counts=data.points.map(p=>p.count);
     const ctx=document.getElementById('visitsChart').getContext('2d');
-    const gradient=ctx.createLinearGradient(0,0,0,220);
-    gradient.addColorStop(0,'rgba(175,30,45,0.45)');
-    gradient.addColorStop(1,'rgba(25,33,104,0.05)');
     if(visitsChartObj) visitsChartObj.destroy();
+    const grad=ctx.createLinearGradient(0,0,0,220);
+    grad.addColorStop(0,'rgba(175,30,45,0.45)');
+    grad.addColorStop(1,'rgba(25,33,104,0.05)');
     visitsChartObj=new Chart(ctx,{
       type:'line',
-      data:{labels,datasets:[{data:counts,borderColor:'var(--red)',backgroundColor:gradient,fill:true,tension:0.35}]},
+      data:{labels,datasets:[{data:counts,borderColor:'var(--red)',backgroundColor:grad,fill:true,tension:.35}]},
       options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}}}
     });
   }catch(err){}
 }
 
-// PROFILE DATA + CHART
+// Profile views
 async function loadProfileViews(){
   try{
-    const res=await fetch(DASH_API+'get_profile_views.php',{credentials:'include'});
-    const data=await res.json();
-    if(!data.success) return;
+    const res = await fetch(DASH_API+'get_profile_views.php',{credentials:'include'});
+    const data = await res.json();
+    if(!data.success)return;
 
     document.getElementById('statProfileTotal').textContent = data.total_views ?? 0;
 
-    // History to 14-day aggregate
+    // Build 14-day history
     const now=new Date();
-    let dayMap={};
+    let dm={};
     for(let i=13;i>=0;i--){
-      let d=new Date(now);
+      const d=new Date(now);
       d.setDate(d.getDate()-i);
-      dayMap[d.toISOString().split('T')[0]]=0;
+      dm[d.toISOString().split('T')[0]] = 0;
     }
     (data.history||[]).forEach(r=>{
-      if(dayMap[r.date]!==undefined) dayMap[r.date]+=r.views;
+      if(dm[r.date]!==undefined) dm[r.date]+=r.views;
     });
-    const labels=Object.keys(dayMap);
-    const views=Object.values(dayMap);
+    const labels=Object.keys(dm);
+    const counts=Object.values(dm);
 
     const ctx=document.getElementById('profileChart').getContext('2d');
+    if(profileChartObj) profileChartObj.destroy();
     const grad=ctx.createLinearGradient(0,0,0,220);
     grad.addColorStop(0,'rgba(25,33,104,0.45)');
     grad.addColorStop(1,'rgba(175,30,45,0.05)');
-    if(profileChartObj) profileChartObj.destroy();
     profileChartObj=new Chart(ctx,{
       type:'line',
-      data:{labels,datasets:[{data:views,borderColor:'var(--blue)',backgroundColor:grad,fill:true,tension:0.35}]},
+      data:{labels,datasets:[{data:counts,borderColor:'var(--blue)',backgroundColor:grad,fill:true,tension:0.35}]},
       options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}}}
     });
 
+    // Leaderboard — CoachName display
     const leaders=document.getElementById('leaderList');
     leaders.innerHTML=(Object.entries(data.totals_per_coach||{})
       .sort((a,b)=>b[1]-a[1])
       .slice(0,5)
-      .map(([name,count])=>`<div class="leader-row"><span>${name}</span><span>${count}</span></div>`)
-      .join('')) || '<div>No data yet</div>';
+      .map(([uname,count])=>{
+        const display = coachNameMap[uname] || uname;
+        return `<div class="leader-row"><span>${display}</span><span>${count}</span></div>`;
+      }).join('')) || '<div>No data yet</div>';
 
   }catch(err){}
 }
 
-// INIT
+// INIT (login-gate)
 document.addEventListener('DOMContentLoaded', async ()=>{
-  const ses=await ensureSession();
+  const ses = await ensureSession();
   if(!ses)return;
+
+  await loadCoachNames();     // <-- Load CoachName mapping first
   await loadStats();
   await loadVisitChart();
   await loadProfileViews();
+  updateTimestamp();
 
-  // AUTO REFRESH every 60s
+  // Auto-refresh every 60s
   setInterval(async ()=>{
     showRefresh();
     await loadStats();
