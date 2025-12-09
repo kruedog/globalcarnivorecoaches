@@ -1,116 +1,107 @@
 /* ============================================
-   Global Carnivore Coaches - Modal System
-   FINAL SHARED VERSION
-   Works on: index.html + profile.html
+   Global Carnivore Coaches - Shared Modal
+   FINAL — December 2025
 ============================================ */
+const GCCModals = (function() {
 
-const GCCModals = (function () {
-  const ANIM_TIME = 120;
+  const ANIM = 150; // fade timing
 
-  function fetchModalHtml() {
-    return fetch('/components/modal-coach.html')
-      .then(r => r.text());
+  function closeModal() {
+    const overlay = document.getElementById('coachModal');
+    if (!overlay) return;
+    overlay.style.opacity = '0';
+    setTimeout(() => overlay.remove(), ANIM);
   }
 
   function img(file) {
-    return file ? `/uploads/${file}?v=${Date.now()}` : "images/earth_steak.png";
+    if (!file) return '/images/earth_steak.png';
+    return `/uploads/${file}?v=${Date.now()}`;
   }
 
-  function populateModal(coach) {
-    const files = coach.Files || {};
-    const name = coach.CoachName || coach.Username || "Coach";
+  function populate(coach) {
+    document.getElementById('coachName').textContent =
+      coach.CoachName || coach.Username;
 
-    // Name + Profile
-    document.getElementById("modalName").textContent = name;
-    document.getElementById("modalProfilePic").src = img(files.Profile);
+    const files = coach.Files || {};
+
+    // Profile
+    document.getElementById('coachProfilePic').src = img(files.Profile);
 
     // Bio
-    const bioBox = document.getElementById("modalBio");
-    bioBox.innerHTML = "";
-    (coach.Bio || "").split(/\n+/).forEach(line => {
-      const p = document.createElement("p");
-      p.textContent = line.trim();
-      bioBox.appendChild(p);
+    const box = document.getElementById('coachBio');
+    box.innerHTML = '';
+    (coach.Bio || '').split(/\n+/).forEach(line => {
+      if (line.trim()) {
+        const p = document.createElement('p');
+        p.textContent = line.trim();
+        box.appendChild(p);
+      }
     });
 
-    // Before/After
-    const ba = document.getElementById("beforeAfterContainer");
-    ba.innerHTML = "";
-    ["Before", "After"].forEach(slot => {
-      const file = files[slot];
-      if (!file) return;
-      const imgEl = document.createElement("img");
-      imgEl.src = img(file);
-      ba.appendChild(imgEl);
+    // Before / After
+    const ba = document.getElementById('beforeAfter');
+    ba.innerHTML = '';
+    ['Before','After'].forEach(slot => {
+      if (files[slot]) {
+        const imgEl = document.createElement('img');
+        imgEl.src = img(files[slot]);
+        ba.appendChild(imgEl);
+      }
     });
 
-    // Specializations
-    const specBox = document.getElementById("specList");
-    const rawSpecs = coach.Specializations || [];
-    const specs = Array.isArray(rawSpecs) ? rawSpecs : String(rawSpecs)
-      .split(/[;,|]/)
-      .map(s => s.trim())
-      .filter(Boolean);
+    // Specs
+    const specs = Array.isArray(coach.Specializations)
+      ? coach.Specializations
+      : (coach.Specializations || '').split(/[;|,]/).map(s => s.trim()).filter(Boolean);
 
-    specBox.innerHTML = specs.map(s => `<li>${s}</li>`).join("");
+    const ul = document.getElementById('coachSpecs');
+    ul.innerHTML = '';
+    specs.forEach(s => {
+      const li = document.createElement('li');
+      li.textContent = s;
+      ul.appendChild(li);
+    });
 
-    // Certificates
-    const certBox = document.getElementById("certificateContainer");
-    certBox.innerHTML = files.Certificate
+    // Certificate
+    const cert = document.getElementById('coachCertificates');
+    cert.innerHTML = files.Certificate
       ? `<img src="${img(files.Certificate)}">`
-      : "";
+      : '';
 
-    // Book button → open /book.html
-    document.getElementById("bookCoach").onclick = () => {
-      const user = coach.Username || coach.CoachName || "";
-      window.location.href = "/book.html?coach=" + encodeURIComponent(user);
+    // Book button → coach username
+    document.getElementById('bookBtn').onclick = () => {
+      const u = coach.Username || coach.CoachName || '';
+      window.location.href = "/book.html?coach=" + encodeURIComponent(u);
     };
   }
 
-  function closeModal(e) {
-    if (e) e.preventDefault();
-    const overlay = document.getElementById('coachModalOverlay');
-    if (!overlay) return;
-    overlay.style.opacity = "0";
-    setTimeout(() => overlay.remove(), ANIM_TIME);
-    document.body.style.overflow = "";
-  }
-
   function openCoachModal(coach) {
+    // Remove old modal if necessary
     closeModal();
 
-    fetchModalHtml().then(html => {
-      const wrap = document.createElement('div');
-      wrap.id = 'coachModalOverlay';
-      wrap.innerHTML = html;
-      wrap.style.opacity = "0";
-      wrap.style.transition = `opacity ${ANIM_TIME}ms ease`;
-      document.body.appendChild(wrap);
+    fetch('/components/modal-coach.html')
+      .then(r => r.text())
+      .then(html => {
+        const temp = document.createElement('div');
+        temp.innerHTML = html;
 
-      requestAnimationFrame(() => wrap.style.opacity = "1");
-      document.body.style.overflow = "hidden";
+        const modal = temp.firstElementChild;
+        modal.style.opacity = '0';
 
-      populateModal(coach);
+        document.body.appendChild(modal);
 
-      // Close events
-      wrap.addEventListener("click", e => {
-        if (e.target.id === 'coachModalOverlay') closeModal();
+        populate(coach);
+
+        // Show
+        requestAnimationFrame(() => modal.style.opacity = '1');
+
+        // Close actions
+        modal.querySelector('.gcc-modal-close').onclick = closeModal;
+        modal.addEventListener('click', e => {
+          if (e.target === modal) closeModal();
+        });
       });
-      const btnClose = wrap.querySelector(".modal-close");
-      if (btnClose) btnClose.onclick = closeModal;
-
-      document.addEventListener("keydown", escClose);
-    });
   }
 
-  function escClose(e) {
-    if (e.key === "Escape") closeModal();
-    document.removeEventListener("keydown", escClose);
-  }
-
-  return {
-    openCoachModal,
-    closeModal
-  };
-
+  return { openCoachModal, closeModal };
 })();
