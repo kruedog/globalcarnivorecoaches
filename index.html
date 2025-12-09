@@ -112,7 +112,7 @@ fetch('/webapi/track_visit.php', {
           <h3>How It Works</h3>
           <ol>
             <li>Discovery call</li>
-            <li>Custom blueprint</td>
+            <li>Custom blueprint</li>
             <li>Track wins weekly</li>
             <li>Thrive for life</li>
           </ol>
@@ -145,34 +145,32 @@ fetch('/webapi/track_visit.php', {
 
     <div class="divider"></div>
 
-	<!-- FOOD GROUPS Section -->
-	<section class="card" id="foodgroups" aria-labelledby="foodgroups-title">
-	  <h2 id="foodgroups-title">
-		Core Food Groups
-		<span class="subline">Fuel Your Inner Beast</span>
-	  </h2>
+    <!-- FOOD GROUPS Section -->
+    <section class="card" id="foodgroups" aria-labelledby="foodgroups-title">
+      <h2 id="foodgroups-title">
+        Core Food Groups
+        <span class="subline">Fuel Your Inner Beast</span>
+      </h2>
 
-	  <p class="lead" style="margin-top:8px;">
-		Unleash your primal power with the carnivore diet’s four essential food groups — each one forged in nature to fuel resilience, sharp thinking, and warrior-level strength.
-	  </p>
+      <p class="lead" style="margin-top:8px;">
+        Unleash your primal power with the carnivore diet’s four essential food groups — each one forged in nature to fuel resilience, sharp thinking, and warrior-level strength.
+      </p>
 
-	  <!-- Inline embed of new Food Groups grid -->
-	  <div style="width:100%;margin-top:20px;">
-		<iframe src="foodgroups.html"
-				title="Core Food Groups"
-				loading="lazy"
-				style="width:100%;min-height:360px;border:none;"></iframe>
-	  </div>
-	</section>
-
-	<style>
-	/* Ensure no internal scroll bars & dynamic height */
-	#foodgroups iframe {
-	  overflow: hidden;
-	}
-	</style>
-
+      <!-- Inline embed of new Food Groups grid -->
+      <div style="width:100%;margin-top:20px;">
+        <iframe src="foodgroups.html"
+                title="Core Food Groups"
+                loading="lazy"
+                style="width:100%;min-height:360px;border:none;"></iframe>
+      </div>
     </section>
+
+    <style>
+    /* Ensure no internal scroll bars & dynamic height */
+    #foodgroups iframe {
+      overflow: hidden;
+    }
+    </style>
 
     <div class="divider"></div>
 
@@ -228,205 +226,113 @@ fetch('/webapi/track_visit.php', {
       </div>
     </section>
 
-    <!-- Public Profile Modal -->
-	<div id="publicProfileModal" class="modal">
-	  <div class="modal-shell">
-		<button class="modal-close" id="closeModal">&times;</button>
-
-		<div class="modal-header">
-		  <h2 id="modalName">Coach Name</h2>
-
-		  <!-- Removed email line completely -->
-		  <div class="profile-avatar">
-			<img id="modalProfilePic" src="images/earth_steak.png" alt="Coach profile photo">
-		  </div>
-		</div>
-
-		<div class="modal-body">
-		  <div>
-			<div class="bio-box" id="modalBio"></div>
-			<div class="before-after" id="beforeAfterContainer"></div>
-		  </div>
-		  <div>
-			<div class="specialization-box">
-			  <h3>I Specialize In</h3>
-			  <ul id="specList"></ul>
-			</div>
-			<div id="certificateContainer"></div>
-		  </div>
-		</div>
-
-		<button class="book-btn" id="bookCoach">Book This Coach</button>
-	  </div>
-	</div>
-
   </main>
 
   <footer>
     <p>&copy; 2025 Global Carnivore Coaches. All rights reserved.</p>
   </footer>
 
-<script>
-const COACHES_JSON_URL = "https://globalcarnivorecoaches.onrender.com/uploads/coaches.json";
+  <!-- Shared modal logic -->
+  <script src="js/modal.js"></script>
 
-function fixPath(p) {
-  if (!p) return "";
-  return "/uploads/" + String(p)
-    .replace(/^https?:\/\/[^/]+\/+/i, "")
-    .replace(/^\/?uploads\/+/i, "")
-    .replace(/^public\/+/i, "");
-}
+  <script>
+  const COACHES_JSON_URL = "https://globalcarnivorecoaches.onrender.com/uploads/coaches.json";
 
-function getSpecs(raw) {
-  if (!raw) return [];
-  if (Array.isArray(raw)) return raw;
-  return String(raw)
-    .split(/[;,|]/)
-    .map(s => s.trim())
-    .filter(Boolean);
-}
-
-async function loadCoaches() {
-  const gallery = document.getElementById("coachGallery");
-  gallery.innerHTML = `<div style="padding:20px;color:var(--muted);">Loading coaches…</div>`;
-
-  try {
-    const res = await fetch(COACHES_JSON_URL + "?t=" + Date.now(), { cache: "no-store" });
-    let data = await res.json();
-
-    // 🔥 Sort logically: DisplayOrder (numeric) then name
-    data = Array.isArray(data)
-      ? data.slice().sort((a, b) => {
-          const da = Number(a.DisplayOrder) || 999;
-          const db = Number(b.DisplayOrder) || 999;
-          if (da !== db) return da - db;
-          return (a.CoachName || "").localeCompare(b.CoachName || "");
-        })
-      : [];
-
-    gallery.innerHTML = "";
-
-    if (data.length === 0) {
-      gallery.innerHTML = `<div style="padding:20px;color:var(--muted);">No coaches yet.</div>`;
-      return;
-    }
-
-    data.forEach(coach => {
-      const files = coach.Files || {};
-      const img = fixPath(files.Profile) || "images/WolfCoach_Profile.png";
-
-      const card = document.createElement("div");
-      card.className = "coach-card";
-      card.innerHTML = `
-        <button class="tile coach-tile" aria-label="View ${coach.CoachName || coach.Username}">
-          <img src="${img}" loading="lazy" alt="Coach photo">
-        </button>
-        <button class="view-btn" aria-label="View ${coach.CoachName || coach.Username} profile">
-          View Profile
-        </button>
-      `;
-
-      const open = evt => {
-        evt.preventDefault();
-        openCoachModal(coach);
-      };
-      card.querySelector(".coach-tile").onclick = open;
-      card.querySelector(".view-btn").onclick = open;
-
-      gallery.appendChild(card);
-    });
-
-  } catch (err) {
-    console.error("Error loading coaches.json:", err);
-    gallery.innerHTML = `<div style="color:red;padding:20px;">Failed to load coaches</div>`;
+  function fixPath(p) {
+    if (!p) return "";
+    return "/uploads/" + String(p)
+      .replace(/^https?:\/\/[^/]+\/+/i, "")
+      .replace(/^\/?uploads\/+/i, "")
+      .replace(/^public\/+/i, "");
   }
-}
 
+  function getSpecs(raw) {
+    if (!raw) return [];
+    if (Array.isArray(raw)) return raw;
+    return String(raw)
+      .split(/[;,|]/)
+      .map(s => s.trim())
+      .filter(Boolean);
+  }
 
-function openCoachModal(coach) {
-  const files = coach.Files || {};
-  const name  = coach.CoachName || coach.Username || "Coach";
-  
+  async function loadCoaches() {
+    const gallery = document.getElementById("coachGallery");
+    gallery.innerHTML = `<div style="padding:20px;color:var(--muted);">Loading coaches…</div>`;
 
-  document.getElementById("modalName").textContent = name;
-  
-  const email = coach.Email || ""; // still used for "Book This Coach"
+    try {
+      const res = await fetch(COACHES_JSON_URL + "?t=" + Date.now(), { cache: "no-store" });
+      let data = await res.json();
 
-  document.getElementById("modalProfilePic").src =
-    fixPath(files.Profile) || "images/WolfCoach_Profile.png";
+      // Sort by DisplayOrder then name
+      data = Array.isArray(data)
+        ? data.slice().sort((a, b) => {
+            const da = Number(a.DisplayOrder) || 999;
+            const db = Number(b.DisplayOrder) || 999;
+            if (da !== db) return da - db;
+            return (a.CoachName || "").localeCompare(b.CoachName || "");
+          })
+        : [];
 
-  document.getElementById("modalBio").innerHTML =
-    String(coach.Bio || "").replace(/\n/g, "<br>");
+      gallery.innerHTML = "";
 
-  const ba = document.getElementById("beforeAfterContainer");
-  ba.innerHTML = "";
-  ["Before","After"].forEach(key => {
-    if (files[key]) {
-      ba.innerHTML += `<img src="${fixPath(files[key])}" loading="lazy">`;
+      if (data.length === 0) {
+        gallery.innerHTML = `<div style="padding:20px;color:var(--muted);">No coaches yet.</div>`;
+        return;
+      }
+
+      data.forEach(coach => {
+        const files = coach.Files || {};
+        const img = fixPath(files.Profile) || "images/WolfCoach_Profile.png";
+
+        const card = document.createElement("div");
+        card.className = "coach-card";
+        card.innerHTML = `
+          <button class="tile coach-tile" aria-label="View ${coach.CoachName || coach.Username}">
+            <img src="${img}" loading="lazy" alt="Coach photo">
+          </button>
+          <button class="view-btn" aria-label="View ${coach.CoachName || coach.Username} profile">
+            View Profile
+          </button>
+        `;
+
+        const open = evt => {
+          evt.preventDefault();
+          // log + open shared modal
+          logProfileView(coach.Username || coach.CoachName);
+          GCCModals.openCoachModal(coach);
+        };
+
+        card.querySelector(".coach-tile").onclick = open;
+        card.querySelector(".view-btn").onclick = open;
+
+        gallery.appendChild(card);
+      });
+
+    } catch (err) {
+      console.error("Error loading coaches.json:", err);
+      gallery.innerHTML = `<div style="color:red;padding:20px;">Failed to load coaches</div>`;
     }
-  });
+  }
 
-  const specs = getSpecs(coach.Specializations);
-  document.getElementById("specList").innerHTML =
-    specs.map(s => `<li>${s}</li>`).join("");
+  // Dashboard logging
+  const DASHBOARD_API = window.location.origin + '/webapi/dashboard';
+  async function logProfileView(username) {
+    if (!username) return;
+    try {
+      await fetch(`${DASHBOARD_API}/log_profile_view.php`, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        credentials: 'include',
+        body: JSON.stringify({ coach: username })
+      });
+    } catch (e) {
+      console.warn('Profile view log failed:', e);
+    }
+  }
 
-  const certBox = document.getElementById("certificateContainer");
-  certBox.innerHTML = files.Certificate
-    ? `<img src="${fixPath(files.Certificate)}" loading="lazy">`
-    : "";
-
-	document.getElementById("bookCoach").onclick = () => {
-	  const user = coach.Username || coach.CoachName || "";
-	  window.location.href = "/book.html?coach=" + encodeURIComponent(user);
-	};
-
-  // Show modal, trap focus
-  const modal = document.getElementById("publicProfileModal");
-  modal.classList.add("show");
-  modal.setAttribute("aria-modal", "true");
-  modal.setAttribute("role", "dialog");
-  document.body.style.overflow = "hidden";
-  document.getElementById("closeModal").focus();
-
-  // Log view
-  try {
-    logProfileView(coach.Username || coach.CoachName);
-  } catch {}
-}
-
-// Close modal anywhere outside shell
-document.getElementById("publicProfileModal").onclick = e => {
-  if (e.target === e.currentTarget) closeModal();
-};
-document.getElementById("closeModal").onclick = () => closeModal();
-document.addEventListener("keydown", e => {
-  if (e.key === "Escape") closeModal();
-});
-
-function closeModal() {
-  const m = document.getElementById("publicProfileModal");
-  m.classList.remove("show");
-  document.body.style.overflow = "";
-}
-
-// Logging
-const DASHBOARD_API = window.location.origin + '/webapi/dashboard';
-async function logProfileView(username) {
-  if (!username) return;
-  await fetch(`${DASHBOARD_API}/log_profile_view.php`, {
-    method: 'POST',
-    headers: {'Content-Type': 'application/json'},
-    credentials: 'include',
-    body: JSON.stringify({ coach: username })
-  }).catch(() => {});
-}
-
-// Init
-document.readyState==="loading"
-  ? document.addEventListener("DOMContentLoaded", loadCoaches)
-  : loadCoaches();
-</script>
-
-
+  document.readyState === "loading"
+    ? document.addEventListener("DOMContentLoaded", loadCoaches)
+    : loadCoaches();
+  </script>
 </body>
 </html>
