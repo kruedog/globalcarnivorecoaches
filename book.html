@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Book a Coach</title>
+<link rel="stylesheet" href="css/global.css"/>
+
+<style>
+  body { background:#f4f4f4; padding:40px; font-family:Inter,sans-serif; }
+  .wrap { max-width:600px; margin:auto; background:white; padding:30px; border-radius:16px; }
+  h1 { font-family:Cinzel,serif; margin-bottom:12px; color:var(--blue); }
+  p.lead { margin-bottom:20px; color:var(--muted); }
+  .btn { margin-top:18px; }
+</style>
+</head>
+
+<body>
+<div class="wrap">
+  <h1>Book Your Coach</h1>
+  <p class="lead">
+    Thank you! Coaching for <strong id="coachName"></strong> begins with a quick discovery call.
+  </p>
+
+  <a id="emailLink" class="btn" href="#">Contact Coach →</a>
+</div>
+
+<script>
+// Read URL param
+const p = new URLSearchParams(window.location.search);
+const coachUser = p.get("coach") || "";
+
+// Display name
+document.getElementById("coachName").textContent = coachUser;
+
+// Load coaches.json
+fetch("/uploads/coaches.json?t=" + Date.now())
+  .then(r => r.json())
+  .then(list => {
+    const coach = list.find(c => c.Username === coachUser || c.CoachName === coachUser);
+    if (!coach) return;
+
+    // Email fallback routing
+    if (coach.Email) {
+      document.getElementById("emailLink").href = "mailto:" + coach.Email;
+    } else {
+      document.getElementById("emailLink").textContent = "Email not available";
+      document.getElementById("emailLink").classList.add("ghost");
+    }
+  })
+  .catch(()=>{});
+</script>
+</body>
+</html>

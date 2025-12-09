@@ -229,35 +229,36 @@ fetch('/webapi/track_visit.php', {
     </section>
 
     <!-- Public Profile Modal -->
-    <div id="publicProfileModal" class="modal">
-      <div class="modal-shell">
-        <button class="modal-close" id="closeModal">&times;</button>
+	<div id="publicProfileModal" class="modal">
+	  <div class="modal-shell">
+		<button class="modal-close" id="closeModal">&times;</button>
 
-        <div class="modal-header">
-          <h2 id="modalName">Coach Name</h2>
-          <p><a id="modalEmail"></a></p>
-          <div class="profile-avatar">
-            <img id="modalProfilePic" src="images/earth_steak.png" alt="Coach profile photo">
-          </div>
-        </div>
+		<div class="modal-header">
+		  <h2 id="modalName">Coach Name</h2>
 
-        <div class="modal-body">
-          <div>
-            <div class="bio-box" id="modalBio"></div>
-            <div class="before-after" id="beforeAfterContainer"></div>
-          </div>
-          <div>
-            <div class="specialization-box">
-              <h3>I Specialize In</h3>
-              <ul id="specList"></ul>
-            </div>
-            <div id="certificateContainer"></div>
-          </div>
-        </div>
+		  <!-- Removed email line completely -->
+		  <div class="profile-avatar">
+			<img id="modalProfilePic" src="images/earth_steak.png" alt="Coach profile photo">
+		  </div>
+		</div>
 
-        <button class="book-btn" id="bookCoach">Book This Coach</button>
-      </div>
-    </div>
+		<div class="modal-body">
+		  <div>
+			<div class="bio-box" id="modalBio"></div>
+			<div class="before-after" id="beforeAfterContainer"></div>
+		  </div>
+		  <div>
+			<div class="specialization-box">
+			  <h3>I Specialize In</h3>
+			  <ul id="specList"></ul>
+			</div>
+			<div id="certificateContainer"></div>
+		  </div>
+		</div>
+
+		<button class="book-btn" id="bookCoach">Book This Coach</button>
+	  </div>
+	</div>
 
   </main>
 
@@ -348,9 +349,8 @@ function openCoachModal(coach) {
   const email = coach.Email || "";
 
   document.getElementById("modalName").textContent = name;
-  const emailEl = document.getElementById("modalEmail");
-  emailEl.textContent = email;
-  emailEl.href = email ? `mailto:${email}` : "#";
+  
+  const email = coach.Email || ""; // still used for "Book This Coach"
 
   document.getElementById("modalProfilePic").src =
     fixPath(files.Profile) || "images/WolfCoach_Profile.png";
@@ -375,9 +375,10 @@ function openCoachModal(coach) {
     ? `<img src="${fixPath(files.Certificate)}" loading="lazy">`
     : "";
 
-  document.getElementById("bookCoach").onclick = () => {
-    if (email) window.location.href = `mailto:${email}`;
-  };
+	document.getElementById("bookCoach").onclick = () => {
+	  const user = coach.Username || coach.CoachName || "";
+	  window.location.href = "/book.html?coach=" + encodeURIComponent(user);
+	};
 
   // Show modal, trap focus
   const modal = document.getElementById("publicProfileModal");
