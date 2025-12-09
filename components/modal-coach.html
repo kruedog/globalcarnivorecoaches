@@ -1,35 +1,31 @@
 <!-- components/modal-coach.html -->
-<div id="coachModal" class="gcc-modal-overlay" aria-hidden="true">
-  <div class="gcc-modal-shell">
+<div id="publicProfileModal" class="modal" aria-hidden="true">
+  <div class="modal-shell">
+    <button class="modal-close" id="closeModal" aria-label="Close">&times;</button>
 
-    <!-- Close -->
-    <button class="gcc-modal-close" aria-label="Close profile modal">&times;</button>
+    <div class="modal-header">
+      <h2 id="modalName">Coach Name</h2>
 
-    <!-- Header -->
-    <div class="gcc-modal-header">
-      <h2 id="coachName"></h2>
-      <div class="gcc-profile-avatar">
-        <img id="coachProfilePic" src="/images/earth_steak.png" alt="Coach">
+      <div class="profile-avatar">
+        <img id="modalProfilePic" src="images/earth_steak.png" alt="Coach profile photo">
       </div>
     </div>
 
-    <!-- Body -->
-    <div class="gcc-modal-body">
+    <div class="modal-body">
       <div>
-        <div class="gcc-bio-box" id="coachBio"></div>
-        <div class="gcc-before-after" id="beforeAfter"></div>
+        <div class="bio-box" id="modalBio"></div>
+        <div class="before-after" id="beforeAfterContainer"></div>
       </div>
 
       <div>
-        <div class="gcc-specialization-box">
+        <div class="specialization-box">
           <h3>I Specialize In</h3>
-          <ul id="coachSpecs"></ul>
+          <ul id="specList"></ul>
         </div>
-        <div id="coachCertificates"></div>
+        <div id="certificateContainer"></div>
       </div>
     </div>
 
-    <button id="bookBtn" class="gcc-book-btn">Book This Coach</button>
-
+    <button class="book-btn" id="bookCoach">Book This Coach</button>
   </div>
 </div>

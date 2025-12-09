@@ -10,332 +10,239 @@
   <link rel="stylesheet" href="css/global.css" />
 </head>
 
+<body>
+
+<!-- Track Visit -->
 <script>
 fetch('/webapi/track_visit.php', {
-  method: 'GET',
-  cache: 'no-store'
+  method:'GET',
+  cache:'no-store'
 });
-
-	<script src="/js/modal.js"></script>
-
 </script>
 
-<body>
-  <!-- NAV Section -->
-  <nav class="top-nav" aria-label="Main Navigation">
-    <div class="wrap nav-inner" style="padding:0;">
-      <div class="nav-left">
-        <a class="brand-mini" href="#about" aria-label="Global Carnivore Coaches home">
-          <img src="images/earth_steak.png" alt="Global Carnivore Coaches logo" onerror="this.style.display='none'">
-          <span>Global Carnivore Coaches</span>
-        </a>
-      </div>
-      <div class="nav-right" role="navigation" aria-label="Site links">
-        <a href="#services" class="nav-link">Programs</a>
-        <a href="#about" class="nav-link">About</a>
-        <a href="science.html" class="nav-link">Science</a>
-        <a href="#mealideas" class="nav-link">Gallery</a>
-        <a href="#contact" class="nav-link">Contact</a>
-        <a href="webapi/login.html" class="nav-link">Coach Login</a>
+<!-- NAV Section -->
+<nav class="top-nav" aria-label="Main Navigation">
+  <div class="wrap nav-inner" style="padding:0;">
+    <div class="nav-left">
+      <a class="brand-mini" href="#about">
+        <img src="images/earth_steak.png" alt="Global Carnivore Coaches logo">
+        <span>Global Carnivore Coaches</span>
+      </a>
+    </div>
+    <div class="nav-right">
+      <a href="#services" class="nav-link">Programs</a>
+      <a href="#about" class="nav-link">About</a>
+      <a href="science.html" class="nav-link">Science</a>
+      <a href="#mealideas" class="nav-link">Gallery</a>
+      <a href="#contact" class="nav-link">Contact</a>
+      <a href="webapi/login.html" class="nav-link">Coach Login</a>
+    </div>
+  </div>
+</nav>
+
+<main class="wrap" id="maincontent">
+
+  <!-- HERO Section -->
+  <header class="hero" aria-labelledby="hero-title">
+    <div class="hero-left">
+      <div class="logo">
+        <img src="images/earth_steak.png" alt="Planet Earth and Ribeye Steak">
       </div>
     </div>
-  </nav>
+    <div>
+      <h1 id="hero-title">Global Carnivore Coaches</h1>
+      <p class="tag">Eat a primal Diet. Feel like a primal Human.</p>
+      <p class="lead-hero">
+        Active enrollment — evidence-minded carnivore coaching for durability, focus, and long-range endurance.
+      </p>
+    </div>
+  </header>
 
-  <main class="wrap" id="maincontent">
-
-    <!-- HERO Section -->
-    <header class="hero" role="banner" aria-labelledby="hero-title">
-      <div class="hero-left" aria-hidden="true">
-        <div class="logo">
-          <img src="images/earth_steak.png" alt="Planet Earth and Ribeye Steak">
-        </div>
-      </div>
+  <!-- SERVICES Section -->
+  <section class="card" id="services">
+    <div class="cols">
       <div>
-        <h1 id="hero-title">Global Carnivore Coaches</h1>
-        <p class="tag">Eat a primal Diet. Feel like a primal Human.</p>
-        <p class="lead-hero">
-          Active enrollment — straightforward, evidence-minded carnivore coaching for durability, focus, and long-range endurance.
-          Includes guidance on fasting, rucking, and recovery.
-        </p>
-      </div>
-    </header>
-
-    <!-- SERVICES Section -->
-    <section class="card" id="services" aria-labelledby="services-title">
-      <div class="cols">
-        <div>
-          <h2 id="services-title">
-            Core Programs: Transformation Blueprint
-            <span class="subline">Unleash • Optimize • Thrive</span>
-          </h2>
-          <p class="lead">
-            Reclaim your vitality with 30, 60, or 90-day coaching programs tailored to guide you from keto to the Lion Diet.
-            Crush inflammation, sharpen focus, and build resilience with personalized nutrition, bi-weekly video calls, daily email or chat support,
-            and curated recipes like ribeyes and meatzzas.
-          </p>
-          <div class="benefits" style="margin-top:8px;">
-            <div class="benefit"><strong>Tailored Journey</strong><div>Personalized plans evolve from keto to Lion Diet.</div></div>
-            <div class="benefit"><strong>Resilient Body</strong><div>Eliminate inflammation & chronic pain.</div></div>
-            <div class="benefit"><strong>Steady Energy</strong><div>Deep ketosis fuels focus & stamina.</div></div>
-            <div class="benefit"><strong>Constant Support</strong><div>Bi-weekly calls + daily messaging.</div></div>
-            <div class="benefit"><strong>Simple Fuel</strong><div>Ribeyes, bacon, meatzza — effortless eating.</div></div>
-          </div>
+        <h2>
+          Core Programs: Transformation Blueprint
+          <span class="subline">Unleash • Optimize • Thrive</span>
+        </h2>
+        <p class="lead">Reclaim your vitality with 30–90 day coaching...</p>
+        <div class="benefits" style="margin-top:8px;">
+          <div class="benefit"><strong>Tailored Journey</strong><div>Keto → Lion Diet</div></div>
+          <div class="benefit"><strong>Resilient Body</strong><div>Inflammation gone</div></div>
+          <div class="benefit"><strong>Steady Energy</strong><div>Focus all day</div></div>
+          <div class="benefit"><strong>Constant Support</strong><div>Calls + messaging</div></div>
+          <div class="benefit"><strong>Simple Fuel</strong><div>Ribeyes, bacon</div></div>
         </div>
-
-        <aside class="card-aside" aria-labelledby="mission-title">
-          <div id="mission-title" style="font-weight:800; margin-bottom:10px; color:var(--text-color);">Mission Focus</div>
-          <ul style="padding-left:18px; margin:0; color:var(--muted); font-weight:600;">
-            <li>System Reset — gut & digestion</li>
-            <li>Inflammation mitigation</li>
-            <li>Metabolic optimization</li>
-            <li>Energy & focus restoration</li>
-            <li>Personalized accountability</li>
-          </ul>
-        </aside>
       </div>
-    </section>
 
-    <div class="divider"></div>
+      <aside class="card-aside">
+        <div style="font-weight:800;margin-bottom:10px;">Mission Focus</div>
+        <ul style="padding-left:18px;margin:0;font-weight:600;">
+          <li>System reset</li><li>Inflammation mitigation</li>
+          <li>Metabolic optimization</li><li>Energy restoration</li>
+          <li>Accountability</li>
+        </ul>
+      </aside>
+    </div>
+  </section>
 
-    <!-- ABOUT / COACHES Section -->
-    <section class="card" id="about">
-      <h2>
-        Meet the Coaches
-        <span class="subline">Certified. Battle-Tested. Yours.</span>
-      </h2>
-      <p class="lead">
-        These coaches have walked the carnivore path — through adaptation, plateaus, and triumphs.
-      </p>
+  <div class="divider"></div>
 
-      <div class="cols">
-        <div class="gallery" id="coachGallery">
-          <!-- Dynamic coach cards injected here -->
-        </div>
-        <aside class="card-aside">
-          <h3>How It Works</h3>
-          <ol>
-            <li>Discovery call</li>
-            <li>Custom blueprint</li>
-            <li>Track wins weekly</li>
-            <li>Thrive for life</li>
-          </ol>
-          <p><a href="contact.html" style="color: var(--accent-red);">Start Today →</a></p>
-        </aside>
+  <!-- ABOUT / COACHES -->
+  <section class="card" id="about">
+    <h2>
+      Meet the Coaches
+      <span class="subline">Certified. Battle-Tested. Yours.</span>
+    </h2>
+    <p class="lead">These coaches walked the path through adaptation, plateaus & triumphs.</p>
+
+    <div class="cols">
+      <div class="gallery" id="coachGallery">
+        <!-- Coaches inserted here -->
       </div>
-    </section>
+      <aside class="card-aside">
+        <h3>How It Works</h3>
+        <ol>
+          <li>Discovery call</li>
+          <li>Custom blueprint</li>
+          <li>Weekly momentum</li>
+          <li>Thrive for life</li>
+        </ol>
+        <p><a href="contact.html" style="color:var(--accent-red)">Start Today →</a></p>
+      </aside>
+    </div>
+  </section>
 
-    <div class="divider"></div>
+  <div class="divider"></div>
 
-    <!-- SHARED MEAL IDEAS Section -->
-    <section class="card" id="mealideas" aria-labelledby="cache-title">
-      <h2 id="cache-title">
-        Shared Meal Ideas
-        <span class="subline">Inspiration for sustained performance</span>
-      </h2>
-      <p class="lead" style="margin-top:8px;">
-        Simple, calorie-dense rations that fuel focus and recovery — 
-        including brisket and slow-cooked fatty cuts for sustained energy.
-      </p>
+  <!-- SHARED MEAL IDEAS Section -->
+  <section class="card" id="mealideas">
+    <h2>
+      Shared Meal Ideas
+      <span class="subline">Fuel for focus</span>
+    </h2>
+    <p class="lead">Meatzza, brisket, ribs — sustainable animal nutrition.</p>
 
-      <!-- Fixed scroll height embed -->
-      <div style="width:100%;height:520px;overflow:hidden;border-radius:8px;">
-        <iframe src="mealideas.html"
-                title="Shared Meal Ideas Gallery"
-                loading="lazy"
-                style="width:100%;height:100%;border:none;overflow-y:auto;"></iframe>
-      </div>
-    </section>
+    <div style="width:100%;height:520px;overflow:hidden;border-radius:8px;">
+      <iframe src="mealideas.html" loading="lazy"
+              style="width:100%;height:100%;border:none;"></iframe>
+    </div>
+  </section>
 
-    <div class="divider"></div>
+  <div class="divider"></div>
 
-    <!-- FOOD GROUPS Section -->
-    <section class="card" id="foodgroups" aria-labelledby="foodgroups-title">
-      <h2 id="foodgroups-title">
-        Core Food Groups
-        <span class="subline">Fuel Your Inner Beast</span>
-      </h2>
+  <!-- FOOD GROUPS -->
+  <section class="card" id="foodgroups">
+    <h2>
+      Core Food Groups
+      <span class="subline">Fuel Your Inner Beast</span>
+    </h2>
 
-      <p class="lead" style="margin-top:8px;">
-        Unleash your primal power with the carnivore diet’s four essential food groups — each one forged in nature to fuel resilience, sharp thinking, and warrior-level strength.
-      </p>
+    <p class="lead">Four primal fuels — resilient strength.</p>
 
-      <!-- Inline embed of new Food Groups grid -->
-      <div style="width:100%;margin-top:20px;">
-        <iframe src="foodgroups.html"
-                title="Core Food Groups"
-                loading="lazy"
-                style="width:100%;min-height:360px;border:none;"></iframe>
-      </div>
-    </section>
+    <iframe src="foodgroups.html" loading="lazy"
+            style="width:100%;min-height:360px;border:none;"></iframe>
+  </section>
 
-    <style>
-    /* Ensure no internal scroll bars & dynamic height */
-    #foodgroups iframe {
-      overflow: hidden;
-    }
-    </style>
+  <div class="divider"></div>
 
-    <div class="divider"></div>
+  <!-- SCIENCE -->
+  <section class="card">
+    <h2>The Science of Transformation</h2>
+    <p class="lead">Biology-informed, field-tested.</p>
+    <a class="btn" href="science.html">Explore the Science →</a>
+  </section>
 
-    <!-- SCIENCE Section -->
-    <section class="card" id="mechanisms">
-      <h2>
-        The Science of Transformation
-        <span class="subline">Biology-informed, field-tested</span>
-      </h2>
-      <p class="lead">The carnivore diet optimizes metabolism...</p>
-      <div class="cta" style="margin-top:12px;">
-        <a class="btn" href="science.html">Explore the Science →</a>
-      </div>
-    </section>
+  <div class="divider"></div>
 
-    <div class="divider"></div>
+  <!-- FASTING & MOVEMENT -->
+  <section class="card">
+    <h2>Fasting & Movement Strategy</h2>
+    <p class="lead">Autophagy • Ruck • Recover • Resilience</p>
+  </section>
 
-    <!-- FASTING & MOVEMENT Section -->
-    <section class="card" id="fasting-movement" aria-labelledby="fasting-movement-title">
-      <h2 id="fasting-movement-title">
-        Fasting &amp; Movement Strategy
-        <span class="subline">Autophagy • Ruck • Recover • Resilience</span>
-      </h2>
-      <p class="lead">Use fasting strategically...</p>
-    </section>
+  <div class="divider"></div>
 
-    <div class="divider"></div>
+  <!-- COMMUNITY -->
+  <section class="card">
+    <h2>Community & Resources</h2>
+    <p class="lead">Join a tribe of focused carnivores.</p>
+    <a class="btn" href="community.html">Explore Community →</a>
+  </section>
 
-    <!-- COMMUNITY Section -->
-    <section class="card" id="community">
-      <h2>
-        Community &amp; Resources
-        <span class="subline">Trusted Voices & Learning</span>
-      </h2>
-      <p class="lead">Join a tribe...</p>
-      <div class="cta" style="margin-top:12px;">
-        <a class="btn" href="community.html">Explore Community →</a>
-      </div>
-    </section>
+  <div class="divider"></div>
 
-    <div class="divider"></div>
+  <!-- CONTACT -->
+  <section class="card" id="contact">
+    <h2>Mobilize Your Transformation</h2>
+    <p class="lead">Reclaim consistent energy.</p>
+    <a class="btn" href="mailto:your@email.com">
+      Book Discovery Call
+    </a>
+    <a class="btn ghost" href="tiers.html">View Program Tiers</a>
+  </section>
 
-    <!-- CONTACT Section -->
-    <section class="card" id="contact">
-      <h2>
-        Mobilize Your Transformation
-        <span class="subline">Deploy your plan</span>
-      </h2>
-      <p class="lead">If you're ready to reclaim consistent energy...</p>
-      <div class="cta">
-        <a class="btn" href="mailto:your@email.com">Book Discovery Call</a>
-        <a class="btn ghost" href="tiers.html">View Program Tiers</a>
-      </div>
-    </section>
+</main>
 
-  </main>
+<footer>
+  <p>&copy; 2025 Global Carnivore Coaches. All rights reserved.</p>
+</footer>
 
-  <footer>
-    <p>&copy; 2025 Global Carnivore Coaches. All rights reserved.</p>
-  </footer>
+<!-- Shared Modal System -->
+<script src="js/modal.js"></script>
 
-  <!-- Shared modal logic -->
-  <script src="js/modal.js"></script>
+<script>
+const COACHES_JSON_URL = "/uploads/coaches.json";
 
-  <script>
-  const COACHES_JSON_URL = "https://globalcarnivorecoaches.onrender.com/uploads/coaches.json";
+function fixPath(p){
+  if(!p) return "";
+  return "/uploads/" + String(p)
+    .replace(/^https?:\/\/[^/]+\/+/i,"")
+    .replace(/^\/?uploads\/+/i,"");
+}
 
-  function fixPath(p) {
-    if (!p) return "";
-    return "/uploads/" + String(p)
-      .replace(/^https?:\/\/[^/]+\/+/i, "")
-      .replace(/^\/?uploads\/+/i, "")
-      .replace(/^public\/+/i, "");
+async function loadCoaches(){
+  const el = document.getElementById("coachGallery");
+  el.innerHTML = "<div>Loading…</div>";
+
+  try{
+    const res = await fetch(COACHES_JSON_URL+"?t="+Date.now(), {cache:"no-store"});
+    let data = await res.json();
+    data = Array.isArray(data)
+      ? data.sort((a,b)=>(a.DisplayOrder||999)-(b.DisplayOrder||999))
+      : [];
+
+    el.innerHTML = "";
+    data.forEach(coach=>{
+      const img = fixPath(coach.Files?.Profile) || "images/WolfCoach_Profile.png";
+      const card = document.createElement("div");
+      card.className = "coach-card";
+      card.innerHTML = `
+        <button class="tile coach-tile">
+          <img src="${img}" alt="Coach photo">
+        </button>
+        <button class="view-btn">View Profile</button>
+      `;
+      const open = e=>{
+        e.preventDefault();
+        GCCModals.openCoachModal(coach);
+      };
+      card.querySelector(".coach-tile").onclick = open;
+      card.querySelector(".view-btn").onclick = open;
+      el.appendChild(card);
+    });
+
+  }catch(err){
+    console.error(err);
+    el.innerHTML = "<div style='color:red'>Failed to load coaches</div>";
   }
+}
 
-  function getSpecs(raw) {
-    if (!raw) return [];
-    if (Array.isArray(raw)) return raw;
-    return String(raw)
-      .split(/[;,|]/)
-      .map(s => s.trim())
-      .filter(Boolean);
-  }
+document.readyState==="loading"
+  ? document.addEventListener("DOMContentLoaded", loadCoaches)
+  : loadCoaches();
+</script>
 
-  async function loadCoaches() {
-    const gallery = document.getElementById("coachGallery");
-    gallery.innerHTML = `<div style="padding:20px;color:var(--muted);">Loading coaches…</div>`;
-
-    try {
-      const res = await fetch(COACHES_JSON_URL + "?t=" + Date.now(), { cache: "no-store" });
-      let data = await res.json();
-
-      // Sort by DisplayOrder then name
-      data = Array.isArray(data)
-        ? data.slice().sort((a, b) => {
-            const da = Number(a.DisplayOrder) || 999;
-            const db = Number(b.DisplayOrder) || 999;
-            if (da !== db) return da - db;
-            return (a.CoachName || "").localeCompare(b.CoachName || "");
-          })
-        : [];
-
-      gallery.innerHTML = "";
-
-      if (data.length === 0) {
-        gallery.innerHTML = `<div style="padding:20px;color:var(--muted);">No coaches yet.</div>`;
-        return;
-      }
-
-      data.forEach(coach => {
-        const files = coach.Files || {};
-        const img = fixPath(files.Profile) || "images/WolfCoach_Profile.png";
-
-        const card = document.createElement("div");
-        card.className = "coach-card";
-        card.innerHTML = `
-          <button class="tile coach-tile" aria-label="View ${coach.CoachName || coach.Username}">
-            <img src="${img}" loading="lazy" alt="Coach photo">
-          </button>
-          <button class="view-btn" aria-label="View ${coach.CoachName || coach.Username} profile">
-            View Profile
-          </button>
-        `;
-
-        const open = evt => {
-          evt.preventDefault();
-          // log + open shared modal
-          logProfileView(coach.Username || coach.CoachName);
-          GCCModals.openCoachModal(coach);
-        };
-
-        card.querySelector(".coach-tile").onclick = open;
-        card.querySelector(".view-btn").onclick = open;
-
-        gallery.appendChild(card);
-      });
-
-    } catch (err) {
-      console.error("Error loading coaches.json:", err);
-      gallery.innerHTML = `<div style="color:red;padding:20px;">Failed to load coaches</div>`;
-    }
-  }
-
-  // Dashboard logging
-  const DASHBOARD_API = window.location.origin + '/webapi/dashboard';
-  async function logProfileView(username) {
-    if (!username) return;
-    try {
-      await fetch(`${DASHBOARD_API}/log_profile_view.php`, {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        credentials: 'include',
-        body: JSON.stringify({ coach: username })
-      });
-    } catch (e) {
-      console.warn('Profile view log failed:', e);
-    }
-  }
-
-  document.readyState === "loading"
-    ? document.addEventListener("DOMContentLoaded", loadCoaches)
-    : loadCoaches();
-  </script>
 </body>
 </html>
