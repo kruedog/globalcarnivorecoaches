@@ -1,218 +1,202 @@
-/* ============================================================
-   Global Carnivore Coaches — Admin Dashboard CSS
-   Uses global.css for theme (colors, typography, background)
-   This file only handles admin layout & components.
-   ============================================================ */
+/* =============================================================
+   ADMIN DASHBOARD STYLING — Global Carnivore Coaches
+   Clean, modern, matching site theme
+   ============================================================= */
 
-body.admin-page {
-  margin: 0;
+.admin-page {
+  background: radial-gradient(circle at 20% 20%, #F5F6F8, #D2D4DA);
   min-height: 100vh;
-  display: flex;
-  flex-direction: column;
+  color: var(--text-color);
 }
 
-/* Header */
 .admin-header {
-  background: #121212;
-  color: #fff;
-  padding: 1.5rem 1rem;
-  box-shadow: 0 6px 24px rgba(0,0,0,0.35);
+  text-align: center;
+  margin-bottom: 20px;
 }
 
 .admin-header h1 {
-  margin: 0;
   font-family: "Cinzel", serif;
   font-size: 2rem;
+  margin: 0 0 6px 0;
 }
 
 .admin-header .sub {
-  margin-top: .4rem;
-  font-size: .9rem;
-  opacity: .9;
+  color: var(--muted);
+  font-size: .95rem;
+  margin-bottom: 10px;
 }
 
-.admin-header .top-links {
+.top-links {
   display: flex;
-  gap: .6rem;
-  font-size: .85rem;
-  margin-top: .5rem;
-}
-
-.admin-header .top-links a {
-  color: #ffe;
-  text-decoration: underline;
-}
-
-/* Main layout */
-.admin-main {
-  max-width: 1200px;
-  margin: 1.5rem auto 2rem;
-  padding: 0 1rem 2rem;
-  display: grid;
-  grid-template-columns: minmax(260px, 1.4fr) minmax(320px, 1.8fr);
-  gap: 1.5rem;
-}
-
-@media (max-width: 900px) {
-  .admin-main {
-    grid-template-columns: 1fr;
-  }
-}
-
-/* Card (reuses brand but scoped for admin) */
-.admin-page .card {
-  background: linear-gradient(180deg, var(--off-white), #C8C8C8);
-  padding: 1.5rem;
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
-  border: 1px solid #e0e0e0;
-}
-
-/* Toolbar & buttons */
-.toolbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: .5rem;
-  margin-top: .5rem;
-  flex-wrap: wrap;
-}
-
-/* Buttons (align with brand style) */
-.btn {
-  display: inline-flex;
-  align-items: center;
   justify-content: center;
-  padding: .45rem .9rem;
-  border-radius: 999px;
-  border: 2px solid var(--primary-blue);
-  background: #fff;
+  gap: 18px;
+}
+
+.top-links a {
   color: var(--primary-blue);
-  font-size: .85rem;
-  font-weight: 600;
-  cursor: pointer;
-  gap: .35rem;
-  box-shadow: 0 3px 10px rgba(0,0,0,0.18);
-}
-
-.btn-primary {
-  background: linear-gradient(180deg, var(--accent-red), #8c1925);
-  color: #fff;
-  border-color: var(--primary-blue);
-}
-
-.btn-danger {
-  background: #121212;
-  color: #fff;
-  border-color: #000;
-}
-
-.btn:disabled {
-  opacity: .4;
-  cursor: default;
-}
-
-/* Coach list */
-.coach-list {
-  max-height: 480px;
-  overflow-y: auto;
-  border-top: 1px solid #e0e0e0;
-  margin-top: .75rem;
-}
-
-.coach-row {
-  padding: .7rem .2rem;
-  border-bottom: 1px solid #e0e0e0;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: .5rem;
-  cursor: pointer;
-}
-
-.coach-row:hover {
-  background: #f3f3f3;
-}
-
-.coach-row.active {
-  background: #ffecee;
-}
-
-.coach-name {
   font-weight: 600;
 }
-
-.coach-user {
-  font-size: .8rem;
-  opacity: .7;
-}
-
-/* Badge + status text */
-.badge {
-  display: inline-block;
-  background: #222;
-  color: #fff;
-  padding: .1rem .4rem;
-  border-radius: 999px;
-  font-size: .7rem;
-  margin-left: .4rem;
-}
-
-.status {
-  margin-top: .7rem;
-  font-size: .85rem;
-  min-height: 1rem;
-}
-
-.status.ok {
-  color: green;
-}
-
-.status.err {
+.top-links a:hover {
   color: var(--accent-red);
 }
 
-/* Forms */
-.admin-page form label {
-  display: block;
-  font-size: .85rem;
-  font-weight: 600;
-  margin-top: .6rem;
+/* Layout */
+.admin-main {
+  display: grid;
+  grid-template-columns: minmax(260px, 380px) 1fr;
+  gap: 24px;
+  align-items: start;
 }
 
-.admin-page form input,
-.admin-page form textarea,
-.admin-page form select {
-  width: 100%;
-  padding: .45rem .55rem;
+.card {
+  background: #FFF;
+  padding: 18px;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+/************ LEFT LIST PANEL ************/
+.coach-list {
+  max-height: calc(100vh - 200px);
+  overflow-y: auto;
+  border: 1px solid rgba(25,33,104,0.12);
   border-radius: 8px;
-  border: 1px solid #e0e0e0;
-  font-family: inherit;
-  font-size: .9rem;
-  margin-top: .15rem;
-  box-sizing: border-box;
 }
 
-.admin-page form textarea {
+.coach-row {
+  padding: 12px 14px;
+  border-bottom: 1px solid rgba(25,33,104,0.08);
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.coach-row:last-child {
+  border-bottom: none;
+}
+.coach-row:hover {
+  background: rgba(25,33,104,0.05);
+}
+.coach-row.active {
+  background: rgba(175,30,45,0.10);
+}
+
+.coach-name {
+  font-weight: 700;
+  color: var(--primary-blue);
+}
+.coach-user {
+  font-size: .85rem;
+  color: var(--muted);
+}
+
+/* DisplayOrder badge & Role badge */
+.badge {
+  display: inline-block;
+  background: var(--accent-red);
+  color: #FFF;
+  padding: 2px 7px;
+  border-radius: 6px;
+  font-size: .75rem;
+  font-weight: 700;
+  margin-left: 6px;
+  white-space: nowrap;
+}
+.badge + .badge {
+  margin-left: 3px;
+}
+
+/************ FORM PANEL ************/
+#coachForm label {
+  font-weight: 700;
+  margin-top: 10px;
+  display: block;
+}
+
+#coachForm input,
+#coachForm textarea,
+#coachForm select {
+  width: 100%;
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid rgba(25,33,104,0.25);
+  margin-top: 4px;
+  font-size: .95rem;
+}
+
+#coachForm textarea {
   min-height: 90px;
   resize: vertical;
 }
 
-.admin-page small.helper {
-  display: block;
-  font-size: .75rem;
-  opacity: .7;
-  margin-top: .2rem;
+#displayOrder {
+  width: 90px;
 }
 
+/* Two-column fields */
 .two-cols {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: .75rem;
+  gap: 14px;
+  align-items: start;
 }
 
-@media (max-width: 600px) {
-  .two-cols {
+/***** STATUS MESSAGE *****/
+.status {
+  margin-top: 8px;
+  font-size: .9rem;
+}
+.status.ok {
+  color: green;
+}
+.status.err {
+  color: #C51230;
+}
+
+/********** BUTTONS **********/
+.btn {
+  appearance: none;
+  border: none;
+  cursor: pointer;
+  white-space: nowrap;
+  padding: 10px 18px;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: .95rem;
+  transition: 0.2s;
+}
+
+/* Primary: red gradient */
+.btn-primary {
+  background: linear-gradient(180deg, var(--accent-red), #8c1925);
+  color: #FFF;
+  border: 2px solid var(--primary-blue);
+}
+.btn-primary:hover {
+  background: #8c1623;
+}
+
+/* Danger: delete */
+.btn-danger {
+  background: #b60000;
+  color: #FFF;
+}
+.btn-danger:hover {
+  background: #7d0000;
+}
+
+/* Disabled button */
+.btn:disabled {
+  opacity: .5;
+  cursor: not-allowed;
+}
+
+/* List scrolling on mobile */
+@media(max-width: 800px) {
+  .admin-main {
     grid-template-columns: 1fr;
+  }
+  .coach-list {
+    max-height: 300px;
   }
 }
