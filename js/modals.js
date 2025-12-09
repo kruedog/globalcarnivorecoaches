@@ -1,131 +1,111 @@
 /* ============================================
    Global Carnivore Coaches - Modal System
-   FINAL VERSION — Public Coach Modal
-   December 2025
+   FINAL SHARED VERSION
+   Works on: index.html + profile.html
 ============================================ */
 
-const GCCModals = (function() {
-
-  // Fade animation duration
+const GCCModals = (function () {
   const ANIM_TIME = 120;
 
-  // Create overlay
-  function createOverlay() {
-    const overlay = document.createElement('div');
-    overlay.id = 'coachModalOverlay';
-    overlay.style.opacity = '0';
-    overlay.style.transition = `opacity ${ANIM_TIME}ms ease`;
-    return overlay;
-  }
-
-  // Fetch the modal template
   function fetchModalHtml() {
-    return fetch('/components/modal-coach.html').then(r => r.text());
+    return fetch('/components/modal-coach.html')
+      .then(r => r.text());
   }
 
-  // Build modal content
+  function img(file) {
+    return file ? `/uploads/${file}?v=${Date.now()}` : "images/earth_steak.png";
+  }
+
   function populateModal(coach) {
-    document.getElementById('coachName').textContent = coach.CoachName || coach.Username;
+    const files = coach.Files || {};
+    const name = coach.CoachName || coach.Username || "Coach";
 
-    const email = coach.Email || '';
-    const link = document.getElementById('coachEmail');
-    link.textContent = email;
-    link.href = email ? `mailto:${email}` : '#';
+    // Name + Profile
+    document.getElementById("modalName").textContent = name;
+    document.getElementById("modalProfilePic").src = img(files.Profile);
 
-    setCoachImages(coach.Files);
-    setCoachBio(coach.Bio);
-    setCoachSpecs(coach.Specializations);
+    // Bio
+    const bioBox = document.getElementById("modalBio");
+    bioBox.innerHTML = "";
+    (coach.Bio || "").split(/\n+/).forEach(line => {
+      const p = document.createElement("p");
+      p.textContent = line.trim();
+      bioBox.appendChild(p);
+    });
 
-    // You can hook booking click here if needed
-    document.getElementById('bookBtn').onclick = () => {
-      if (email) window.location = `mailto:${email}`;
+    // Before/After
+    const ba = document.getElementById("beforeAfterContainer");
+    ba.innerHTML = "";
+    ["Before", "After"].forEach(slot => {
+      const file = files[slot];
+      if (!file) return;
+      const imgEl = document.createElement("img");
+      imgEl.src = img(file);
+      ba.appendChild(imgEl);
+    });
+
+    // Specializations
+    const specBox = document.getElementById("specList");
+    const rawSpecs = coach.Specializations || [];
+    const specs = Array.isArray(rawSpecs) ? rawSpecs : String(rawSpecs)
+      .split(/[;,|]/)
+      .map(s => s.trim())
+      .filter(Boolean);
+
+    specBox.innerHTML = specs.map(s => `<li>${s}</li>`).join("");
+
+    // Certificates
+    const certBox = document.getElementById("certificateContainer");
+    certBox.innerHTML = files.Certificate
+      ? `<img src="${img(files.Certificate)}">`
+      : "";
+
+    // Book button → open /book.html
+    document.getElementById("bookCoach").onclick = () => {
+      const user = coach.Username || coach.CoachName || "";
+      window.location.href = "/book.html?coach=" + encodeURIComponent(user);
     };
   }
 
-  // Set Profile / Before/After / Certificate
-  function setCoachImages(files = {}) {
-    const profile = document.getElementById('coachProfilePic');
-    const ba = document.getElementById('beforeAfter');
-    const cert = document.getElementById('coachCertificates');
-
-    profile.src = files.Profile ? `/uploads/${files.Profile}?v=${Date.now()}` : '/images/earth_steak.png';
-
-    ba.innerHTML = '';
-    ['Before', 'After'].forEach(slot=>{
-      if(files[slot]) {
-        const img = document.createElement('img');
-        img.src = `/uploads/${files[slot]}?v=${Date.now()}`;
-        ba.appendChild(img);
-      }
-    });
-
-    cert.innerHTML = '';
-    if(files.Certificate){
-      const img = document.createElement('img');
-      img.src = `/uploads/${files.Certificate}?v=${Date.now()}`;
-      cert.appendChild(img);
-    }
-  }
-
-  // Bio block
-  function setCoachBio(text) {
-    const box = document.getElementById('coachBio');
-    box.innerHTML = '';
-    (text || '').split(/\n+/).forEach(p => {
-      if(p.trim()){
-        const el = document.createElement('p');
-        el.textContent = p.trim();
-        box.appendChild(el);
-      }
-    });
-  }
-
-  // Specializations list
-  function setCoachSpecs(list = []) {
-    const ul = document.getElementById('coachSpecs');
-    ul.innerHTML = '';
-    list.forEach(s => {
-      const li = document.createElement('li');
-      li.textContent = s;
-      ul.appendChild(li);
-    });
-  }
-
-  // Close modal (animation + cleanup)
   function closeModal(e) {
-    if(e) e.preventDefault();
+    if (e) e.preventDefault();
     const overlay = document.getElementById('coachModalOverlay');
-    if(!overlay) return;
-
-    overlay.style.opacity = '0';
+    if (!overlay) return;
+    overlay.style.opacity = "0";
     setTimeout(() => overlay.remove(), ANIM_TIME);
+    document.body.style.overflow = "";
   }
 
-  // Open modal
   function openCoachModal(coach) {
-    closeModal(); // ensure clean single modal
+    closeModal();
 
     fetchModalHtml().then(html => {
-      const wrapper = document.createElement('div');
-      wrapper.id = 'coachModalOverlay';
-      wrapper.innerHTML = html;
-      document.body.appendChild(wrapper);
+      const wrap = document.createElement('div');
+      wrap.id = 'coachModalOverlay';
+      wrap.innerHTML = html;
+      wrap.style.opacity = "0";
+      wrap.style.transition = `opacity ${ANIM_TIME}ms ease`;
+      document.body.appendChild(wrap);
 
-      // fade-in
-      requestAnimationFrame(() => {
-        wrapper.style.opacity = '1';
-      });
+      requestAnimationFrame(() => wrap.style.opacity = "1");
+      document.body.style.overflow = "hidden";
 
       populateModal(coach);
 
-      // Wire close button
-      document.querySelector('.gcc-modal-close').onclick = closeModal;
-
-      // Clicking outside shell closes modal
-      wrapper.addEventListener('click', e=>{
-        if(e.target.id === 'coachModalOverlay') closeModal();
+      // Close events
+      wrap.addEventListener("click", e => {
+        if (e.target.id === 'coachModalOverlay') closeModal();
       });
+      const btnClose = wrap.querySelector(".modal-close");
+      if (btnClose) btnClose.onclick = closeModal;
+
+      document.addEventListener("keydown", escClose);
     });
+  }
+
+  function escClose(e) {
+    if (e.key === "Escape") closeModal();
+    document.removeEventListener("keydown", escClose);
   }
 
   return {

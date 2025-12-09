@@ -346,7 +346,7 @@ async function loadCoaches() {
 function openCoachModal(coach) {
   const files = coach.Files || {};
   const name  = coach.CoachName || coach.Username || "Coach";
-  const email = coach.Email || "";
+  
 
   document.getElementById("modalName").textContent = name;
   
