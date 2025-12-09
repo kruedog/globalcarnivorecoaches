@@ -1,380 +1,277 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Coach Profile | Global Carnivore Coaches</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Coach Profile • Global Carnivore Coaches</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Lora&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/png" href="/images/earth_steak.png">
 
-<link rel="stylesheet" href="../css/global.css">
-<link rel="stylesheet" href="../css/modal.css">
+  <!-- GLOBAL THEME from index -->
+  <link rel="stylesheet" href="/css/global.css">
 
-<style>
-body {
-  font-family:'Lora',serif;
-  background:#f4f4f4;
-  margin:0;
-  padding:20px;
-}
-.container {
-  max-width:1100px;
-  margin:auto;
-  background:#fff;
-  padding:30px;
-  border-radius:16px;
-  box-shadow:0 4px 14px rgba(0,0,0,0.15);
-}
-h1 {
-  font-family:'Cinzel',serif;
-  margin-bottom:20px;
-}
-.row {
-  display:flex;
-  flex-wrap:wrap;
-  gap:25px;
-}
-.left, .right {
-  flex:1;
-  min-width:300px;
-}
-.upload-zone {
-  border:2px dashed #AF1E2D;
-  padding:1rem;
-  border-radius:12px;
-  text-align:center;
-  cursor:pointer;
-}
-.preview-item {
-  margin-top:10px;
-  text-align:center;
-}
-.preview-img {
-  width:150px;
-  height:200px;
-  object-fit:cover;
-  border:2px solid #AF1E2D;
-  border-radius:12px;
-}
-#profileStatus, #passwordStatus {
-  margin-top:10px;
-  font-weight:bold;
-}
-</style>
+  <!-- PROFILE-SPECIFIC CARD STYLING -->
+  <style>
+    body {
+      min-height:100vh;
+      background:radial-gradient(circle at 10% 10%, #F8F9FA 0%, #D0D2D5 40%, #B0B3BA 100%);
+      padding:2rem 1rem;
+      color:var(--text-color);
+    }
+
+    .wrap {
+      max-width:1100px;
+      margin:auto;
+    }
+
+    h1 {
+      font-family:'Cinzel', serif;
+      text-align:center;
+      font-size:2.4rem;
+      color:var(--primary-blue);
+      margin-bottom:.35rem;
+    }
+    .lead {
+      text-align:center;
+      color:var(--muted);
+      margin-bottom:2rem;
+    }
+
+    .card {
+      background:#fff;
+      padding:2rem;
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      border:1px solid rgba(0,0,0,0.08);
+      margin-bottom:2rem;
+    }
+
+    label {
+      font-weight:700;
+      margin-top:1rem;
+      display:block;
+      color:var(--primary-blue);
+    }
+
+    input, textarea {
+      width:100%;
+      border:2px solid var(--primary-blue);
+      border-radius:var(--radius);
+      padding:.9rem 1rem;
+      background:#fff;
+      font-size:1rem;
+      transition:.2s;
+    }
+
+    input:focus, textarea:focus {
+      border-color:var(--accent-red);
+      outline:none;
+      box-shadow:0 0 0 3px rgba(175,30,45,0.18);
+    }
+
+    textarea {
+      resize:vertical;
+      min-height:140px;
+    }
+
+    .form-grid {
+      display:grid;
+      gap:1.2rem;
+      grid-template-columns:repeat(auto-fit, minmax(260px,1fr));
+    }
+
+    .btn {
+      text-align:center;
+      display:inline-block;
+      margin:.3rem;
+      font-size:.95rem;
+      padding:.85rem 2.4rem;
+      border-radius:999px;
+      font-weight:700;
+      cursor:pointer;
+      border:none;
+      transition:.25s;
+    }
+    .btn-primary {
+      background:var(--accent-red);
+      color:#fff;
+    }
+    .btn-ghost {
+      background:transparent;
+      border:2px solid var(--primary-blue);
+      color:var(--primary-blue);
+    }
+    .btn-primary:hover {
+      background:#8b1624;
+      transform:translateY(-1px);
+    }
+    .btn-ghost:hover {
+      background:var(--primary-blue);
+      color:#fff;
+    }
+
+    .upload-zone {
+      border:2px dashed var(--primary-blue);
+      border-radius:var(--radius);
+      padding:1.6rem;
+      text-align:center;
+      cursor:pointer;
+      color:var(--primary-blue);
+      background:rgba(25,33,104,0.05);
+    }
+    .upload-zone:hover {
+      border-color:var(--accent-red);
+      background:rgba(175,30,45,0.08);
+    }
+
+    #uploadsList {
+      display:grid;
+      gap:1rem;
+      grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
+      margin-top:1.4rem;
+    }
+    .preview-item {
+      position:relative;
+      overflow:hidden;
+      border-radius:var(--radius);
+      background:#000;
+      box-shadow:0 8px 20px rgba(0,0,0,0.25);
+    }
+    .preview-img {
+      width:100%;
+      height:220px;
+      object-fit:cover;
+    }
+    .remove-btn {
+      position:absolute;
+      top:10px;
+      right:10px;
+      width:30px;
+      height:30px;
+      background:var(--accent-red);
+      color:#fff;
+      font-size:1.1rem;
+      border-radius:50%;
+      border:none;
+      cursor:pointer;
+    }
+
+    .specializations-list span {
+      background:var(--accent-red);
+      color:#fff;
+      padding:.4rem 1rem;
+      border-radius:20px;
+      display:inline-block;
+      margin:.25rem;
+      font-size:.9rem;
+      cursor:pointer;
+    }
+
+    .status-line {
+      text-align:center;
+      margin-top:1rem;
+      font-size:.9rem;
+      min-height:1rem;
+    }
+    .status-line.ok { color:green; }
+    .status-line.err { color:var(--accent-red); }
+  </style>
 </head>
 
 <body>
-<div class="container">
+  <div class="wrap">
 
-  <h1>Coach Profile</h1>
+    <h1>Coach Profile</h1>
+    <p class="lead">Welcome back, <strong id="coachName">Coach</strong>.</p>
 
-  <div class="row">
-    <div class="left">
-
+    <!-- MAIN CARD -->
+    <div class="card">
       <form id="profileForm">
 
-        <label>Coach Name</label>
-        <input type="text" id="coachNameInput" required>
+        <div class="form-grid">
+          <div>
+            <label for="coachNameInput">Full Name</label>
+            <input id="coachNameInput" required>
+          </div>
+          <div>
+            <label for="email">Email</label>
+            <input id="email" type="email">
+          </div>
+          <div>
+            <label for="phone">Phone</label>
+            <input id="phone">
+          </div>
+        </div>
 
-        <label>Email</label>
-        <input type="email" id="email" required>
-
-        <label>Phone (optional)</label>
-        <input type="text" id="phone">
-
-        <label>Bio</label>
-        <textarea id="bio" rows="6"></textarea>
+        <label for="bio">Bio</label>
+        <textarea id="bio"></textarea>
 
         <label>Specializations</label>
-        <div style="display:flex;gap:8px;">
-          <input type="text" id="newSpec" placeholder="Add specialization">
-          <button type="button" id="addSpecBtn">+</button>
+        <div style="display:flex;gap:1rem;flex-wrap:wrap;">
+          <input type="text" id="newSpec" placeholder="Add specialization…" style="flex:1;">
+          <button type="button" class="btn btn-primary" id="addSpecBtn">Add</button>
         </div>
-        <div id="specList" style="margin-top:8px;"></div>
+        <div id="specList" class="specializations-list"></div>
 
-        <label>Profile Photo</label>
-        <div class="upload-zone" id="profileUpload">Click to upload</div>
-
-        <label>Before Photo</label>
-        <div class="upload-zone" id="beforeUpload">Click to upload</div>
-
-        <label>After Photo</label>
-        <div class="upload-zone" id="afterUpload">Click to upload</div>
-
-        <label>Certificate</label>
-        <div class="upload-zone" id="certUpload">Click to upload</div>
+        <div class="form-grid" style="margin-top:1rem;">
+          <div>
+            <label>Profile Photo</label>
+            <div class="upload-zone" id="profileUpload">Drop or click</div>
+          </div>
+          <div>
+            <label>Before Photo</label>
+            <div class="upload-zone" id="beforeUpload">Drop or click</div>
+          </div>
+          <div>
+            <label>After Photo</label>
+            <div class="upload-zone" id="afterUpload">Drop or click</div>
+          </div>
+          <div>
+            <label>Certification</label>
+            <div class="upload-zone" id="certUpload">Drop or click</div>
+          </div>
+        </div>
 
         <div id="uploadsList"></div>
 
-        <button type="submit" style="margin-top:15px;" class="btn">Save Profile</button>
-        <div id="profileStatus"></div>
+        <div style="text-align:center;margin-top:2rem;">
+          <button class="btn btn-primary" type="submit">Save Changes</button>
+          <button class="btn btn-ghost" type="button" id="viewProfileBtn">Preview Public Profile</button>
+        </div>
 
+        <div style="text-align:center;margin-top:1rem;">
+          <button class="btn btn-ghost" type="button" id="dashboardBtn">Visitor Dashboard</button>
+          <button class="btn btn-ghost" type="button" id="manageCoachesBtn" style="display:none;">Manage Coaches</button>
+        </div>
+
+        <div style="text-align:center;margin-top:1rem;">
+          <button class="btn btn-ghost" type="button" id="logoutBtn">Logout</button>
+        </div>
+
+        <div id="profileStatus" class="status-line"></div>
       </form>
-
     </div>
 
-    <div class="right">
-      <button class="btn ghost" id="viewProfileBtn">View Public Profile</button>
-
-      <hr>
-
-      <h3>Change Password</h3>
-      <label>Current</label>
-      <input type="password" id="currentPassword">
-      <label>New</label>
-      <input type="password" id="newPassword">
-      <label>Confirm</label>
-      <input type="password" id="confirmPassword">
-      <button class="btn" id="changePasswordBtn">Update</button>
-      <div id="passwordStatus"></div>
-
-      <hr>
-
-      <button class="btn ghost" id="dashboardBtn">Dashboard</button>
-      <button class="btn ghost" id="manageCoachesBtn">Manage Coaches</button>
-      <button class="btn" id="logoutBtn" style="background:#AF1E2D;color:#fff;">Logout</button>
+    <!-- PASSWORD CARD -->
+    <div class="card">
+      <h2 style="font-family:'Cinzel',serif;color:var(--primary-blue);">Change Password</h2>
+      <div class="form-grid" style="margin-top:1rem;">
+        <div><label>Current</label><input id="currentPassword" type="password"></div>
+        <div><label>New</label><input id="newPassword" type="password"></div>
+        <div><label>Confirm</label><input id="confirmPassword" type="password"></div>
+      </div>
+      <div style="text-align:center;margin-top:1.3rem;">
+        <button class="btn btn-primary" id="changePasswordBtn">Update Password</button>
+      </div>
+      <div id="passwordStatus" class="status-line"></div>
     </div>
+
   </div>
 
-</div>
+  <!-- SHARED MODAL LOGIC -->
+  <script src="/js/modal.js"></script>
 
-<!-- Shared Modal Loader -->
-<script src="../js/modal.js"></script>
-
-<script>
-const API_BASE = "/webapi/";
-let currentCoach = null;
-let specializations = [];
-const newFiles = new Map();
-const pendingDeletes = new Set();
-
-/* ---- Helpers ---- */
-function imgUrl(f) {
-  if (!f) return "";
-  return "/uploads/" + f.replace(/^\/?uploads\/+/,'');
-}
-
-function setStatus(el, msg, ok=true) {
-  el.textContent = msg;
-  el.style.color = ok ? "green" : "red";
-}
-
-/* ---- Load coach data ---- */
-async function loadProfile() {
-  try {
-    const res = await fetch(API_BASE + "get_coach.php", {
-      method:"GET",
-      credentials:"include",
-      cache:"no-store"
-    });
-    const data = await res.json();
-    if (!data.success) {
-      alert("Session expired. Please log in again.");
-      return location.href="/webapi/login.html";
-    }
-    currentCoach = data.coach;
-
-    document.getElementById("coachNameInput").value = currentCoach.CoachName || "";
-    document.getElementById("email").value = currentCoach.Email || "";
-    document.getElementById("phone").value = currentCoach.Phone || "";
-    document.getElementById("bio").value = currentCoach.Bio || "";
-
-    specializations = currentCoach.Specializations || [];
-    renderSpecializations();
-    renderImages();
-  } catch (err) {
-    console.error("load error", err);
-  }
-}
-
-/* ---- Specializations ---- */
-function renderSpecializations() {
-  const list = document.getElementById("specList");
-  list.innerHTML = "";
-  specializations.forEach((s, i) => {
-    const tag = document.createElement("span");
-    tag.textContent = s;
-    tag.className = "tag";
-    tag.onclick = () => {
-      specializations.splice(i,1);
-      renderSpecializations();
-    };
-    list.appendChild(tag);
-  });
-}
-
-/* ---- Images ---- */
-function renderImages() {
-  const list = document.getElementById("uploadsList");
-  list.innerHTML = "";
-  const files = currentCoach.Files || {};
-  const labels = {Profile:"Profile", Before:"Before", After:"After", Certificate:"Certificate"};
-  Object.entries(files).forEach(([slot,file])=>{
-    if(!file) return;
-    const div = document.createElement("div");
-    div.className="preview-item";
-    div.innerHTML = `
-      <img src="${imgUrl(file)}" class="preview-img">
-      <div>${labels[slot]||slot}</div>
-      <button type="button" data-slot="${slot}" class="remove-btn">&times;</button>
-    `;
-    div.querySelector("button").onclick = ()=>{
-      pendingDeletes.add(slot);
-      div.remove();
-    };
-    list.appendChild(div);
-  });
-}
-
-/* ---- Upload click zones ---- */
-function setupUploader(id, slot) {
-  const zone = document.getElementById(id);
-  const input = document.createElement("input");
-  input.type="file";
-  input.accept="image/*";
-  input.onchange = ()=>{
-    if(input.files[0]){
-      newFiles.set(slot,input.files[0]);
-      pendingDeletes.delete(slot);
-      previewTemp(slot,input.files[0]);
-    }
-  };
-  zone.onclick = ()=>input.click();
-}
-
-function previewTemp(slot,file) {
-  const list = document.getElementById("uploadsList");
-  const div = document.createElement("div");
-  div.className = "preview-item";
-  const reader = new FileReader();
-  reader.onload = e=>{
-    div.innerHTML = `
-      <img src="${e.target.result}" class="preview-img">
-      <div>${slot}</div>
-      <button type="button">&times;</button>
-    `;
-    div.querySelector("button").onclick = ()=>{
-      newFiles.delete(slot);
-      div.remove();
-    };
-    list.appendChild(div);
-  };
-  reader.readAsDataURL(file);
-}
-
-/* ---- Save profile ---- */
-async function handleProfileSave(e) {
-  e.preventDefault();
-  const statusEl = document.getElementById("profileStatus");
-  setStatus(statusEl,"Saving…",true);
-
-  const formData = new FormData();
-  formData.append("coachName",document.getElementById("coachNameInput").value.trim());
-  formData.append("email",document.getElementById("email").value.trim());
-  formData.append("phone",document.getElementById("phone").value.trim());
-  formData.append("bio",document.getElementById("bio").value);
-  formData.append("specializations",JSON.stringify(specializations));
-
-  newFiles.forEach((file,slot)=>{
-    formData.append(`files[${slot}]`,file);
-  });
-
-  pendingDeletes.forEach(slot=>{
-    formData.append("deleteSlots[]",slot);
-  });
-
-  try {
-    const res = await fetch(API_BASE+"update_coach.php",{
-      method:"POST",
-      credentials:"include",
-      body:formData
-    });
-    const data = await res.json();
-    if(!data.success){
-      setStatus(statusEl,data.message,false);
-      return;
-    }
-    newFiles.clear();
-    pendingDeletes.clear();
-    await loadProfile();
-    setStatus(statusEl,"Saved!",true);
-  } catch {
-    setStatus(statusEl,"Network error",false);
-  }
-}
-
-/* ---- View Public Modal ---- */
-function openProfileModal() {
-  if (!currentCoach) return;
-  GCCModals.openCoachModal(currentCoach);
-}
-
-/* ---- Password Change ---- */
-async function handleChangePassword() {
-  const cur=document.getElementById("currentPassword").value;
-  const nxt=document.getElementById("newPassword").value;
-  const cnf=document.getElementById("confirmPassword").value;
-  const status=document.getElementById("passwordStatus");
-  if(!cur||!nxt||!cnf){
-    setStatus(status,"All fields required",false);
-    return;
-  }
-  if(nxt!==cnf){
-    setStatus(status,"Passwords don't match",false);
-    return;
-  }
-  if(nxt.length<8){
-    setStatus(status,"Min 8 chars",false);
-    return;
-  }
-  setStatus(status,"Updating…",true);
-  try{
-    const res = await fetch(API_BASE+"change_password.php",{
-      method:"POST",
-      headers:{"Content-Type":"application/json"},
-      credentials:"include",
-      body:JSON.stringify({currentPassword:cur,newPassword:nxt})
-    });
-    const data = await res.json();
-    data.success ?
-      setStatus(status,"Updated!",true) :
-      setStatus(status,data.message,false);
-  }catch{
-    setStatus(status,"Network err",false);
-  }
-}
-
-/* ---- Logout ---- */
-async function handleLogout(){
-  try{
-    await fetch(API_BASE+"logout.php",{
-      method:"POST",
-      credentials:"include"
-    });
-  }catch{}
-  localStorage.clear();
-  location.href="/webapi/login.html";
-}
-
-/* ---- Init ---- */
-document.addEventListener("DOMContentLoaded",()=>{
-  ["profileUpload","beforeUpload","afterUpload","certUpload"]
-    .forEach(id=>{
-      const slot = id.replace("Upload","");
-      setupUploader(id,slot);
-    });
-
-  document.getElementById("profileForm").onsubmit = handleProfileSave;
-  document.getElementById("viewProfileBtn").onclick = openProfileModal;
-  document.getElementById("changePasswordBtn").onclick=handleChangePassword;
-  document.getElementById("logoutBtn").onclick=handleLogout;
-  document.getElementById("dashboardBtn").onclick=()=>location.href="/webapi/visitor_dashboard.html";
-  const adminBtn=document.getElementById("manageCoachesBtn");
-  if(adminBtn) adminBtn.onclick=()=>location.href="/webapi/manage_coaches.html";
-
-  loadProfile();
-});
-</script>
-
+  <!-- PAGE LOGIC -->
+  <script src="/js/profile.js"></script>
 </body>
 </html>
