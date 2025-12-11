@@ -9,9 +9,8 @@
 <!-- Fonts -->
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
 
-<!-- External Dashboard Styles -->
+<!-- Dashboard Styles -->
 <link rel="stylesheet" href="/css/dashboard.css">
-
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
@@ -33,11 +32,11 @@
 
   <!-- TAB BAR -->
   <nav class="tab-bar">
-    <button class="tab-btn active" data-tab="overview" aria-selected="true">Overview</button>
-    <button class="tab-btn" data-tab="engagement" aria-selected="false">Engagement</button>
-    <button class="tab-btn" data-tab="leads" aria-selected="false">Leads</button>
-    <button class="tab-btn" data-tab="devices" aria-selected="false">Devices</button>
-    <button class="tab-btn" data-tab="geography" aria-selected="false">Geography</button>
+    <button class="tab-btn active" data-tab="overview">Overview</button>
+    <button class="tab-btn" data-tab="engagement">Engagement</button>
+    <button class="tab-btn" data-tab="leads">Leads</button>
+    <button class="tab-btn" data-tab="devices">Devices</button>
+    <button class="tab-btn" data-tab="geography">Geography</button>
   </nav>
 
   <!-- =============================
@@ -45,33 +44,19 @@
        ============================= -->
   <section class="tab-panel" data-panel="overview">
     <div class="cards">
-      <div class="card">
-        <h2>Today’s Visits</h2>
-        <div class="big-num" id="statToday">–</div>
-      </div>
-      <div class="card">
-        <h2>Last 7 Days</h2>
-        <div class="big-num" id="statWeek">–</div>
-      </div>
-      <div class="card">
-        <h2>All-Time Visits</h2>
-        <div class="big-num" id="statTotal">–</div>
-      </div>
-      <div class="card">
-        <h2>All-Time Profile Views</h2>
-        <div class="big-num" id="statProfileTotal">–</div>
-      </div>
+      <div class="card"><h2>Today’s Visits</h2><div class="big-num" id="statToday">–</div></div>
+      <div class="card"><h2>Last 7 Days</h2><div class="big-num" id="statWeek">–</div></div>
+      <div class="card"><h2>All-Time Visits</h2><div class="big-num" id="statTotal">–</div></div>
+      <div class="card"><h2>All-Time Profile Views</h2><div class="big-num" id="statProfileTotal">–</div></div>
     </div>
 
     <div class="card chart-wrap">
       <h2>Visitor Activity • Last 14 Days</h2>
-      <div class="small">Based on track_visit.php events</div>
       <div class="chart-inner"><canvas id="visitsChart"></canvas></div>
     </div>
 
     <div class="card chart-wrap">
       <h2>Profile Views • Last 14 Days</h2>
-      <div class="small">Public and coach-view events</div>
       <div class="chart-inner"><canvas id="profileChart"></canvas></div>
     </div>
 
@@ -82,7 +67,6 @@
 
     <div class="card">
       <h2>Visitor Locations</h2>
-      <div class="small">Geo approximations</div>
       <div class="locations-list" id="locationList"></div>
       <div id="dashStatus" class="status"></div>
     </div>
@@ -95,12 +79,9 @@
     <div class="cards">
       <div class="card">
         <div class="subheading">Return Visitors</div>
-        <div class="kpi-label">Today</div>
-        <div class="kpi-value" id="engReturnToday">–</div>
-        <div class="kpi-label">Last 7 days</div>
-        <div class="kpi-value" id="engReturnWeek">–</div>
-        <div class="kpi-label">Return rate</div>
-        <div class="kpi-value" id="engReturnRate">–</div>
+        <div class="kpi-label">Today</div><div class="kpi-value" id="engReturnToday">–</div>
+        <div class="kpi-label">Last 7 days</div><div class="kpi-value" id="engReturnWeek">–</div>
+        <div class="kpi-label">Return rate</div><div class="kpi-value" id="engReturnRate">–</div>
       </div>
 
       <div class="card">
@@ -114,14 +95,12 @@
 
       <div class="card">
         <div class="subheading">Top Pages</div>
-        <ul class="list-plain" id="engTopPages">
-          <li><span class="text-muted">No data yet</span></li>
-        </ul>
+        <ul class="list-plain" id="engTopPages"></ul>
       </div>
     </div>
 
     <div class="card chart-wrap">
-      <h2>Hourly Activity • Last 7 Days</h2>
+      <h2>Hourly Activity</h2>
       <div class="chart-inner"><canvas id="hourlyChart"></canvas></div>
       <div id="engagementStatus" class="status"></div>
     </div>
@@ -134,10 +113,8 @@
     <div class="cards">
       <div class="card">
         <div class="subheading">Contact Intent</div>
-        <div class="kpi-label">Today</div>
-        <div class="kpi-value" id="leadsContactToday">–</div>
-        <div class="kpi-label">Last 7 days</div>
-        <div class="kpi-value" id="leadsContactWeek">–</div>
+        <div class="kpi-label">Today</div><div class="kpi-value" id="leadsContactToday">–</div>
+        <div class="kpi-label">Last 7 days</div><div class="kpi-value" id="leadsContactWeek">–</div>
       </div>
 
       <div class="card">
@@ -158,9 +135,7 @@
 
     <div class="card">
       <h2>Weekly Lead Summary</h2>
-      <div id="leadsSummaryText" class="text-muted">
-        Lead summary will appear once backend endpoints are ready.
-      </div>
+      <div id="leadsSummaryText" class="text-muted">Waiting for data…</div>
       <div id="leadsStatus" class="status"></div>
     </div>
   </section>
@@ -193,19 +168,15 @@
     <div class="cards">
       <div class="card">
         <h2>World View</h2>
-        <div class="map-placeholder">World heat map coming soon.</div>
+        <div class="map-placeholder">World heatmap coming soon</div>
       </div>
-
       <div class="card">
         <h2>Top Countries</h2>
-        <ul class="list-plain" id="geoTopCountries">
-          <li><span class="text-muted">Waiting for data…</span></li>
-        </ul>
+        <ul class="list-plain" id="geoTopCountries"></ul>
       </div>
-
       <div class="card">
         <h2>Regional Trends</h2>
-        <div id="geoTrendText" class="text-muted">Geo-trend data will appear here.</div>
+        <div id="geoTrendText" class="text-muted"></div>
       </div>
     </div>
     <div id="geoStatus" class="status"></div>
@@ -213,9 +184,7 @@
 
 </div>
 
-<!-- =============================
-     SCRIPTS (same JS logic as before)
-     ============================= -->
+<!-- JS (extracted) -->
 <script src="/js/dashboard.js"></script>
 
 </body>
