@@ -1,11 +1,27 @@
 <?php
-// webapi/webapi.php — DASHBOARD API (Stats + 14-day history)
+/**
+ * webapi/webapi.php
+ * Unified API router for Global Carnivore Coaches dashboard + analytics.
+ * 
+ * Supports:
+ *   - get_stats (legacy)
+ *   - get_visits_14days (legacy)
+ *   - get_engagement
+ *   - get_devices
+ *   - get_geo
+ *   - get_leads
+ * 
+ * Loads endpoint files from /webapi/endpoints/
+ */
 
 declare(strict_types=1);
 
 ini_set('display_errors', '0');
 error_reporting(E_ALL);
 
+// -----------------------------
+// CORE HEADERS
+// -----------------------------
 header('Cache-Control: no-cache');
 
 $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
@@ -18,6 +34,9 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
+// -----------------------------
+// SECURITY CHECK FOR COACH ACCESS
+// -----------------------------
 function require_login_json(): void {
     if (empty($_SESSION['username'])) {
         http_response_code(401);
@@ -30,22 +49,25 @@ function require_login_json(): void {
     }
 }
 
-$DIR    = __DIR__;
-$action = $_GET['action'] ?? '';
+// -----------------------------
+// ROUTER SETUP
+// -----------------------------
+$DIR      = __DIR__;
+$ENDPOINT = $DIR . '/endpoints/';
+$action   = $_GET['action'] ?? '';
 
-// =======================
-// ACTION: get_stats
-// =======================
+header('Content-Type: application/json; charset=utf-8');
+
+// ============================================================
+// LEGACY ENDPOINT: get_stats
+// (Uses visits.json)
+// ============================================================
 if ($action === 'get_stats') {
 
     require_login_json();
-    header('Content-Type: application/json; charset=utf-8');
 
     $visitsFile = $DIR . '/visits.json';
-
-    $today         = 0;
-    $week          = 0;
-    $total         = 0;
+    $today = $week = $total = 0;
     $locationCount = [];
 
     if (file_exists($visitsFile)) {
@@ -71,16 +93,16 @@ if ($action === 'get_stats') {
     exit;
 }
 
-// =======================
-// ACTION: get_visits_14days
-// =======================
+// ============================================================
+// LEGACY ENDPOINT: get_visits_14days
+// (Uses visits_history.json)
+// ============================================================
 if ($action === 'get_visits_14days') {
 
     require_login_json();
-    header('Content-Type: application/json; charset=utf-8');
 
     $historyFile = $DIR . '/visits_history.json';
-    $history     = [];
+    $history = [];
 
     if (file_exists($historyFile)) {
         $history = json_decode(file_get_contents($historyFile), true);
@@ -89,7 +111,6 @@ if ($action === 'get_visits_14days') {
         }
     }
 
-    // Normalize, sort oldest → newest
     $clean = [];
     foreach ($history as $rec) {
         if (!isset($rec['date'], $rec['count'])) continue;
@@ -108,10 +129,40 @@ if ($action === 'get_visits_14days') {
     exit;
 }
 
-// =======================
-// DEFAULT: invalid action
-// =======================
-header('Content-Type: application/json; charset=utf-8');
+// ============================================================
+// NEW DASHBOARD ENDPOINTS (modular)
+// ============================================================
+
+// Map action → endpoint file
+$ROUTES = [
+    'get_engagement' => 'get_engagement.php',
+    'get_leads'      => 'get_leads.php',
+    'get_devices'    => 'get_devices.php',
+    'get_geo'        => 'get_geo.php'
+];
+
+// If action matches, include the endpoint
+if (isset($ROUTES[$action])) {
+
+    require_login_json(); // Only coaches can access analytics
+
+    $endpointFile = $ENDPOINT . $ROUTES[$action];
+
+    if (file_exists($endpointFile)) {
+        require $endpointFile;
+        exit;
+    }
+
+    echo json_encode([
+        'success' => false,
+        'message' => "Endpoint file not found ($endpointFile)"
+    ]);
+    exit;
+}
+
+// ============================================================
+// FALLBACK — INVALID ACTION
+// ============================================================
 echo json_encode([
     'success' => false,
     'message' => 'Invalid or missing action'
