@@ -5,306 +5,218 @@
 <title>Visitor Dashboard • Global Carnivore Coaches</title>
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <link rel="icon" type="image/png" href="/images/earth_steak.png">
+
+<!-- Fonts -->
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
 
-<style>
-:root{
-  --blue:#192168;
-  --red:#AF1E2D;
-  --bg:#f5f7fb;
-}
-*{box-sizing:border-box;margin:0;padding:0}
-body{
-  min-height:100vh;
-  font-family:'Inter',sans-serif;
-  background:radial-gradient(circle at 10% 10%,#F8F9FA 0%,#D0D2D5 40%,#B0B3BA 100%);
-  padding:1.8rem 1rem;
-  color:#111;
-}
-.wrap{max-width:1160px;margin:0 auto;}
-header{
-  background:#111;
-  border-radius:18px;
-  padding:1.8rem;
-  color:#fff;
-  box-shadow:0 16px 40px rgba(0,0,0,.6);
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:1.2rem;
-}
-header h1{font-family:'Cinzel',serif;font-size:2rem;}
-.badge{
-  display:inline-block;
-  padding:.15rem .6rem;
-  border-radius:999px;
-  font-size:.75rem;
-  background:rgba(255,255,255,.12);
-}
-.cards{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
-  gap:1rem;
-  margin:1.8rem 0;
-}
-.card{
-  background:#fff;
-  border-radius:14px;
-  padding:1.3rem;
-  box-shadow:0 10px 26px rgba(0,0,0,.18);
-  border:1px solid rgba(25,33,104,.12);
-}
-.chart-wrap{margin-top:1.3rem;}
-.chart-inner{position:relative;height:220px;}
-.big-num{font-size:2rem;font-weight:800;color:var(--red);}
-.small{font-size:.78rem;color:#666;}
-#updateTime{
-  font-size:.8rem;
-  opacity:.9;
-  margin-top:.4rem;
-}
-#refreshStatus{
-  font-size:.85rem;
-  color:var(--blue);
-  font-weight:600;
-  opacity:0;
-  transition:opacity .25s;
-}
-#refreshStatus.show{opacity:1;}
-.locations-list{
-  margin-top:.6rem;
-  max-height:350px;
-  overflow-y:auto;
-  border-top:1px solid rgba(0,0,0,.1);
-}
-.location-row{
-  padding:.45rem 0;
-  display:flex;
-  justify-content:space-between;
-  font-size:.9rem;
-  border-bottom:1px solid rgba(0,0,0,.04);
-}
-.cols{display:flex;gap:1rem;flex-wrap:wrap;}
-.leader-list .leader-row{
-  display:flex;
-  justify-content:space-between;
-  padding:.4rem 0;
-  font-size:.88rem;
-  border-bottom:1px solid rgba(0,0,0,.06);
-}
-</style>
+<!-- External Dashboard Styles -->
+<link rel="stylesheet" href="/css/dashboard.css">
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
 <body>
 <div class="wrap">
-<header>
-  <div>
-    <h1>Visitor Dashboard</h1>
-    <p>Live analytics — visible only to logged-in coaches.</p>
-    <span class="badge" id="userBadge"></span>
-    <div id="updateTime"></div>
-    <div id="refreshStatus">Refreshing…</div>
-  </div>
-  <div><a href="/profile.html" style="color:#fff;text-decoration:underline;">← Back to Profile</a></div>
-</header>
 
-<!-- Summary cards -->
-<div class="cards">
-  <div class="card"><h2>Today’s Visits</h2><div class="big-num" id="statToday">–</div></div>
-  <div class="card"><h2>Last 7 Days</h2><div class="big-num" id="statWeek">–</div></div>
-  <div class="card"><h2>All-Time Visits</h2><div class="big-num" id="statTotal">–</div></div>
-  <div class="card"><h2>All-Time Profile Views</h2><div class="big-num" id="statProfileTotal">–</div></div>
+  <header>
+    <div>
+      <h1>Visitor Dashboard</h1>
+      <p>Live analytics — visible only to logged-in coaches.</p>
+      <span class="badge" id="userBadge"></span>
+      <div id="updateTime"></div>
+      <div id="refreshStatus">Refreshing…</div>
+    </div>
+    <div>
+      <a href="/profile.html" class="header-link">← Back to Profile</a>
+    </div>
+  </header>
+
+  <!-- TAB BAR -->
+  <nav class="tab-bar">
+    <button class="tab-btn active" data-tab="overview" aria-selected="true">Overview</button>
+    <button class="tab-btn" data-tab="engagement" aria-selected="false">Engagement</button>
+    <button class="tab-btn" data-tab="leads" aria-selected="false">Leads</button>
+    <button class="tab-btn" data-tab="devices" aria-selected="false">Devices</button>
+    <button class="tab-btn" data-tab="geography" aria-selected="false">Geography</button>
+  </nav>
+
+  <!-- =============================
+       OVERVIEW TAB
+       ============================= -->
+  <section class="tab-panel" data-panel="overview">
+    <div class="cards">
+      <div class="card">
+        <h2>Today’s Visits</h2>
+        <div class="big-num" id="statToday">–</div>
+      </div>
+      <div class="card">
+        <h2>Last 7 Days</h2>
+        <div class="big-num" id="statWeek">–</div>
+      </div>
+      <div class="card">
+        <h2>All-Time Visits</h2>
+        <div class="big-num" id="statTotal">–</div>
+      </div>
+      <div class="card">
+        <h2>All-Time Profile Views</h2>
+        <div class="big-num" id="statProfileTotal">–</div>
+      </div>
+    </div>
+
+    <div class="card chart-wrap">
+      <h2>Visitor Activity • Last 14 Days</h2>
+      <div class="small">Based on track_visit.php events</div>
+      <div class="chart-inner"><canvas id="visitsChart"></canvas></div>
+    </div>
+
+    <div class="card chart-wrap">
+      <h2>Profile Views • Last 14 Days</h2>
+      <div class="small">Public and coach-view events</div>
+      <div class="chart-inner"><canvas id="profileChart"></canvas></div>
+    </div>
+
+    <div class="card">
+      <h2>Top Coaches (Total Views)</h2>
+      <div class="leader-list" id="leaderList"></div>
+    </div>
+
+    <div class="card">
+      <h2>Visitor Locations</h2>
+      <div class="small">Geo approximations</div>
+      <div class="locations-list" id="locationList"></div>
+      <div id="dashStatus" class="status"></div>
+    </div>
+  </section>
+
+  <!-- =============================
+       ENGAGEMENT TAB
+       ============================= -->
+  <section class="tab-panel hidden" data-panel="engagement">
+    <div class="cards">
+      <div class="card">
+        <div class="subheading">Return Visitors</div>
+        <div class="kpi-label">Today</div>
+        <div class="kpi-value" id="engReturnToday">–</div>
+        <div class="kpi-label">Last 7 days</div>
+        <div class="kpi-value" id="engReturnWeek">–</div>
+        <div class="kpi-label">Return rate</div>
+        <div class="kpi-value" id="engReturnRate">–</div>
+      </div>
+
+      <div class="card">
+        <div class="subheading">Session Duration Mix</div>
+        <ul class="list-plain">
+          <li><span>Quick visits (0–10s)</span><span id="engDurShort">–</span></li>
+          <li><span>Browsers (10–30s)</span><span id="engDurMed">–</span></li>
+          <li><span>Deep reads (30s+)</span><span id="engDurLong">–</span></li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <div class="subheading">Top Pages</div>
+        <ul class="list-plain" id="engTopPages">
+          <li><span class="text-muted">No data yet</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card chart-wrap">
+      <h2>Hourly Activity • Last 7 Days</h2>
+      <div class="chart-inner"><canvas id="hourlyChart"></canvas></div>
+      <div id="engagementStatus" class="status"></div>
+    </div>
+  </section>
+
+  <!-- =============================
+       LEADS TAB
+       ============================= -->
+  <section class="tab-panel hidden" data-panel="leads">
+    <div class="cards">
+      <div class="card">
+        <div class="subheading">Contact Intent</div>
+        <div class="kpi-label">Today</div>
+        <div class="kpi-value" id="leadsContactToday">–</div>
+        <div class="kpi-label">Last 7 days</div>
+        <div class="kpi-value" id="leadsContactWeek">–</div>
+      </div>
+
+      <div class="card">
+        <div class="subheading">Lead Quality Index</div>
+        <div class="kpi-value" id="leadsScoreToday">–</div>
+        <div class="kpi-delta" id="leadsScoreDelta"></div>
+      </div>
+
+      <div class="card">
+        <div class="subheading">Engagement Funnel</div>
+        <ul class="list-plain">
+          <li><span>Profile views</span><span id="funnelViews">–</span></li>
+          <li><span>Scrolled > 50%</span><span id="funnelScrolled">–</span></li>
+          <li><span>Contact opens</span><span id="funnelContact">–</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Weekly Lead Summary</h2>
+      <div id="leadsSummaryText" class="text-muted">
+        Lead summary will appear once backend endpoints are ready.
+      </div>
+      <div id="leadsStatus" class="status"></div>
+    </div>
+  </section>
+
+  <!-- =============================
+       DEVICES TAB
+       ============================= -->
+  <section class="tab-panel hidden" data-panel="devices">
+    <div class="cards">
+      <div class="card chart-wrap">
+        <h2>Device Types</h2>
+        <div class="chart-inner"><canvas id="deviceChart"></canvas></div>
+      </div>
+      <div class="card chart-wrap">
+        <h2>Browsers</h2>
+        <div class="chart-inner"><canvas id="browserChart"></canvas></div>
+      </div>
+      <div class="card chart-wrap">
+        <h2>Operating Systems</h2>
+        <div class="chart-inner"><canvas id="osChart"></canvas></div>
+      </div>
+    </div>
+    <div id="devicesStatus" class="status"></div>
+  </section>
+
+  <!-- =============================
+       GEOGRAPHY TAB
+       ============================= -->
+  <section class="tab-panel hidden" data-panel="geography">
+    <div class="cards">
+      <div class="card">
+        <h2>World View</h2>
+        <div class="map-placeholder">World heat map coming soon.</div>
+      </div>
+
+      <div class="card">
+        <h2>Top Countries</h2>
+        <ul class="list-plain" id="geoTopCountries">
+          <li><span class="text-muted">Waiting for data…</span></li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <h2>Regional Trends</h2>
+        <div id="geoTrendText" class="text-muted">Geo-trend data will appear here.</div>
+      </div>
+    </div>
+    <div id="geoStatus" class="status"></div>
+  </section>
+
 </div>
 
-<!-- Visits chart -->
-<div class="card chart-wrap">
-  <h2>Visitor Activity — Last 14 Days</h2>
-  <div class="small">Based on track_visit.php events</div>
-  <div class="chart-inner"><canvas id="visitsChart"></canvas></div>
-</div>
+<!-- =============================
+     SCRIPTS (same JS logic as before)
+     ============================= -->
+<script src="/js/dashboard.js"></script>
 
-<!-- Profile views chart -->
-<div class="card chart-wrap">
-  <h2>Profile Views — Last 14 Days</h2>
-  <div class="small">Public & coach view events</div>
-  <div class="chart-inner"><canvas id="profileChart"></canvas></div>
-</div>
-
-<!-- Top coaches leaderboard -->
-<div class="card" style="margin-top:1.3rem;">
-  <h2>Top Coaches (Total Views)</h2>
-  <div class="leader-list" id="leaderList"></div>
-</div>
-
-<!-- Visitor Locations -->
-<div class="card" style="margin-top:1.3rem;">
-  <h2>Visitor Locations</h2>
-  <div class="small">Geo approximations from visits.json</div>
-  <div class="locations-list" id="locationList"></div>
-  <div id="dashStatus" class="status"></div>
-</div>
-
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script>
-const API_BASE = window.location.origin + '/webapi/';
-const DASH_API = API_BASE + 'dashboard/';
-let visitsChartObj = null;
-let profileChartObj = null;
-
-// 🔹 Coach Name Map (username → CoachName)
-let coachNameMap = {};
-async function loadCoachNames(){
-  try{
-    const res = await fetch('/uploads/coaches.json', {cache:'no-store'});
-    const data = await res.json();
-    data.forEach(c=>{
-      const uname = (c.Username||'').toLowerCase();
-      const cname = c.CoachName || c.Username;
-      if(uname) coachNameMap[uname] = cname;
-    });
-  }catch(err){ console.warn("Coach name load failed:",err); }
-}
-
-// Session check
-async function ensureSession(){
-  try{
-    const res = await fetch(API_BASE+'login.php',{credentials:'include'});
-    const data = await res.json();
-    if(!data.success){
-      window.location.href='/webapi/login.html';
-      return null;
-    }
-    document.getElementById('userBadge').textContent = data.username;
-    return data;
-  }catch(err){
-    window.location.href='/webapi/login.html';
-    return null;
-  }
-}
-
-function showRefresh(){
-  const e=document.getElementById('refreshStatus');
-  e.classList.add('show');
-  setTimeout(()=>e.classList.remove('show'),1200);
-}
-function updateTimestamp(){
-  document.getElementById('updateTime')
-    .textContent = 'Last updated: ' + new Date().toLocaleTimeString();
-}
-
-// Visits summary
-async function loadStats(){
-  showRefresh();
-  try{
-    const res = await fetch(API_BASE+'webapi.php?action=get_stats',{credentials:'include'});
-    const data = await res.json();
-    document.getElementById('statToday').textContent = data.today ?? 0;
-    document.getElementById('statWeek').textContent  = data.week ?? 0;
-    document.getElementById('statTotal').textContent = data.total ?? 0;
-
-    const list=document.getElementById('locationList');
-    list.innerHTML='';
-    for(const [loc,count] of Object.entries(data.locationCount||{}).sort((a,b)=>b[1]-a[1])){
-      const row=document.createElement('div');
-      row.className='location-row';
-      row.innerHTML=`<span>${loc||'Unknown'}</span><span>${count}</span>`;
-      list.appendChild(row);
-    }
-  }catch(err){
-    document.getElementById('dashStatus').textContent='Analytics unavailable.';
-  }
-}
-
-// Visits chart
-async function loadVisitChart(){
-  try{
-    const res = await fetch(API_BASE+'webapi.php?action=get_visits_14days',{credentials:'include'});
-    const data = await res.json();
-    if(!Array.isArray(data.points))return;
-    const labels=data.points.map(p=>p.date);
-    const counts=data.points.map(p=>p.count);
-    const ctx=document.getElementById('visitsChart').getContext('2d');
-    if(visitsChartObj) visitsChartObj.destroy();
-    const grad=ctx.createLinearGradient(0,0,0,220);
-    grad.addColorStop(0,'rgba(175,30,45,0.45)');
-    grad.addColorStop(1,'rgba(25,33,104,0.05)');
-    visitsChartObj=new Chart(ctx,{
-      type:'line',
-      data:{labels,datasets:[{data:counts,borderColor:'var(--red)',backgroundColor:grad,fill:true,tension:.35}]},
-      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}}}
-    });
-  }catch(err){}
-}
-
-// Profile views
-async function loadProfileViews(){
-  try{
-    const res = await fetch(DASH_API+'get_profile_views.php',{credentials:'include'});
-    const data = await res.json();
-    if(!data.success)return;
-
-    document.getElementById('statProfileTotal').textContent = data.total_views ?? 0;
-
-    // Build 14-day history
-    const now=new Date();
-    let dm={};
-    for(let i=13;i>=0;i--){
-      const d=new Date(now);
-      d.setDate(d.getDate()-i);
-      dm[d.toISOString().split('T')[0]] = 0;
-    }
-    (data.history||[]).forEach(r=>{
-      if(dm[r.date]!==undefined) dm[r.date]+=r.views;
-    });
-    const labels=Object.keys(dm);
-    const counts=Object.values(dm);
-
-    const ctx=document.getElementById('profileChart').getContext('2d');
-    if(profileChartObj) profileChartObj.destroy();
-    const grad=ctx.createLinearGradient(0,0,0,220);
-    grad.addColorStop(0,'rgba(25,33,104,0.45)');
-    grad.addColorStop(1,'rgba(175,30,45,0.05)');
-    profileChartObj=new Chart(ctx,{
-      type:'line',
-      data:{labels,datasets:[{data:counts,borderColor:'var(--blue)',backgroundColor:grad,fill:true,tension:0.35}]},
-      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}}}
-    });
-
-    // Leaderboard — CoachName display
-    const leaders=document.getElementById('leaderList');
-    leaders.innerHTML=(Object.entries(data.totals_per_coach||{})
-      .sort((a,b)=>b[1]-a[1])
-      .slice(0,5)
-      .map(([uname,count])=>{
-        const display = coachNameMap[uname] || uname;
-        return `<div class="leader-row"><span>${display}</span><span>${count}</span></div>`;
-      }).join('')) || '<div>No data yet</div>';
-
-  }catch(err){}
-}
-
-// INIT (login-gate)
-document.addEventListener('DOMContentLoaded', async ()=>{
-  const ses = await ensureSession();
-  if(!ses)return;
-
-  await loadCoachNames();     // <-- Load CoachName mapping first
-  await loadStats();
-  await loadVisitChart();
-  await loadProfileViews();
-  updateTimestamp();
-
-  // Auto-refresh every 60s
-  setInterval(async ()=>{
-    showRefresh();
-    await loadStats();
-    await loadVisitChart();
-    await loadProfileViews();
-    updateTimestamp();
-  },60000);
-});
-</script>
 </body>
 </html>

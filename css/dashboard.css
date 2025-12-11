@@ -1,0 +1,189 @@
+/* ===========================================
+   GLOBAL VARIABLES
+=========================================== */
+:root{
+  --blue:#192168;
+  --red:#AF1E2D;
+  --white:#ffffff;
+  --muted:#555;
+  --bg:#f5f7fb;
+}
+
+/* ===========================================
+   LAYOUT
+=========================================== */
+body{
+  min-height:100vh;
+  font-family:'Inter',sans-serif;
+  background:radial-gradient(circle at 10% 10%,#F8F9FA 0%,#D0D2D5 40%,#B0B3BA 100%);
+  padding:1.8rem 1rem;
+  color:#111;
+}
+.wrap{max-width:1160px;margin:0 auto;}
+
+/* ===========================================
+   HEADER
+=========================================== */
+header{
+  background:#111;
+  border-radius:18px;
+  padding:1.8rem;
+  color:#fff;
+  box-shadow:0 16px 40px rgba(0,0,0,.6);
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+header h1{
+  font-family:'Cinzel',serif;
+  margin-bottom:.3rem;
+}
+.badge{
+  background:rgba(255,255,255,.12);
+  padding:.2rem .6rem;
+  border-radius:999px;
+  font-size:.75rem;
+}
+.header-link{
+  color:#fff;
+  text-decoration:underline;
+}
+
+/* ===========================================
+   TAB BAR (Pill Style 2A)
+=========================================== */
+.tab-bar{
+  margin-top:1.5rem;
+  display:flex;
+  flex-wrap:wrap;
+  gap:.5rem;
+}
+.tab-btn{
+  padding:.35rem .9rem;
+  border-radius:999px;
+  border:1.5px solid var(--blue);
+  background:#fff;
+  color:var(--blue);
+  cursor:pointer;
+  transition:.2s;
+}
+.tab-btn:hover{
+  background:rgba(25,33,104,.06);
+}
+.tab-btn.active{
+  background:var(--red);
+  border-color:var(--red);
+  color:#fff;
+  box-shadow:0 6px 16px rgba(0,0,0,.25);
+}
+.tab-panel.hidden{
+  display:none;
+}
+
+/* ===========================================
+   CARDS
+=========================================== */
+.cards{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+  gap:1rem;
+  margin:1.8rem 0;
+}
+.card{
+  background:#fff;
+  padding:1.3rem;
+  border-radius:14px;
+  box-shadow:0 10px 26px rgba(0,0,0,.18);
+  border:1px solid rgba(25,33,104,.12);
+}
+
+/* ===========================================
+   METRICS & KPI BLOCKS
+=========================================== */
+.big-num{
+  font-size:2rem;
+  font-weight:800;
+  color:var(--red);
+}
+.kpi-label{
+  font-size:.8rem;
+  color:var(--muted);
+}
+.kpi-value{
+  font-size:1.4rem;
+  font-weight:700;
+  color:var(--blue);
+}
+.kpi-delta{
+  font-size:.8rem;
+  margin-top:.3rem;
+}
+.kpi-delta.up{color:#188351;}
+.kpi-delta.down{color:#B00020;}
+.kpi-delta.flat{color:var(--muted);}
+
+/* ===========================================
+   LISTS
+=========================================== */
+.list-plain{
+  list-style:none;
+  margin-top:.4rem;
+}
+.list-plain li{
+  display:flex;
+  justify-content:space-between;
+  padding:.2rem 0;
+}
+
+/* ===========================================
+   LOCATION + LEADERBOARD
+=========================================== */
+.location-row{
+  display:flex;
+  justify-content:space-between;
+  padding:.45rem 0;
+  border-bottom:1px solid rgba(0,0,0,.05);
+}
+.locations-list{
+  max-height:350px;
+  overflow-y:auto;
+  margin-top:.6rem;
+}
+
+.leader-row{
+  display:flex;
+  justify-content:space-between;
+  padding:.4rem 0;
+  border-bottom:1px solid rgba(0,0,0,.05);
+}
+
+/* ===========================================
+   CHARTS
+=========================================== */
+.chart-wrap{
+  margin-top:1.3rem;
+}
+.chart-inner{
+  position:relative;
+  height:220px;
+}
+
+/* ===========================================
+   STATUSES & HELPERS
+=========================================== */
+.small{font-size:.78rem;color:#666;}
+.text-muted{color:var(--muted);font-size:.8rem;}
+.status{
+  font-size:.8rem;
+  margin-top:.4rem;
+  color:var(--muted);
+}
+.map-placeholder{
+  height:220px;
+  border-radius:12px;
+  border:1px dashed rgba(25,33,104,.3);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:var(--muted);
+}
