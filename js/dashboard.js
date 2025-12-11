@@ -1,288 +1,383 @@
-/* ============================================
-   DASHBOARD.JS — Global Carnivore Coaches
-   Complete Analytics Frontend Engine
-   ============================================ */
+/* ============================================================
+   GLOBAL CONFIG
+============================================================ */
+const API_BASE = window.location.origin + '/webapi/';
+const DASH_API = API_BASE + 'dashboard/';
 
-const API_BASE = "/webapi/webapi.php?action=";
+/* ============================================================
+   GCC ADMIN UTILITIES (Reusable)
+============================================================ */
+const GCC = {
+  qs(sel){ return document.querySelector(sel); },
+  qsa(sel){ return document.querySelectorAll(sel); },
 
-/* -------------------------------
-   Helper: Fetch JSON with safety
---------------------------------*/
-async function apiGet(action) {
-    try {
-        const res = await fetch(API_BASE + action, {
-            method: "GET",
-            credentials: "include",
-            cache: "no-store"
-        });
+  fadeIn(el){ el.style.opacity = 0; el.classList.remove("hidden"); setTimeout(()=>el.style.opacity=1,10); },
+  fadeOut(el){ el.style.opacity = 1; setTimeout(()=>{el.style.opacity=0; setTimeout(()=>el.classList.add("hidden"),200)},10); },
 
-        if (!res.ok) throw new Error("Server returned " + res.status);
+  async json(url, opts={}){
+    const res = await fetch(url, opts);
+    if(!res.ok) throw new Error(`HTTP ${res.status}`);
+    return res.json();
+  },
 
-        const data = await res.json();
-        if (!data || data.success === false) {
-            console.warn("API error:", data);
-            return null;
+  setHTML(el, html){
+    if(typeof el === "string") el = GCC.qs(el);
+    if(el) el.innerHTML = html;
+  }
+};
+
+/* ============================================================
+   TAB MANAGER
+============================================================ */
+function initTabs(){
+  const buttons = GCC.qsa('.tab-btn');
+  const panels  = GCC.qsa('.tab-panel');
+
+  function showTab(tab){
+    buttons.forEach(btn=>{
+      const active = btn.dataset.tab === tab;
+      btn.classList.toggle('active', active);
+    });
+    panels.forEach(panel=>{
+      panel.classList.toggle('hidden', panel.dataset.panel !== tab);
+    });
+
+    // Lazy-load each section
+    if(tab === 'engagement') loadEngagement();
+    if(tab === 'leads')      loadLeads();
+    if(tab === 'devices')    loadDevices();
+    if(tab === 'geography')  loadGeoExtra();
+  }
+
+  buttons.forEach(btn=>{
+    btn.addEventListener('click', ()=> showTab(btn.dataset.tab));
+  });
+
+  showTab('overview');
+}
+
+/* ============================================================
+   SESSION CHECK
+============================================================ */
+async function ensureSession(){
+  try{
+    const data = await GCC.json(API_BASE + 'login.php', {credentials:'include'});
+    if(!data.success){
+      window.location.href = '/webapi/login.html';
+      return null;
+    }
+    GCC.setHTML('#userBadge', data.username);
+    return data;
+  }catch(err){
+    window.location.href = '/webapi/login.html';
+    return null;
+  }
+}
+
+/* ============================================================
+   COACH NAME MAP
+============================================================ */
+let coachNameMap = {};
+
+async function loadCoachNames(){
+  try{
+    const res = await fetch('/uploads/coaches.json', {cache:'no-store'});
+    const data = await res.json();
+    data.forEach(c=>{
+      const u = (c.Username||'').toLowerCase();
+      coachNameMap[u] = c.CoachName || c.Username;
+    });
+  }catch{}
+}
+
+/* ============================================================
+   REFRESH INDICATOR & TIMESTAMP
+============================================================ */
+function showRefresh(){
+  const el = GCC.qs('#refreshStatus');
+  el.classList.add('show');
+  setTimeout(()=>el.classList.remove('show'),1000);
+}
+function updateTimestamp(){
+  GCC.setHTML('#updateTime', 'Last updated: ' + new Date().toLocaleTimeString());
+}
+
+/* ============================================================
+   OVERVIEW LOADERS
+============================================================ */
+async function loadStats(){
+  try{
+    const data = await GCC.json(API_BASE + 'webapi.php?action=get_stats', {credentials:'include'});
+    GCC.setHTML('#statToday', data.today ?? 0);
+    GCC.setHTML('#statWeek', data.week ?? 0);
+    GCC.setHTML('#statTotal', data.total ?? 0);
+
+    const locList = GCC.qs('#locationList');
+    locList.innerHTML = '';
+    const locs = Object.entries(data.locationCount || {}).sort((a,b)=>b[1]-a[1]);
+
+    if(locs.length === 0){
+      locList.innerHTML = `<div class="location-row"><span class="text-muted">No visits yet</span></div>`;
+    }else{
+      locs.forEach(([loc,count])=>{
+        locList.innerHTML += `<div class="location-row"><span>${loc}</span><span>${count}</span></div>`;
+      });
+    }
+  }catch{
+    GCC.setHTML('#dashStatus','Analytics unavailable.');
+  }
+}
+
+let visitsChartObj=null, profileChartObj=null;
+
+async function loadVisitChart(){
+  try{
+    const data = await GCC.json(API_BASE + 'webapi.php?action=get_visits_14days',{credentials:'include'});
+    const labels = data.points.map(p=>p.date);
+    const counts = data.points.map(p=>p.count);
+
+    const ctx = GCC.qs('#visitsChart').getContext('2d');
+    if(visitsChartObj) visitsChartObj.destroy();
+
+    const grad = ctx.createLinearGradient(0,0,0,220);
+    grad.addColorStop(0,'rgba(175,30,45,0.45)');
+    grad.addColorStop(1,'rgba(25,33,104,0.05)');
+
+    visitsChartObj = new Chart(ctx,{
+      type:'line',
+      data:{ labels, datasets:[{data:counts, borderColor:'rgba(175,30,45,1)', backgroundColor:grad, fill:true,tension:.35}] },
+      options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}} }
+    });
+  }catch{}
+}
+
+async function loadProfileViews(){
+  try{
+    const data = await GCC.json(DASH_API + 'get_profile_views.php', {credentials:'include'});
+    if(!data.success) return;
+
+    GCC.setHTML('#statProfileTotal', data.total_views ?? 0);
+
+    // Build 14-day history
+    const now = new Date();
+    let dm = {};
+    for(let i=13;i>=0;i--){
+      const d = new Date(now);
+      d.setDate(d.getDate()-i);
+      dm[d.toISOString().split('T')[0]] = 0;
+    }
+    (data.history||[]).forEach(r=>{
+      if(dm[r.date]!==undefined) dm[r.date]+=r.views;
+    });
+
+    const labels = Object.keys(dm);
+    const counts = Object.values(dm);
+
+    const ctx = GCC.qs('#profileChart').getContext('2d');
+    if(profileChartObj) profileChartObj.destroy();
+
+    const grad = ctx.createLinearGradient(0,0,0,220);
+    grad.addColorStop(0,'rgba(25,33,104,0.45)');
+    grad.addColorStop(1,'rgba(175,30,45,0.05)');
+
+    profileChartObj = new Chart(ctx,{
+      type:'line',
+      data:{ labels, datasets:[{data:counts, borderColor:'rgba(25,33,104,1)', backgroundColor:grad, fill:true}] },
+      options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}} }
+    });
+
+    // Leaderboard
+    const leaders = data.totals_per_coach || {};
+    const list = Object.entries(leaders).sort((a,b)=>b[1]-a[1]).slice(0,5);
+    const el = GCC.qs('#leaderList');
+    el.innerHTML = list.length
+      ? list.map(([u,c])=>{
+          const name = coachNameMap[u.toLowerCase()] || u;
+          return `<div class="leader-row"><span>${name}</span><span>${c}</span></div>`;
+        }).join('')
+      : `<div class="text-muted">No data yet</div>`;
+
+  }catch{}
+}
+
+/* ============================================================
+   ENGAGEMENT TAB
+============================================================ */
+let hourlyChartObj=null;
+
+async function loadEngagement(){
+  try{
+    const data = await GCC.json(API_BASE + 'webapi.php?action=get_engagement',{credentials:'include'});
+
+    GCC.setHTML('#engReturnToday', data.return_today ?? '0');
+    GCC.setHTML('#engReturnWeek', data.return_week ?? '0');
+    GCC.setHTML('#engReturnRate', data.return_rate ? data.return_rate.toFixed(1)+'%' : '–');
+
+    GCC.setHTML('#engDurShort', data.duration_short ?? '0');
+    GCC.setHTML('#engDurMed',   data.duration_med ?? '0');
+    GCC.setHTML('#engDurLong',  data.duration_long ?? '0');
+
+    // Top pages
+    const pages = data.top_pages || [];
+    const list = GCC.qs('#engTopPages');
+    list.innerHTML = pages.length
+      ? pages.map(p=>`<li><span>${p.path}</span><span>${p.count}</span></li>`).join('')
+      : '<li><span class="text-muted">No data yet</span></li>';
+
+    // Hourly chart
+    const hourly = data.hourly || [];
+    const labels = hourly.map(h=>h.label||h.hour);
+    const counts = hourly.map(h=>h.count);
+    const ctx = GCC.qs('#hourlyChart').getContext('2d');
+    if(hourlyChartObj) hourlyChartObj.destroy();
+    hourlyChartObj = new Chart(ctx,{
+      type:'line',
+      data:{labels,datasets:[{data:counts,borderColor:'rgba(25,33,104,1)',backgroundColor:'rgba(25,33,104,0.1)',fill:true}]},
+      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}}}
+    });
+  }catch{
+    GCC.setHTML('#engagementStatus',"Engagement data unavailable.");
+  }
+}
+
+/* ============================================================
+   LEADS TAB
+============================================================ */
+async function loadLeads(){
+  try{
+    const data = await GCC.json(API_BASE + 'webapi.php?action=get_leads',{credentials:'include'});
+
+    GCC.setHTML('#leadsContactToday', data.contact_today ?? '0');
+    GCC.setHTML('#leadsContactWeek', data.contact_week ?? '0');
+
+    GCC.setHTML('#funnelViews', data.funnel_views ?? '0');
+    GCC.setHTML('#funnelScrolled', data.funnel_scrolled ?? '0');
+    GCC.setHTML('#funnelContact', data.funnel_contact ?? '0');
+
+    const scoreToday = data.score_today;
+    const scoreYest  = data.score_yesterday;
+
+    if(typeof scoreToday === 'number'){
+      GCC.setHTML('#leadsScoreToday', scoreToday.toFixed(1));
+      const delta = GCC.qs('#leadsScoreDelta');
+
+      if(typeof scoreYest === 'number'){
+        const diff = scoreToday - scoreYest;
+        if(diff > 0){
+          delta.textContent = '+'+diff.toFixed(1)+' vs yesterday';
+          delta.className = 'kpi-delta up';
+        }else if(diff < 0){
+          delta.textContent = diff.toFixed(1)+' vs yesterday';
+          delta.className = 'kpi-delta down';
+        }else{
+          delta.textContent = 'No change';
+          delta.className = 'kpi-delta flat';
         }
-        return data;
-    } catch (err) {
-        console.error("Fetch failed:", err);
-        return null;
-    }
-}
-
-/* -------------------------------
-   UI Helper: Set loading / error
---------------------------------*/
-function setStatus(id, msg, type = "loading") {
-    const el = document.getElementById(id);
-    if (!el) return;
-
-    el.textContent = msg;
-
-    el.className = "dash-status " + type; // CSS will style this
-}
-
-/* -------------------------------
-   Tabs
---------------------------------*/
-function initTabs() {
-    const tabs = document.querySelectorAll("[data-tab]");
-    const panels = document.querySelectorAll("[data-panel]");
-
-    tabs.forEach(tab => {
-        tab.addEventListener("click", () => {
-            const target = tab.dataset.tab;
-
-            tabs.forEach(t => t.classList.remove("active"));
-            panels.forEach(p => p.classList.remove("active"));
-
-            tab.classList.add("active");
-            document.querySelector(`[data-panel="${target}"]`).classList.add("active");
-
-            loadTab(target);
-        });
-    });
-
-    // Load default tab
-    const first = tabs[0];
-    if (first) {
-        first.classList.add("active");
-        document.querySelector(`[data-panel="${first.dataset.tab}"]`).classList.add("active");
-        loadTab(first.dataset.tab);
-    }
-}
-
-/* -------------------------------
-   Main loader dispatcher
---------------------------------*/
-function loadTab(tab) {
-    switch (tab) {
-        case "overview":      return loadOverview();
-        case "engagement":    return loadEngagement();
-        case "devices":       return loadDevices();
-        case "geo":           return loadGeo();
-        case "leads":         return loadLeads();
-        default:
-            console.warn("Unknown tab:", tab);
-    }
-}
-
-/* -------------------------------
-   1. OVERVIEW TAB
---------------------------------*/
-async function loadOverview() {
-    setStatus("overview-status", "Loading overview…");
-
-    const stats = await apiGet("get_stats");
-    const history = await apiGet("get_visits_14days");
-
-    if (!stats || !history) {
-        setStatus("overview-status", "Failed to load data.", "error");
-        return;
+      } else {
+        delta.textContent = 'Waiting for comparison data…';
+      }
     }
 
-    // Insert stats
-    document.getElementById("ov-today").textContent = stats.today;
-    document.getElementById("ov-week").textContent = stats.week;
-    document.getElementById("ov-total").textContent = stats.total;
+    GCC.setHTML('#leadsSummaryText', data.summary || 'Lead summary endpoint is active.');
 
-    setStatus("overview-status", "Loaded", "ok");
-
-    // Chart
-    drawVisitsChart(history.points);
+  }catch{
+    GCC.setHTML('#leadsStatus',"Lead analytics unavailable.");
+  }
 }
 
-/* Chart.js daily visits */
-function drawVisitsChart(points) {
-    const ctx = document.getElementById("visitsChart").getContext("2d");
+/* ============================================================
+   DEVICES TAB
+============================================================ */
+let deviceChartObj=null, browserChartObj=null, osChartObj=null;
 
-    if (window._visitsChart) window._visitsChart.destroy();
+async function loadDevices(){
+  try{
+    const data = await GCC.json(API_BASE + 'webapi.php?action=get_devices',{credentials:'include'});
 
-    window._visitsChart = new Chart(ctx, {
-        type: "line",
-        data: {
-            labels: points.map(p => p.date),
-            datasets: [{
-                label: "Visitors",
-                data: points.map(p => p.count),
-                fill: true,
-                tension: 0.25
-            }]
-        },
-        options: {
-            responsive: true,
-            scales: {
-                y: { beginAtZero: true }
-            }
+    function doughnut(canvasId, arr){
+      if(!arr.length) return null;
+      const el = GCC.qs(canvasId);
+      const ctx = el.getContext('2d');
+      const labels = arr.map(i=>i.label);
+      const counts = arr.map(i=>i.count);
+      const total = counts.reduce((a,b)=>a+b,0) || 1;
+
+      return new Chart(ctx,{
+        type:'doughnut',
+        data:{labels,datasets:[{data:counts}]},
+        options:{
+          responsive:true,
+          maintainAspectRatio:false,
+          plugins:{
+            legend:{position:'bottom'},
+            tooltip:{callbacks:{label:(ctx)=>`${ctx.label}: ${ctx.raw} (${(ctx.raw/total*100).toFixed(1)}%)`}}
+          },
+          cutout:'55%'
         }
-    });
-}
-
-/* -------------------------------
-   2. ENGAGEMENT TAB
---------------------------------*/
-async function loadEngagement() {
-    setStatus("engage-status", "Loading engagement…");
-
-    const data = await apiGet("get_engagement");
-
-    if (!data) {
-        setStatus("engage-status", "Failed to load engagement.", "error");
-        return;
+      });
     }
 
-    document.getElementById("eng-return-today").textContent = data.return_today;
-    document.getElementById("eng-return-week").textContent  = data.return_week;
-    document.getElementById("eng-return-rate").textContent  = data.return_rate.toFixed(1) + "%";
+    if(deviceChartObj) deviceChartObj.destroy();
+    if(browserChartObj) browserChartObj.destroy();
+    if(osChartObj) osChartObj.destroy();
 
-    document.getElementById("eng-dur-short").textContent = data.duration_short;
-    document.getElementById("eng-dur-med").textContent   = data.duration_med;
-    document.getElementById("eng-dur-long").textContent  = data.duration_long;
+    deviceChartObj  = doughnut('#deviceChart',  data.devices  || []);
+    browserChartObj = doughnut('#browserChart', data.browsers || []);
+    osChartObj      = doughnut('#osChart',      data.os       || []);
 
-    setStatus("engage-status", "Loaded", "ok");
-
-    drawEngagementHourlyChart(data.hourly);
+  }catch{
+    GCC.setHTML('#devicesStatus',"Device analytics unavailable.");
+  }
 }
 
-/* Hourly chart */
-function drawEngagementHourlyChart(items) {
-    const ctx = document.getElementById("engChart").getContext("2d");
+/* ============================================================
+   GEOGRAPHY TAB
+============================================================ */
+async function loadGeoExtra(){
+  try{
+    const data = await GCC.json(API_BASE + 'webapi.php?action=get_geo',{credentials:'include'});
 
-    if (window._engChart) window._engChart.destroy();
+    const list = GCC.qs('#geoTopCountries');
+    const arr  = data.top_countries || [];
+    list.innerHTML = arr.length
+      ? arr.map(c=>`<li><span>${c.name}</span><span>${c.count}</span></li>`).join('')
+      : '<li><span class="text-muted">No data yet</span></li>';
 
-    window._engChart = new Chart(ctx, {
-        type: "bar",
-        data: {
-            labels: items.map(i => i.label),
-            datasets: [{
-                label: "Visits per hour",
-                data: items.map(i => i.count)
-            }]
-        },
-        options: {
-            responsive: true
-        }
-    });
+    GCC.setHTML('#geoTrendText', data.trend_text || 'Geo endpoint active.');
+
+  }catch{
+    GCC.setHTML('#geoStatus',"Geo data unavailable.");
+  }
 }
 
-/* -------------------------------
-   3. DEVICES TAB
---------------------------------*/
-async function loadDevices() {
-    setStatus("devices-status", "Loading devices…");
+/* ============================================================
+   INIT
+============================================================ */
+document.addEventListener('DOMContentLoaded', async ()=>{
+  const session = await ensureSession();
+  if(!session) return;
 
-    const data = await apiGet("get_devices");
+  initTabs();
+  loadCoachNames();
 
-    if (!data) {
-        setStatus("devices-status", "Failed to load devices.", "error");
-        return;
-    }
+  showRefresh();
+  await loadStats();
+  await loadVisitChart();
+  await loadProfileViews();
+  updateTimestamp();
 
-    drawDoughnut("devChartDevices",  data.devices);
-    drawDoughnut("devChartBrowser",  data.browsers);
-    drawDoughnut("devChartOS",       data.os);
+  // Preload other tabs silently
+  loadEngagement();
+  loadLeads();
+  loadDevices();
+  loadGeoExtra();
 
-    setStatus("devices-status", "Loaded", "ok");
-}
-
-function drawDoughnut(canvasId, items) {
-    const ctx = document.getElementById(canvasId).getContext("2d");
-
-    if (ctx._chart) ctx._chart.destroy();
-
-    ctx._chart = new Chart(ctx, {
-        type: "doughnut",
-        data: {
-            labels: items.map(i => i.label),
-            datasets: [{
-                data: items.map(i => i.count)
-            }]
-        },
-        options: { responsive: true }
-    });
-}
-
-/* -------------------------------
-   4. GEO TAB
---------------------------------*/
-async function loadGeo() {
-    setStatus("geo-status", "Loading regions…");
-
-    const data = await apiGet("get_geo");
-
-    if (!data) {
-        setStatus("geo-status", "Failed to load geography.", "error");
-        return;
-    }
-
-    // Country list
-    const list = document.getElementById("geo-list");
-    list.innerHTML = "";
-
-    data.top_countries.forEach(row => {
-        const li = document.createElement("li");
-        li.textContent = `${row.name} — ${row.count}`;
-        list.appendChild(li);
-    });
-
-    document.getElementById("geo-trend").textContent = data.trend_text;
-
-    setStatus("geo-status", "Loaded", "ok");
-}
-
-/* -------------------------------
-   5. LEADS TAB
---------------------------------*/
-async function loadLeads() {
-    setStatus("leads-status", "Loading leads…");
-
-    const data = await apiGet("get_leads");
-
-    if (!data) {
-        setStatus("leads-status", "Failed to load leads.", "error");
-        return;
-    }
-
-    document.getElementById("lead-today").textContent     = data.contact_today;
-    document.getElementById("lead-week").textContent      = data.contact_week;
-    document.getElementById("lead-score-today").textContent  = data.score_today;
-    document.getElementById("lead-score-yesterday").textContent = data.score_yesterday;
-
-    document.getElementById("lead-summary").textContent = data.summary;
-
-    setStatus("leads-status", "Loaded", "ok");
-}
-
-/* -------------------------------
-   Auto-refresh every 60s
---------------------------------*/
-setInterval(() => {
-    const active = document.querySelector(".tab.active");
-    if (active) loadTab(active.dataset.tab);
-}, 60000);
-
-
-/* -------------------------------
-   Init
---------------------------------*/
-document.addEventListener("DOMContentLoaded", initTabs);
+  // Auto refresh every 60s
+  setInterval(async ()=>{
+    showRefresh();
+    await loadStats();
+    await loadVisitChart();
+    await loadProfileViews();
+    updateTimestamp();
+  },60000);
+});
